@@ -1,3 +1,3 @@
 # jwebpoll
-# Die wahrscheinlich beste Umfrage Software der Welt!
+# Die wahrscheinlich beste Umfragesoftware der Welt!
 
