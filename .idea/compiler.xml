@@ -22,11 +22,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
-        <module name="jwebpoll" />
+        <module name="JWebPoll" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
-      <module name="jwebpoll" target="1.8" />
+      <module name="JWebPoll" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
