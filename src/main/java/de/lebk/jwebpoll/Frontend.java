@@ -1,3 +1,5 @@
+package de.lebk.jwebpoll;
+
 import freemarker.template.Configuration;
 import spark.ModelAndView;
 import spark.Request;
