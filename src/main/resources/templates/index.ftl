@@ -3,9 +3,16 @@
     <#include "includes/head.flt">
     </head>
     <body>
-        <div class="row">
-            <h1 class="text-center">Hello world. Nice day for a poll, isn't it?</h1>
+    <#include "includes/navbar.flt">
+
+    <div class="container">
+
+        <div class="main">
+            <div class="row">
+                <h1 class="text-center">Hello world. Nice day for a poll, isn't it?</h1>
+            </div>
         </div>
-        <script type="text/javascript" src="js/bootstrap.min.js"
+
+    </div>
     </body>
 </html>
