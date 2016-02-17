@@ -1,6 +1,6 @@
 <html>
     <head>
-        <link href="css/bootstrap.min.css" rel="stylesheet">
+    <#include "includes/head.flt">
     </head>
     <body>
         <div class="row">
