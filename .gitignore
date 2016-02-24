@@ -5,3 +5,4 @@ target/
 !.idea/encodings.xml
 !.idea/modules.xml
 /JWebPoll.iml
+/jwebpoll.sqlite

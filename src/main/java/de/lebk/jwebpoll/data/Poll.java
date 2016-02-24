@@ -1,4 +1,4 @@
-package de.lebk.jwebpoll.classes;
+package de.lebk.jwebpoll.data;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -6,9 +6,6 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * Created by Samson on 17.02.2016.
- */
 @DatabaseTable(tableName = "polls")
 public class Poll {
     @DatabaseField(id = true)

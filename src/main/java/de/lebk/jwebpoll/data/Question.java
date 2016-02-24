@@ -1,11 +1,8 @@
-package de.lebk.jwebpoll.classes;
+package de.lebk.jwebpoll.data;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-/**
- * Created by Samson on 17.02.2016.
- */
 @DatabaseTable(tableName = "questions")
 public class Question {
     @DatabaseField(id = true)
