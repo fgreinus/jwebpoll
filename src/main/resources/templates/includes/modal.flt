@@ -1,0 +1,15 @@
+<div id="about" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Impressum</h4>
+            </div>
+            <div class="modal-body">
+                <p><b>jWebPoll has been crafted by amazing developers!</b></p>
+                <p>Simon Miketta, Lucas Weckermann, Felix Wöstmann, Florian Greinus and Tim Schirrmacher</p>
+                <p>Powered by HTFLTR-Technology</p>
+            </div>
+        </div>
+    </div>
+</div>
