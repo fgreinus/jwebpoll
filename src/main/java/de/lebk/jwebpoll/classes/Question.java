@@ -1,4 +1,4 @@
-package classes;
+package de.lebk.jwebpoll.classes;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -11,7 +11,10 @@ public class Question {
     @DatabaseField(id = true)
     private int id;
 
-    public Question() {
+    @DatabaseField
+    private Poll poll;
 
+    public Question(Poll poll) {
+        this.poll = poll;
     }
 }
