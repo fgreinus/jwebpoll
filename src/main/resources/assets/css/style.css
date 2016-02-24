@@ -3,7 +3,9 @@ body {
     padding-top: 50px;
 }
 .main {
-    padding: 40px 15px;
-    text-align: center;
+    display: block;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 15px 25px;
 }
 
