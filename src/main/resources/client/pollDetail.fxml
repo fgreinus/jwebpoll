@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.GridPane?>
+
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.geometry.Insets?>
+<GridPane xmlns="http://javafx.com/javafx/8"
+          id="root"
+          hgap="10"
+          vgap="10">
+    <padding><Insets top="25" right="25" bottom="25" left="25"/></padding>
+    <Text id="titleTxt"
+          text="Umfrage"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="0"/>
+    <TextField id="titleTxF"
+               text="Eine Beispiel-Umfrage!"
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="0"/>
+</GridPane>
