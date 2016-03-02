@@ -1,21 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.GridPane?>
-
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.ColumnConstraints?>
+
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.layout.BorderPane?>
 <GridPane xmlns="http://javafx.com/javafx/8"
-          id="root"
+          id="detailGrid"
           hgap="10"
           vgap="10">
-    <padding><Insets top="25" right="25" bottom="25" left="25"/></padding>
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+    <columnConstraints>
+        <ColumnConstraints/>
+        <ColumnConstraints hgrow="ALWAYS"/>
+    </columnConstraints>
     <Text id="titleTxt"
-          text="Umfrage"
+          text="Titel"
           GridPane.columnIndex="0"
           GridPane.rowIndex="0"/>
     <TextField id="titleTxF"
                text="Eine Beispiel-Umfrage!"
                GridPane.columnIndex="1"
-               GridPane.rowIndex="0"/>
+               GridPane.rowIndex="0"
+               maxWidth="400"/>
+
+    <Text id="descTxt"
+          text="Beschreibung"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="1"/>
+    <TextArea id="descTxF"
+              text="Hier kann eine Beschreibung für die Umfrage hinterlegt werden."
+              prefHeight="100"
+              wrapText="true"
+              GridPane.columnIndex="1"
+              GridPane.rowIndex="1"/>
+
+    <Text id="createdTxt"
+          text="Erstellt am"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="2"/>
+    <DatePicker id="createdDtp"
+                editable="false"
+                GridPane.columnIndex="1"
+                GridPane.rowIndex="2"/>
+
+    <Text id="stateTxt"
+          text="Status"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="3"/>
+    <ComboBox id="stateCbo"
+              editable="false"
+              GridPane.columnIndex="1"
+              GridPane.rowIndex="3"/>
+
+    <Text id="questionsTxt"
+          text="Fragen"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="4"
+          GridPane.columnSpan="2"/>
 </GridPane>
