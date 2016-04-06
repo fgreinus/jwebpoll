@@ -17,12 +17,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class Database {
 
     private static Database instance;
 
     private ConnectionSource dbConn;
+
+    private Hashtable<String, Dao> daoList;
 
 
     private Database() throws Exception {
@@ -36,6 +39,7 @@ public class Database {
         }
 
         initializeDatabaseTables();
+        initializeModelDataAccessObjects();
     }
 
     public static Database getInstance() throws Exception {
@@ -64,6 +68,31 @@ public class Database {
             TableUtils.createTableIfNotExists(dbConn, Vote.class);
         } catch (SQLException e) {
 
+        }
+    }
+
+    private void initializeModelDataAccessObjects()
+    {
+        daoList = new Hashtable<>();
+
+        try {
+
+            daoList.put(Poll.class.getName(), DaoManager.createDao(dbConn, Poll.class));
+            daoList.put(Answer.class.getName(), DaoManager.createDao(dbConn, Answer.class));
+            daoList.put(Question.class.getName(), DaoManager.createDao(dbConn, Question.class));
+            daoList.put(Vote.class.getName(), DaoManager.createDao(dbConn, Vote.class));
+
+        } catch (SQLException e) {
+
+        }
+    }
+
+    public Dao getDaoForClass(String className)
+    {
+        if (daoList.containsKey(className)) {
+            return daoList.get(className);
+        } else {
+            return null;
         }
     }
 
