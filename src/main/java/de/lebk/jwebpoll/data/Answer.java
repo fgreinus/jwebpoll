@@ -9,7 +9,7 @@ public class Answer
     @DatabaseField(id = true)
     private int id;
 
-    @DatabaseField
+    @DatabaseField(canBeNull = false, foreign = true)
     private Question question;
 
     @DatabaseField
@@ -24,5 +24,7 @@ public class Answer
         this.text = text;
         this.value = value;
     }
+
+    public Answer() { }
 
 }

@@ -24,9 +24,14 @@
             <version>2.3</version>
         </dependency>
         <dependency>
-            <groupId>com.j256</groupId>
-            <artifactId>ormlite</artifactId>
-            <version>3.0</version>
+            <groupId>com.j256.ormlite</groupId>
+            <artifactId>ormlite-core</artifactId>
+            <version>4.48</version>
+        </dependency>
+        <dependency>
+            <groupId>com.j256.ormlite</groupId>
+            <artifactId>ormlite-jdbc</artifactId>
+            <version>4.48</version>
         </dependency>
         <dependency>
             <groupId>org.xerial</groupId>
