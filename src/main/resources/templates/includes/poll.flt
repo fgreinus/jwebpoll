@@ -1,16 +1,21 @@
- <form role="form">
+<form role="form" id="pollform" method="post" action="">
+    <fieldset>
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="badge">1</span> Grundlagen
             </div>
             <div class="panel-body">
                 <div class="form-group">
-                    <label>Name</label>
-                    <input class="form-control">
+                    <label class="control-label" for="name">Name</label>
+                    <div class="input-field">
+                        <input class="form-control" id="name" name="name" required>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>Ausbildungsgang</label>
-                    <input class="form-control">
+                    <label class="control-label" for="ausbildungsgang">Ausbildungsgang</label>
+                    <div class="input-field">
+                        <input class="form-control" id="ausbildungsgang" name="ausbildungsgang" required>
+                    </div>
                 </div>
             </div>
         </div>
@@ -42,7 +47,8 @@
                     <label>Wie bewerten Sie die allgemeine Sauberkeit?</label>
                     <div class="radio">
                         <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>Sehr gut
+                            <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>Sehr
+                            gut
                         </label>
                     </div>
                     <div class="radio">
@@ -73,7 +79,52 @@
                 </div>
             </div>
         </div>
-        <hr />
-        <button type="button" class="btn btn-success btn-lg btn-block">Umfrage absenden</button>
-    </form>
+        <hr/>
+        <button type="submit" class="btn btn-success btn-lg btn-block">Umfrage absenden</button>
+    </fieldset>
+</form>
 </div>
+<script type="text/javascript">
+    jQuery.extend(jQuery.validator.messages, {
+        required: "Dieses Feld muss ausgefüllt sein!",
+    });
+    $(document).ready(function () {
+
+        $("#pollform").validate({
+            errorElement: "em",
+            errorPlacement: function (error, element) {
+                // Add the `help-block` class to the error element
+                error.addClass("help-block");
+
+                // Add `has-feedback` class to the parent div.form-group
+                // in order to add icons to inputs
+                element.parents(".input-field").addClass("has-feedback");
+
+                if (element.prop("type") === "checkbox") {
+                    error.insertAfter(element.parent("label"));
+                } else {
+                    error.insertAfter(element);
+                }
+
+                // Add the span element, if doesn't exists, and apply the icon classes to it.
+                if (!element.next("span")[0]) {
+                    $("<span class='glyphicon glyphicon-remove form-control-feedback'></span>").insertAfter(element);
+                }
+            },
+            success: function (label, element) {
+                // Add the span element, if doesn't exists, and apply the icon classes to it.
+                if (!$(element).next("span")[0]) {
+                    $("<span class='glyphicon glyphicon-ok form-control-feedback'></span>").insertAfter($(element));
+                }
+            },
+            highlight: function (element, errorClass, validClass) {
+                $(element).parents(".input-field").addClass("has-error").removeClass("has-success");
+                $(element).next("span").addClass("glyphicon-remove").removeClass("glyphicon-ok");
+            },
+            unhighlight: function (element, errorClass, validClass) {
+                $(element).parents(".input-field").addClass("has-success").removeClass("has-error");
+                $(element).next("span").addClass("glyphicon-ok").removeClass("glyphicon-remove");
+            }
+        });
+    });
+</script>
