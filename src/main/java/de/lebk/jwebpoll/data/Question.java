@@ -6,10 +6,10 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "questions")
 public class Question
 {
-    @DatabaseField(id = true)
+    @DatabaseField(generatedId = true)
     private int id;
 
-    @DatabaseField
+    @DatabaseField(canBeNull = false, foreign = true)
     private Poll poll;
 
     @DatabaseField
@@ -32,4 +32,6 @@ public class Question
         this.required = required;
         this.type = type;
     }
+
+    public Question() { }
 }

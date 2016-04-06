@@ -1,5 +1,6 @@
 package de.lebk.jwebpoll.data;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -15,13 +16,13 @@ public class Vote
     @DatabaseField
     private String session;
 
-    @DatabaseField
+    @DatabaseField(dataType = DataType.DATE_STRING)
     private Date created;
 
-    @DatabaseField
+    @DatabaseField(canBeNull = false, foreign = true)
     private Question question;
 
-    @DatabaseField
+    @DatabaseField(canBeNull = false, foreign = true)
     private Answer answer;
 
     @DatabaseField
@@ -37,4 +38,6 @@ public class Vote
         this.session = session;
         this.userText = "";
     }
+
+    public Vote() { }
 }

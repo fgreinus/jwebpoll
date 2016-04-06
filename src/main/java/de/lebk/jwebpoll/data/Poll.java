@@ -1,5 +1,6 @@
 package de.lebk.jwebpoll.data;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -11,7 +12,7 @@ public class Poll {
     @DatabaseField(id = true)
     private int id;
 
-    @DatabaseField
+    @DatabaseField(dataType = DataType.DATE_STRING)
     private Date created;
 
     @DatabaseField
@@ -33,4 +34,6 @@ public class Poll {
         this.description = description;
         this.state = state;
     }
+
+    public Poll() { }
 }
