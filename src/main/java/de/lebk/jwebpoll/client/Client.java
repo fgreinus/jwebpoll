@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -23,18 +24,24 @@ public class Client extends Application
     {
         primaryStage.setTitle("JWebPoll");
 
-        VBox root = (VBox) FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
-        SplitPane rootSplit = (SplitPane) root.lookup("#rootSplit");
+        SplitPane rootSplit = (SplitPane) FXMLLoader.load(this.getClass().getResource("/client/client.fxml")); //root.lookup("#rootSplit");
         this.pollList = new ListView<String>();
         this.pollList.getItems().add("1. Umfrage");
         this.pollList.getItems().add("Bundestagswahlen");
         this.pollList.getItems().add("Mittag-Menü-Wahl");
         rootSplit.getItems().add(this.pollList);
+        rootSplit.setDividerPositions(1d / 3d);
 
+        ScrollPane pollDetailScroller = new ScrollPane();
+        pollDetailScroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        pollDetailScroller.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        pollDetailScroller.setFitToWidth(true);
+        pollDetailScroller.setFitToHeight(true);
         GridPane pollDetail = (GridPane) FXMLLoader.load(this.getClass().getResource("/client/pollDetail.fxml"));
-        rootSplit.getItems().add(pollDetail);
+        pollDetailScroller.setContent(pollDetail);
+        rootSplit.getItems().add(pollDetailScroller);
 
-        primaryStage.setScene(new Scene(root, 800, 600));
+        primaryStage.setScene(new Scene(rootSplit, 800, 600));
         primaryStage.show();
     }
 }
