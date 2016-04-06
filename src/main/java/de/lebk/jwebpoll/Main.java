@@ -2,11 +2,6 @@ package de.lebk.jwebpoll;
 
 import com.j256.ormlite.dao.Dao;
 import de.lebk.jwebpoll.data.Poll;
-import org.sqlite.SQLiteConfig;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.List;
 
 public class Main {
