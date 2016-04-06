@@ -6,31 +6,35 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.ArrayList;
 import java.util.Date;
 
-@DatabaseTable(tableName = "polls")
-public class Poll {
+@DatabaseTable(tableName = "votes")
+public class Vote
+{
     @DatabaseField(id = true)
     private int id;
+
+    @DatabaseField
+    private String session;
 
     @DatabaseField
     private Date created;
 
     @DatabaseField
-    private String title;
+    private Question question;
 
     @DatabaseField
-    private String description;
+    private Answer answer;
 
     @DatabaseField
-    private short state;
+    private String userText;
 
     ArrayList<Question> questions;
 
-    public Poll(String title, String description, short state)
+    public Vote(String session, Question question, Answer answer)
     {
-        this.questions = new ArrayList<Question>();
         this.created = new Date();
-        this.title = title;
-        this.description = description;
-        this.state = state;
+        this.question = question;
+        this.answer = answer;
+        this.session = session;
+        this.userText = "";
     }
 }

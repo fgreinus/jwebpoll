@@ -31,6 +31,17 @@ public class Frontend {
         return Frontend.instance;
     }
 
+    public void stop()
+    {
+        if (isRunning())
+            instance.stop();
+    }
+
+    public boolean isRunning()
+    {
+        return instance.isRunning();
+    }
+
     private void initializeSparkConfiguration()
     {
         // so that all static files will be served directly by spark and we don't have to care any longer about them :)
