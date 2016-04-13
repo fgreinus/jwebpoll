@@ -6,7 +6,6 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Separator?>
 
@@ -26,8 +25,9 @@
           GridPane.columnIndex="0"
           GridPane.rowIndex="0"/>
     <TextField id="titleTxF"
-               text="Eine Beispiel-Umfrage!"
+               text=""
                GridPane.columnIndex="1"
+               GridPane.columnSpan="2"
                GridPane.rowIndex="0"
                maxWidth="400"/>
 
@@ -36,20 +36,25 @@
           GridPane.columnIndex="0"
           GridPane.rowIndex="1"/>
     <TextArea id="descTxF"
-              text="Hier kann eine Beschreibung für die Umfrage hinterlegt werden."
+              text=""
               prefHeight="100"
               wrapText="true"
               GridPane.columnIndex="1"
+              GridPane.columnSpan="2"
               GridPane.rowIndex="1"/>
 
     <Text id="createdTxt"
           text="Erstellt am"
           GridPane.columnIndex="0"
           GridPane.rowIndex="2"/>
-    <TextField id="createdTxF"
+    <TextField id="createdDateTxF"
                 editable="false"
                 GridPane.columnIndex="1"
                 GridPane.rowIndex="2"/>
+    <TextField id="createdTimeTxF"
+               editable="false"
+               GridPane.columnIndex="2"
+               GridPane.rowIndex="2"/>
 
     <Text id="stateTxt"
           text="Status"
@@ -58,6 +63,7 @@
     <ComboBox id="stateCbo"
               editable="false"
               GridPane.columnIndex="1"
+              GridPane.columnSpan="2"
               GridPane.rowIndex="3"/>
 
     <Text id="questionsTxt"
@@ -69,5 +75,5 @@
                orientation="HORIZONTAL"
                GridPane.columnIndex="0"
                GridPane.rowIndex="5"
-               GridPane.columnSpan="2"/>
+               GridPane.columnSpan="3"/>
 </GridPane>
