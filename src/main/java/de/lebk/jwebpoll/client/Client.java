@@ -2,20 +2,16 @@ package de.lebk.jwebpoll.client;
 
 import de.lebk.jwebpoll.data.Poll;
 import javafx.application.Application;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.SplitPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,21 +27,16 @@ public class Client extends Application
     private List<Poll> polls = new ArrayList<>();
     private Poll poll;
 
-    private StringProperty title = new SimpleStringProperty();
-
     //- View -
     private ListView<Poll> pollList = new ListView<>();
+    private TextField titleTxF;
+    private TextArea descTxF;
+    private TextField createdTxF;
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
         primaryStage.setTitle("JWebPoll");
-
-        title.addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
-        {
-            if(Client.this.poll != null)
-                Client.this.poll.setTitle(newValue);
-        });
 
         polls.add(new Poll("1. Umfrage", "Eine Beschreibung", (short) 0));
         polls.add(new Poll("Bundestagswahl", "Kurze Beschreibung", (short) 0));
@@ -63,14 +54,9 @@ public class Client extends Application
         {
             this.pollList.getItems().add(p);
         }
-        this.pollList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Poll>()
+        this.pollList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Poll> observable, Poll oldValue, Poll newValue) ->
         {
-            @Override
-            public void changed(ObservableValue<? extends Poll> observable, Poll oldValue, Poll newValue)
-            {
-                //TODO Handle oldValue!
-                Client.this.setPoll(newValue);
-            }
+            Client.this.setPoll(newValue);
         });
         rootSplit.getItems().add(this.pollList);
         rootSplit.setDividerPositions(1d / 3d);
@@ -81,6 +67,21 @@ public class Client extends Application
         pollDetailScroller.setFitToWidth(true);
         pollDetailScroller.setFitToHeight(true);
         GridPane pollDetail = (GridPane) FXMLLoader.load(this.getClass().getResource("/client/pollDetail.fxml"));
+        this.titleTxF = (TextField) pollDetail.lookup("#titleTxF");
+        this.titleTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
+        {
+            if(Client.this.poll != null
+            && !Client.this.poll.getTitle().equals(newValue))
+                Client.this.poll.setTitle(newValue);
+        });
+        this.descTxF = (TextArea) pollDetail.lookup("#descTxF");
+        this.descTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
+        {
+            if(Client.this.poll != null
+            && !Client.this.poll.getDescription().equals(newValue))
+                Client.this.poll.setDescription(newValue);
+        });
+        this.createdTxF = (TextField) pollDetail.lookup("#createdTxF");
         pollDetailScroller.setContent(pollDetail);
         rootSplit.getItems().add(pollDetailScroller);
 
@@ -91,6 +92,14 @@ public class Client extends Application
     public void setPoll(Poll newPoll)
     {
         this.poll = newPoll;
+        if(this.poll != null)
+        {
+            this.titleTxF.setText(this.poll.getTitle());
+            this.descTxF.setText(this.poll.getDescription());
+
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+            this.createdTxF.setText(outputFormat.format(this.poll.getCreated()));
+        }
     }
 
     //- Classes -

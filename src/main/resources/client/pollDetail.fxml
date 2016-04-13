@@ -46,7 +46,7 @@
           text="Erstellt am"
           GridPane.columnIndex="0"
           GridPane.rowIndex="2"/>
-    <DatePicker id="createdDtp"
+    <TextField id="createdTxF"
                 editable="false"
                 GridPane.columnIndex="1"
                 GridPane.rowIndex="2"/>
