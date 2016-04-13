@@ -34,7 +34,7 @@ public class Client extends Application
     private TextField titleTxF;
     private TextArea descTxF;
     private TextField createdDateTxF, createdTimeTxF;
-    private ListView<Question> questionList = new ListView<>();
+    private ListView<Question> questionList;
 
     @Override
     public void start(Stage primaryStage) throws Exception
@@ -87,6 +87,11 @@ public class Client extends Application
         });
         this.createdDateTxF = (TextField) pollDetail.lookup("#createdDateTxF");
         this.createdTimeTxF = (TextField) pollDetail.lookup("#createdTimeTxF");
+        this.questionList = (ListView<Question>) pollDetail.lookup("#questionList");
+        this.questionList.setCellFactory((ListView<Question> param) ->
+        {
+            return new QuestionListCell();
+        });
         pollDetailScroller.setContent(pollDetail);
         rootSplit.getItems().add(pollDetailScroller);
 
@@ -107,17 +112,10 @@ public class Client extends Application
             this.createdDateTxF.setText(outputFormatDate.format(this.poll.getCreated()));
             this.createdTimeTxF.setText(outputFormatTime.format(this.poll.getCreated()));
 
-            this.questionList.setCellFactory(new Callback<ListView<Question>, ListCell<Question>>()
-            {
-                @Override
-                public ListCell<Question> call(ListView<Question> param)
-                {
-                    return new QuestionListCell();
-                }
-            });
+
+            this.questionList.getItems().clear();
             for (Question q : this.poll.getQuestions())
             {
-                System.out.println(" > " + q.getTitle());
                 this.questionList.getItems().add(q);
             }
         }
@@ -157,13 +155,12 @@ public class Client extends Application
                     numTxt.setText(String.format("%d.", 42));
                     titleTxt.setText(item.getTitle());
                     hintTxt.setText(item.getHint());
+                    this.setGraphic(questionView);
                 }
                 catch (IOException e)
                 {
                     e.printStackTrace();
                 }
-
-                this.setText(item.getTitle());
             }
         }
     }

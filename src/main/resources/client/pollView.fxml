@@ -9,6 +9,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Separator?>
 
+<?import javafx.scene.control.ListView?>
 <GridPane xmlns="http://javafx.com/javafx/8"
           id="detailGrid"
           hgap="10"
@@ -18,6 +19,7 @@
     </padding>
     <columnConstraints>
         <ColumnConstraints/>
+        <ColumnConstraints hgrow="ALWAYS"/>
         <ColumnConstraints hgrow="ALWAYS"/>
     </columnConstraints>
     <Text id="titleTxt"
@@ -69,11 +71,18 @@
     <Text id="questionsTxt"
           text="Fragen"
           GridPane.columnIndex="0"
-          GridPane.rowIndex="4"
-          GridPane.columnSpan="2"/>
+          GridPane.columnSpan="2"
+          GridPane.rowIndex="4"/>
     <Separator id="questionsSep"
                orientation="HORIZONTAL"
                GridPane.columnIndex="0"
                GridPane.rowIndex="5"
                GridPane.columnSpan="3"/>
+
+    <ListView
+            id="questionList"
+            GridPane.columnIndex="0"
+            GridPane.columnSpan="3"
+            GridPane.rowIndex="6"
+    />
 </GridPane>
