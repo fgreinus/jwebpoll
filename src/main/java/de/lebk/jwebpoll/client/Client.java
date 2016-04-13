@@ -34,24 +34,25 @@ public class Client extends Application
     private TextField titleTxF;
     private TextArea descTxF;
     private TextField createdDateTxF, createdTimeTxF;
+    private ListView<Question> questionList = new ListView<>();
 
     @Override
     public void start(Stage primaryStage) throws Exception
     {
         primaryStage.setTitle("JWebPoll");
 
-        polls.add(new Poll("Neu", "", (short) 0));
+        Poll newPoll = new Poll("Neue Umfrage", "", (short) 0);
+        Question newQuestion = new Question(newPoll, "Neue Frage", true, (short) 0);
+        newQuestion.setHint("Hinweis zur Frage hier eingeben...");
+        newPoll.getQuestions().add(newQuestion);
+        polls.add(newPoll);
         polls.add(new Poll("1. Umfrage", "Eine Beschreibung", (short) 0));
         polls.add(new Poll("Bundestagswahl", "Kurze Beschreibung", (short) 0));
 
         SplitPane rootSplit = (SplitPane) FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
-        this.pollList.setCellFactory(new Callback<ListView<Poll>, ListCell<Poll>>()
+        this.pollList.setCellFactory((ListView<Poll> param) ->
         {
-            @Override
-            public ListCell<Poll> call(ListView<Poll> param)
-            {
-                return new PollListCell();
-            }
+            return new PollListCell();
         });
         for (Poll p : this.polls)
         {
@@ -106,28 +107,18 @@ public class Client extends Application
             this.createdDateTxF.setText(outputFormatDate.format(this.poll.getCreated()));
             this.createdTimeTxF.setText(outputFormatTime.format(this.poll.getCreated()));
 
-            Text numTxt;
-            TextField titleTxt;
-            TextField hintTxt;
-            Question q;
-            for (int i = 0; i < this.poll.getQuestions().size(); i++)
+            this.questionList.setCellFactory(new Callback<ListView<Question>, ListCell<Question>>()
             {
-                q = this.poll.getQuestions().get(i);
-                try
+                @Override
+                public ListCell<Question> call(ListView<Question> param)
                 {
-                    GridPane questionView = (GridPane) FXMLLoader.load(Client.this.getClass().getResource("/client/questionView.fxml"));
-                    numTxt = (Text) questionView.lookup("#numTxt");
-                    titleTxt = (TextField) questionView.lookup("#titleTxF");
-                    hintTxt = (TextField) questionView.lookup("#hintTxF");
-
-                    numTxt.setText(String.format("%d.", i));
-                    titleTxt.setText(q.getTitle());
-                    hintTxt.setText(q.getHint());
+                    return new QuestionListCell();
                 }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+            });
+            for (Question q : this.poll.getQuestions())
+            {
+                System.out.println(" > " + q.getTitle());
+                this.questionList.getItems().add(q);
             }
         }
     }
@@ -142,6 +133,38 @@ public class Client extends Application
 
             if(item != null)
                 this.setText(item.getTitle());
+        }
+    }
+    private class QuestionListCell extends ListCell<Question>
+    {
+        @Override
+        protected void updateItem(Question item, boolean empty)
+        {
+            super.updateItem(item, empty);
+
+            if(item != null)
+            {
+                Text numTxt;
+                TextField titleTxt;
+                TextField hintTxt;
+                try
+                {
+                    GridPane questionView = (GridPane) FXMLLoader.load(Client.this.getClass().getResource("/client/questionView.fxml"));
+                    numTxt = (Text) questionView.lookup("#numTxt");
+                    titleTxt = (TextField) questionView.lookup("#titleTxF");
+                    hintTxt = (TextField) questionView.lookup("#hintTxF");
+
+                    numTxt.setText(String.format("%d.", 42));
+                    titleTxt.setText(item.getTitle());
+                    hintTxt.setText(item.getHint());
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+
+                this.setText(item.getTitle());
+            }
         }
     }
 }
