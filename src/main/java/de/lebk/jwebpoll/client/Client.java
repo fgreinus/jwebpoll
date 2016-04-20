@@ -47,8 +47,8 @@ public class Client extends Application
                 Client.this.poll.setTitle(newValue);
         });
 
-        polls.add(new Poll("1. Umfrage", "Eine Beschreibung", (short) 0));
-        polls.add(new Poll("Bundestagswahl", "Kurze Beschreibung", (short) 0));
+        //polls.add(new Poll("1. Umfrage", "Eine Beschreibung", (short) 0));
+        //polls.add(new Poll("Bundestagswahl", "Kurze Beschreibung", (short) 0));
 
         SplitPane rootSplit = (SplitPane) FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
         this.pollList.setCellFactory(new Callback<ListView<Poll>, ListCell<Poll>>()
