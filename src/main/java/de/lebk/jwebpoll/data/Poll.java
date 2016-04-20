@@ -9,8 +9,9 @@ import java.util.Date;
 import java.util.List;
 
 @DatabaseTable(tableName = "polls")
-public class Poll {
-    @DatabaseField(id = true)
+public class Poll
+{
+    @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     private int id;
 
     @DatabaseField(dataType = DataType.DATE_STRING)
@@ -23,7 +24,7 @@ public class Poll {
     private String description;
 
     @DatabaseField
-    private short state;
+    private PollState state;
 
     ArrayList<Question> questions;
 
@@ -31,8 +32,10 @@ public class Poll {
     {
 
     }
-    public Poll(String title, String description, short state)
+
+    public Poll(int id, String title, String description, PollState state)
     {
+        this.id = id;
         this.questions = new ArrayList<Question>();
         this.created = new Date();
         this.title = title;
@@ -56,7 +59,7 @@ public class Poll {
         return description;
     }
 
-    public short getState() {
+    public PollState getState() {
         return state;
     }
 
@@ -84,7 +87,7 @@ public class Poll {
         this.description = description;
     }
 
-    public void setState(short state) {
+    public void setState(PollState state) {
         this.state = state;
     }
 }

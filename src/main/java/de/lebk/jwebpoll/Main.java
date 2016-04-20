@@ -2,37 +2,57 @@ package de.lebk.jwebpoll;
 
 import com.j256.ormlite.dao.Dao;
 import de.lebk.jwebpoll.data.Poll;
+import de.lebk.jwebpoll.data.PollState;
+
+import java.sql.SQLException;
 import java.util.List;
 
 public class Main {
 
+    protected static Poll activePoll;
+
     public static void main(String[] args) throws Exception {
         spawnDatabase();
-        spawnWebServer();
+
+        if (selectActivePoll())
+        {
+            spawnWebServer(activePoll);
+        }
     }
 
-    private static void spawnWebServer() throws Exception {
-        Frontend.getInstance();
+    private static void spawnWebServer(Poll poll) throws Exception {
+        Frontend.getInstance(poll);
     }
 
     private static void spawnDatabase() throws Exception {
         Database.getInstance();
     }
 
-    private void sqlExample()
+    private static boolean selectActivePoll()
     {
-        Poll poll = new Poll("Toller Titel", "Beschreibung", (short)1);
-
+        Database db = null;
         try {
-            Database db = Database.getInstance();
-            Dao pollDao = db.getDaoForClass(Poll.class.getName());
-            pollDao.create(poll);
+            db = Database.getInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
 
-            List<Poll> list = pollDao.queryForAll();
-            for (Poll p : list) {
-                System.out.println(p);
+        Dao dao = db.getDaoForClass(Poll.class.getName());
+        try {
+            Object result = dao.queryBuilder().where().eq("state", PollState.OPEN).queryForFirst();
+            if (result != null)
+            {
+                activePoll = (Poll) result;
+                return true;
             }
-        } catch (Exception e) { }
+            else {
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
 

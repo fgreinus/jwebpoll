@@ -8,7 +8,7 @@
     <div class="main">
         <div class="row">
             <h1>Umfrage</h1>
-            <h3>Kartoffel-Umfrage</h3>
+            <h3>${poll.getTitle()}</h3>
             <#include "includes/poll.flt">
             </div>
     </div>

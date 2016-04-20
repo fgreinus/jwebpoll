@@ -67,7 +67,7 @@ public class Database {
             TableUtils.createTableIfNotExists(dbConn, Question.class);
             TableUtils.createTableIfNotExists(dbConn, Vote.class);
         } catch (SQLException e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -94,6 +94,21 @@ public class Database {
         } else {
             return null;
         }
+    }
+
+    public Object getLastObjectOfTable(String className)
+    {
+        Dao dao = getDaoForClass(className);
+
+        Object result = null;
+
+        try {
+            result = dao.queryBuilder().orderBy("id", false).queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
 }
