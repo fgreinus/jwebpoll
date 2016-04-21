@@ -5,6 +5,12 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Separator?>
 <GridPane xmlns="http://javafx.com/javafx/8"
           id="questionGrid"
           hgap="10"
@@ -12,20 +18,80 @@
 
     <columnConstraints>
         <ColumnConstraints/>
+        <ColumnConstraints/>
         <ColumnConstraints hgrow="ALWAYS"/>
+        <ColumnConstraints hgrow="SOMETIMES"/>
     </columnConstraints>
 
     <Text id="numTxt"
-          text=""
           GridPane.columnIndex="0"
           GridPane.rowIndex="0"/>
     <TextField id="titleTxF"
-          text=""
-          GridPane.columnIndex="1"
-          GridPane.rowIndex="0"/>
+               GridPane.columnIndex="1"
+               GridPane.columnSpan="3"
+               GridPane.rowIndex="0"/>
+    <CheckBox id="requiredCkB"
+              text="Pflichtfrage"
+              GridPane.columnIndex="4"
+              GridPane.rowIndex="0"/>
     <TextField id="hintTxF"
-          text=""
-          GridPane.columnIndex="1"
-          GridPane.rowIndex="1"/>
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="1"
+               GridPane.columnSpan="4"/>
 
+    <Text id="answersTxt"
+          text="Antwortmöglichkeiten"
+          GridPane.columnIndex="1"
+          GridPane.rowIndex="2"
+          GridPane.columnSpan="4"/>
+    <Separator id="answersSep"
+               orientation="HORIZONTAL"
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="3"
+               GridPane.columnSpan="4"/>
+
+    <ComboBox
+            id="typeCbo"
+            GridPane.columnIndex="1"
+            GridPane.rowIndex="4"/>
+    <TextField id="answerAddTextTxF"
+               prefWidth="-Infinity"
+               GridPane.columnIndex="2"
+               GridPane.rowIndex="4"
+               GridPane.hgrow="ALWAYS"/>
+    <TextField id="answerAddValueTxF"
+               prefWidth="-Infinity"
+               GridPane.columnIndex="3"
+               GridPane.rowIndex="4"
+               GridPane.hgrow="ALWAYS"/>
+    <Button id="answerAddBtn"
+            text="Hinzufügen"
+            textFill="green"
+            maxWidth="Infinity"
+            GridPane.hgrow="SOMETIMES"
+            GridPane.columnIndex="4"
+            GridPane.rowIndex="4"/>
+
+    <ListView id="answerList"
+              orientation="HORIZONTAL"
+              GridPane.columnIndex="1"
+              GridPane.rowIndex="5"
+              GridPane.columnSpan="3"
+              prefHeight="-Infinity"
+              prefWidth="-Infinity"/>
+    <Button id="answerRemoveBtn"
+            text="Entfernen"
+            textFill="red"
+            maxWidth="Infinity"
+            GridPane.hgrow="SOMETIMES"
+            GridPane.columnIndex="4"
+            GridPane.rowIndex="5"/>
+    <TextArea id="answerFreetext"
+              text="Hier kann Freitext eingegeben werden..."
+              disable="true"
+              GridPane.columnIndex="1"
+              GridPane.rowIndex="5"
+              GridPane.columnSpan="4"
+              prefHeight="-Infinity"
+              prefWidth="-Infinity"/>
 </GridPane>

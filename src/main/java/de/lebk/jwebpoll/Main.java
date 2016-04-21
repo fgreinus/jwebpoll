@@ -2,6 +2,8 @@ package de.lebk.jwebpoll;
 
 import com.j256.ormlite.dao.Dao;
 import de.lebk.jwebpoll.data.Poll;
+import de.lebk.jwebpoll.data.PollState;
+
 import java.util.List;
 
 public class Main {
@@ -21,9 +23,10 @@ public class Main {
 
     private void sqlExample()
     {
-        Poll poll = new Poll("Toller Titel", "Beschreibung", (short)1);
+        Poll poll = new Poll("Toller Titel", "Beschreibung", PollState.NEW);
 
-        try {
+        try
+        {
             Database db = Database.getInstance();
             Dao pollDao = db.getDaoForClass(Poll.class.getName());
             pollDao.create(poll);
@@ -32,7 +35,8 @@ public class Main {
             for (Poll p : list) {
                 System.out.println(p);
             }
-        } catch (Exception e) { }
+        }
+        catch (Exception e) { }
     }
 }
 

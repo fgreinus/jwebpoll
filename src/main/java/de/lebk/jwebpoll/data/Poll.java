@@ -23,17 +23,16 @@ public class Poll {
     private String description;
 
     @DatabaseField
-    private short state;
+    private PollState state;
 
-    ArrayList<Question> questions;
+    private final ArrayList<Question> questions = new ArrayList<>();
 
     public Poll()
     {
 
     }
-    public Poll(String title, String description, short state)
+    public Poll(String title, String description, PollState state)
     {
-        this.questions = new ArrayList<Question>();
         this.created = new Date();
         this.title = title;
         this.description = description;
@@ -56,14 +55,12 @@ public class Poll {
         return description;
     }
 
-    public short getState() {
+    public PollState getState() {
         return state;
     }
 
     public List<Question> getQuestions()
     {
-        if(this.questions == null)
-            this.questions = new ArrayList<>();
         return questions;
     }
 
@@ -84,7 +81,7 @@ public class Poll {
         this.description = description;
     }
 
-    public void setState(short state) {
+    public void setState(PollState state) {
         this.state = state;
     }
 }

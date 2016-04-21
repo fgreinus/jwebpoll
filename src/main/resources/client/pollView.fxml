@@ -50,9 +50,9 @@
           GridPane.columnIndex="0"
           GridPane.rowIndex="2"/>
     <TextField id="createdDateTxF"
-                editable="false"
-                GridPane.columnIndex="1"
-                GridPane.rowIndex="2"/>
+               editable="false"
+               GridPane.columnIndex="1"
+               GridPane.rowIndex="2"/>
     <TextField id="createdTimeTxF"
                editable="false"
                GridPane.columnIndex="2"
@@ -63,10 +63,11 @@
           GridPane.columnIndex="0"
           GridPane.rowIndex="3"/>
     <ComboBox id="stateCbo"
-              editable="false"
+              disable="true"
+              maxWidth="Infinity"
               GridPane.columnIndex="1"
-              GridPane.columnSpan="2"
-              GridPane.rowIndex="3"/>
+              GridPane.rowIndex="3"
+              GridPane.hgrow="ALWAYS"/>
 
     <Text id="questionsTxt"
           text="Fragen"

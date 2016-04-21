@@ -4,13 +4,9 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "answers")
-public class Answer
-{
+public class Answer {
     @DatabaseField(id = true)
     private int id;
-
-    @DatabaseField(canBeNull = false, foreign = true)
-    private Question question;
 
     @DatabaseField
     private String text;
@@ -18,13 +14,28 @@ public class Answer
     @DatabaseField
     private String value;
 
-    public Answer(Question question, String text, String value)
+    public Answer()
     {
-        this.question = question;
+    }
+
+    public Answer(String text, String value)
+    {
         this.text = text;
         this.value = value;
     }
 
-    public Answer() { }
+    public int getId()
+    {
+        return id;
+    }
 
+    public String getText()
+    {
+        return text;
+    }
+
+    public String getValue()
+    {
+        return value;
+    }
 }

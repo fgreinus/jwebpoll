@@ -3,14 +3,13 @@ package de.lebk.jwebpoll.data;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.ArrayList;
+
 @DatabaseTable(tableName = "questions")
 public class Question
 {
     @DatabaseField(generatedId = true)
     private int id;
-
-    @DatabaseField(canBeNull = false, foreign = true)
-    private Poll poll;
 
     @DatabaseField
     private String title;
@@ -22,13 +21,14 @@ public class Question
     private boolean required;
 
     @DatabaseField
-    private short type;
+    private QuestionType type;
+
+    private final ArrayList<Answer> answers = new ArrayList<>();
 
     public Question() { }
 
-    public Question(Poll poll, String title, boolean required, short type)
+    public Question(String title, boolean required, QuestionType type)
     {
-        this.poll = poll;
         this.title = title;
         this.hint = "";
         this.required = required;
@@ -41,14 +41,6 @@ public class Question
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Poll getPoll() {
-        return poll;
-    }
-
-    public void setPoll(Poll poll) {
-        this.poll = poll;
     }
 
     public String getTitle() {
@@ -75,11 +67,16 @@ public class Question
         this.required = required;
     }
 
-    public short getType() {
+    public QuestionType getType() {
         return type;
     }
 
-    public void setType(short type) {
+    public void setType(QuestionType type) {
         this.type = type;
+    }
+
+    public ArrayList<Answer> getAnswers()
+    {
+        return answers;
     }
 }
