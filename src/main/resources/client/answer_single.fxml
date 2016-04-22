@@ -2,4 +2,5 @@
 
 <?import javafx.scene.control.RadioButton?>
 
-<RadioButton xmlns="http://javafx.com/javafx/8"/>
+<RadioButton xmlns="http://javafx.com/javafx/8"
+             disable="true"/>

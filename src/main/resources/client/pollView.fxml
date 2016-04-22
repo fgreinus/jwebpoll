@@ -10,6 +10,8 @@
 <?import javafx.scene.control.Separator?>
 
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.RowConstraints?>
 <GridPane xmlns="http://javafx.com/javafx/8"
           id="detailGrid"
           hgap="10"
@@ -21,7 +23,18 @@
         <ColumnConstraints/>
         <ColumnConstraints hgrow="ALWAYS"/>
         <ColumnConstraints hgrow="ALWAYS"/>
+        <ColumnConstraints hgrow="ALWAYS"/>
     </columnConstraints>
+    <rowConstraints>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints vgrow="ALWAYS"/>
+        <RowConstraints/>
+    </rowConstraints>
     <Text id="titleTxt"
           text="Titel"
           GridPane.columnIndex="0"
@@ -29,7 +42,7 @@
     <TextField id="titleTxF"
                text=""
                GridPane.columnIndex="1"
-               GridPane.columnSpan="2"
+               GridPane.columnSpan="3"
                GridPane.rowIndex="0"
                maxWidth="400"/>
 
@@ -42,7 +55,7 @@
               prefHeight="100"
               wrapText="true"
               GridPane.columnIndex="1"
-              GridPane.columnSpan="2"
+              GridPane.columnSpan="3"
               GridPane.rowIndex="1"/>
 
     <Text id="createdTxt"
@@ -56,7 +69,8 @@
     <TextField id="createdTimeTxF"
                editable="false"
                GridPane.columnIndex="2"
-               GridPane.rowIndex="2"/>
+               GridPane.rowIndex="2"
+               GridPane.columnSpan="2"/>
 
     <Text id="stateTxt"
           text="Status"
@@ -69,21 +83,62 @@
               GridPane.rowIndex="3"
               GridPane.hgrow="ALWAYS"/>
 
+    <Button id="openBtn"
+            text="Öffnen"
+            textFill="green"
+            maxWidth="Infinity"
+            GridPane.columnIndex="2"
+            GridPane.rowIndex="3"/>
+    <Button id="closeBtn"
+            text="Schliessen"
+            textFill="red"
+            maxWidth="Infinity"
+            GridPane.columnIndex="2"
+            GridPane.rowIndex="3"/>
+
+    <Button id="resultsBtn"
+            text="Ergebnisse"
+            maxWidth="Infinity"
+            GridPane.columnIndex="3"
+            GridPane.rowIndex="3"/>
+
     <Text id="questionsTxt"
           text="Fragen"
           GridPane.columnIndex="0"
-          GridPane.columnSpan="2"
+          GridPane.columnSpan="4"
           GridPane.rowIndex="4"/>
     <Separator id="questionsSep"
                orientation="HORIZONTAL"
                GridPane.columnIndex="0"
                GridPane.rowIndex="5"
-               GridPane.columnSpan="3"/>
+               GridPane.columnSpan="4"/>
 
-    <ListView
-            id="questionList"
-            GridPane.columnIndex="0"
-            GridPane.columnSpan="3"
-            GridPane.rowIndex="6"
-    />
+    <ListView id="questionList"
+              GridPane.columnIndex="0"
+              GridPane.columnSpan="4"
+              GridPane.rowIndex="6"/>
+
+    <GridPane id="questionsBtns"
+              GridPane.columnIndex="0"
+              GridPane.rowIndex="7"
+              GridPane.columnSpan="4"
+              hgap="10">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+
+        <Button id="questionsAddBtn"
+                text="Hinzufügen"
+                textFill="green"
+                maxWidth="Infinity"
+                GridPane.hgrow="SOMETIMES"
+                GridPane.columnIndex="0"/>
+        <Button id="questionsRemoveBtn"
+                text="Entfernen"
+                textFill="red"
+                maxWidth="Infinity"
+                GridPane.hgrow="SOMETIMES"
+                GridPane.columnIndex="1"/>
+    </GridPane>
 </GridPane>
