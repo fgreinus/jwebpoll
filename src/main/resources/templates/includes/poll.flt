@@ -1,3 +1,8 @@
+<hr>
+<#list formArray as arrayElement>
+<b> ${arrayElement} </b>
+</#list>
+<hr>
 <form role="form" id="pollform" method="post" action="">
     <fieldset>
         <div class="panel panel-default">

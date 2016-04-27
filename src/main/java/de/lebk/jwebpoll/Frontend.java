@@ -11,6 +11,7 @@ import spark.template.freemarker.FreeMarkerEngine;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,7 +83,25 @@ public class Frontend {
         {
             Map<String, Object> attributes = new HashMap<>();
 
+            attributes.put("test", "Test123");
+
+            // TEST FOR FORMS
+            Map<String, String> testArray1 = new HashMap<String, String>();
+            ArrayList<HashMap> testArray = new ArrayList<HashMap>();
+
+
+           // testArray.add("EINS");
+
+            attributes.put("formArray", testArray1);
+
             return new ModelAndView(attributes, "index.ftl");
+        }
+
+        public static ModelAndView pollAction(Request request, Response response)
+        {
+            Map<String, Object> attributes = new HashMap<>();
+
+            return new ModelAndView(attributes, "poll.ftl");
         }
     }
 }
