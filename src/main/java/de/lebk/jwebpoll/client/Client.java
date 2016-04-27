@@ -1,5 +1,7 @@
 package de.lebk.jwebpoll.client;
 
+import de.lebk.jwebpoll.Database;
+import de.lebk.jwebpoll.Frontend;
 import de.lebk.jwebpoll.data.*;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
@@ -16,11 +18,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Client extends Application
-{
+public class Client extends Application {
     //- Main -
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         Client.launch(args);
     }
 
@@ -40,23 +40,20 @@ public class Client extends Application
     private Button questionsAddBtn, questionsRemoveBtn;
 
     @Override
-    public void start(Stage primaryStage) throws Exception
-    {
+    public void start(Stage primaryStage) throws Exception {
         //Title
         primaryStage.setTitle("JWebPoll");
 
         //Default Poll: new poll
-        Poll newPoll = new Poll(0, "Neue Umfrage", "", PollState.NEW);
+        Poll newPoll = new Poll( "Neue Umfrage", "", PollState.NEW);
         this.polls.add(newPoll);
 
         //Example polls (to be deleted in future)
-        this.polls.add(new Poll(0, "1. Umfrage", "Eine Beschreibung", PollState.OPEN));
-        this.polls.add(new Poll(0, "Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
+        this.polls.add(new Poll( "1. Umfrage", "Eine Beschreibung", PollState.OPEN));
+        this.polls.add(new Poll( "Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
 
-        for (Poll p : this.polls)
-        {
-            if(p.getState() == PollState.OPEN)
-            {
+        for (Poll p : this.polls) {
+            if (p.getState() == PollState.OPEN) {
                 this.activePoll = p;
                 break;
             }
@@ -68,8 +65,7 @@ public class Client extends Application
         {
             return new PollListCell();
         });
-        for (Poll p : this.polls)
-        {
+        for (Poll p : this.polls) {
             this.pollList.getItems().add(p);
         }
         this.pollList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Poll> observable, Poll oldValue, Poll newValue) ->
@@ -89,15 +85,15 @@ public class Client extends Application
         this.titleTxF = (TextField) pollDetail.lookup("#titleTxF");
         this.titleTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
         {
-            if(Client.this.poll != null
-            && !Client.this.poll.getTitle().equals(newValue))
+            if (Client.this.poll != null
+                    && !Client.this.poll.getTitle().equals(newValue))
                 Client.this.poll.setTitle(newValue);
         });
         this.descTxF = (TextArea) pollDetail.lookup("#descTxF");
         this.descTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
         {
-            if(Client.this.poll != null
-            && !Client.this.poll.getDescription().equals(newValue))
+            if (Client.this.poll != null
+                    && !Client.this.poll.getDescription().equals(newValue))
                 Client.this.poll.setDescription(newValue);
         });
         this.createdDateTxF = (TextField) pollDetail.lookup("#createdDateTxF");
@@ -112,28 +108,37 @@ public class Client extends Application
         this.openBtn = (Button) pollDetail.lookup("#openBtn");
         this.openBtn.setOnAction((ActionEvent event) ->
         {
-            if(this.poll != null)
-            {
+            if (this.poll != null) {
                 this.poll.setState(PollState.OPEN);
                 this.activePoll = this.poll;
                 this.openBtn.setVisible(false);
                 this.closeBtn.setVisible(true);
                 this.stateCbo.setValue(this.poll.getState());
                 this.enableControls();
+                try {
+                    spawnDatabase();
+                    spawnWebServer(this.poll);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
         });
         this.closeBtn = (Button) pollDetail.lookup("#closeBtn");
         this.closeBtn.setOnAction((ActionEvent event) ->
         {
-            if(this.poll != null)
-            {
+            if (this.poll != null) {
                 this.poll.setState(PollState.CLOSED);
                 this.activePoll = null;
                 this.closeBtn.setVisible(false);
                 this.openBtn.setVisible(true);
                 this.stateCbo.setValue(this.poll.getState());
                 this.enableControls();
-            }
+                try {
+                    spawnWebServer(null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }}
         });
         this.resultsBtn = (Button) pollDetail.lookup("#resultsBtn");
         this.resultsBtn.setOnAction((ActionEvent event) ->
@@ -156,10 +161,9 @@ public class Client extends Application
         this.questionsRemoveBtn = (Button) pollDetail.lookup("#questionsRemoveBtn");
         this.questionsRemoveBtn.setOnAction((ActionEvent event) ->
         {
-            if(!this.questionList.getSelectionModel().isEmpty())
-            {
+            if (!this.questionList.getSelectionModel().isEmpty()) {
                 Question toRemove = this.questionList.getSelectionModel().getSelectedItem();
-                if(this.poll != null)
+                if (this.poll != null)
                     this.poll.getQuestions().remove(toRemove);
                 this.questionList.getItems().remove(toRemove);
             }
@@ -173,11 +177,9 @@ public class Client extends Application
         primaryStage.show();
     }
 
-    public void setPoll(Poll newPoll)
-    {
+    public void setPoll(Poll newPoll) {
         this.poll = newPoll;
-        if(this.poll != null)
-        {
+        if (this.poll != null) {
             this.titleTxF.setText(this.poll.getTitle());
             this.descTxF.setText(this.poll.getDescription());
 
@@ -190,15 +192,13 @@ public class Client extends Application
             this.closeBtn.setVisible(this.poll.getState() == PollState.OPEN);
             this.enableControls();
             this.questionList.getItems().clear();
-            for (Question q : this.poll.getQuestions())
-            {
+            for (Question q : this.poll.getQuestions()) {
                 this.questionList.getItems().add(q);
             }
         }
     }
 
-    public void enableControls()
-    {
+    public void enableControls() {
         boolean disable = this.activePoll != null && this.activePoll == this.poll;
         this.titleTxF.setDisable(disable);
         this.descTxF.setDisable(disable);
@@ -206,275 +206,259 @@ public class Client extends Application
         this.createdTimeTxF.setDisable(disable);
         this.openBtn.setDisable(this.activePoll != null);
         this.closeBtn.setDisable(!disable);
-        this.questionList.refresh();
+        //this.questionList.refresh(); TODO
         this.questionsAddBtn.setDisable(disable);
         this.questionsRemoveBtn.setDisable(disable);
     }
 
     //- Classes -
-    private class PollListCell extends ListCell<Poll>
-    {
+    private class PollListCell extends ListCell<Poll> {
         @Override
-        protected void updateItem(Poll item, boolean empty)
-        {
+        protected void updateItem(Poll item, boolean empty) {
             super.updateItem(item, empty);
 
-            if(item != null)
+            if (item != null)
                 this.setText(item.getTitle());
         }
     }
-    private class QuestionListCell extends ListCell<Question>
-    {
+
+    private class QuestionListCell extends ListCell<Question> {
         @Override
-        protected void updateItem(Question item, boolean empty)
-        {
+        protected void updateItem(Question item, boolean empty) {
             super.updateItem(item, empty);
 
-            if(!empty && item != null)
-            {
-                try
-                {
+            if (!empty && item != null) {
+                try {
                     boolean disabled = Client.this.activePoll != null && Client.this.activePoll == Client.this.poll;
 
-                    GridPane rootGird = (GridPane) FXMLLoader.load(Client.this.getClass().getResource("/client/questionView.fxml"));
-                    GridPane questionView = (GridPane) rootGird.lookup("#questionGrid");
-                    Text titelTxt = (Text) questionView.lookup("#titelTxt");
-                    TextField titleTxF = (TextField) questionView.lookup("#titleTxF");
-                    CheckBox requiredCkB = (CheckBox) questionView.lookup("#requiredCkB");
-                    TextField hintTxF = (TextField) questionView.lookup("#hintTxF");
-                    ComboBox<QuestionType> typeCbo = (ComboBox<QuestionType>) questionView.lookup("#typeCbo");
-                    Text answerAddTextTxt = (Text) questionView.lookup("#answerAddTextTxt");
-                    TextField answerAddTextTxF = (TextField) questionView.lookup("#answerAddTextTxF");
-                    Text answerAddValueTxt = (Text) questionView.lookup("#answerAddValueTxt");
-                    TextField answerAddValueTxF = (TextField) questionView.lookup("#answerAddValueTxF");
-                    Button answerAddBtn = (Button) questionView.lookup("#answerAddBtn");
-                    ListView<Answer> answerList = (ListView<Answer>) questionView.lookup("#answerList");
-                    Button answerRemoveBtn = (Button) questionView.lookup("#answerRemoveBtn");
-                    TextArea answerFreetext = (TextArea) questionView.lookup("#answerFreetext");
+                            GridPane rootGird = (GridPane) FXMLLoader.load(Client.this.getClass().getResource("/client/questionView.fxml"));
+                            GridPane questionView = (GridPane) rootGird.lookup("#questionGrid");
+                            Text titelTxt = (Text) questionView.lookup("#titelTxt");
+                            TextField titleTxF = (TextField) questionView.lookup("#titleTxF");
+                            CheckBox requiredCkB = (CheckBox) questionView.lookup("#requiredCkB");
+                            TextField hintTxF = (TextField) questionView.lookup("#hintTxF");
+                            ComboBox<QuestionType> typeCbo = (ComboBox<QuestionType>) questionView.lookup("#typeCbo");
+                            Text answerAddTextTxt = (Text) questionView.lookup("#answerAddTextTxt");
+                            TextField answerAddTextTxF = (TextField) questionView.lookup("#answerAddTextTxF");
+                            Text answerAddValueTxt = (Text) questionView.lookup("#answerAddValueTxt");
+                            TextField answerAddValueTxF = (TextField) questionView.lookup("#answerAddValueTxF");
+                            Button answerAddBtn = (Button) questionView.lookup("#answerAddBtn");
+                            ListView<Answer> answerList = (ListView<Answer>) questionView.lookup("#answerList");
+                            Button answerRemoveBtn = (Button) questionView.lookup("#answerRemoveBtn");
+                            TextArea answerFreetext = (TextArea) questionView.lookup("#answerFreetext");
 
-                    titleTxF.setText(item.getTitle());
-                    titleTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
-                    {
-                        item.setTitle(titleTxF.getText());
-                    });
-                    titleTxF.setDisable(disabled);
-                    requiredCkB.setSelected(item.isRequired());
-                    requiredCkB.setOnAction((ActionEvent event) ->
-                    {
-                        item.setRequired(requiredCkB.isSelected());
-                    });
-                    requiredCkB.setDisable(disabled);
-                    hintTxF.setText(item.getHint());
-                    hintTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
-                    {
-                        item.setHint(hintTxF.getText());
-                    });
-                    hintTxF.setDisable(disabled);
-                    typeCbo.getItems().addAll(QuestionType.SINGLE, QuestionType.MULTIPLE, QuestionType.FREE);
-                    typeCbo.setCellFactory((ListView<QuestionType> param) ->
-                    {
-                        return new QuestionTypeCell();
-                    });
-                    typeCbo.setButtonCell(new QuestionTypeCell());
-                    typeCbo.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends QuestionType> observable, QuestionType oldValue, QuestionType newValue) ->
-                    {
-                        item.setType(newValue);
-                        switch(newValue)
-                        {
-                            //TODO Implement different Views
-                            case SINGLE:
-                                answerAddTextTxt.setVisible(true);
-                                answerAddTextTxF.setVisible(true);
-                                answerAddValueTxt.setVisible(true);
-                                answerAddValueTxF.setVisible(true);
-                                answerAddBtn.setVisible(true);
-                                answerList.setVisible(true);
-                                answerRemoveBtn.setVisible(true);
-                                answerFreetext.setVisible(false);
-                                break;
-                            case MULTIPLE:
-                                answerAddTextTxt.setVisible(true);
-                                answerAddTextTxF.setVisible(true);
-                                answerAddValueTxt.setVisible(true);
-                                answerAddValueTxF.setVisible(true);
-                                answerAddBtn.setVisible(true);
-                                answerList.setVisible(true);
-                                answerRemoveBtn.setVisible(true);
-                                answerFreetext.setVisible(false);
-                                break;
-                            case FREE:
-                                answerAddTextTxt.setVisible(false);
-                                answerAddTextTxF.setVisible(false);
-                                answerAddValueTxt.setVisible(false);
-                                answerAddValueTxF.setVisible(false);
-                                answerAddBtn.setVisible(false);
-                                answerList.setVisible(false);
-                                answerRemoveBtn.setVisible(false);
-                                answerFreetext.setVisible(true);
-                                break;
-                        }
-                        answerList.setCellFactory((ListView<Answer> param) ->
-                        {
-                            AnswerListCell answerListCell = new AnswerListCell();
-                            answerListCell.setType(newValue);
-                            return answerListCell;
-                        });
-                    });
-                    typeCbo.setValue(item.getType());
-                    answerAddBtn.setOnAction((ActionEvent event) ->
-                    {
-                        if(!answerAddTextTxF.getText().isEmpty()
-                        && !answerAddValueTxF.getText().isEmpty())
-                        {
-                            try
+                            titleTxF.setText(item.getTitle());
+                            titleTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
                             {
-                                int value = Integer.parseInt(answerAddValueTxF.getText());
-                                Answer answer = new Answer(answerAddTextTxF.getText(), "Test2");
-                                item.getAnswers().add(answer);
-                                answerList.getItems().add(answer);
-                            }
-                            catch (NumberFormatException e)
+                                item.setTitle(titleTxF.getText());
+                            });
+                            titleTxF.setDisable(disabled);
+                            requiredCkB.setSelected(item.isRequired());
+                            requiredCkB.setOnAction((ActionEvent event) ->
                             {
-                                answerAddValueTxF.setText("Ungültiger Wert");
+                                item.setRequired(requiredCkB.isSelected());
+                            });
+                            requiredCkB.setDisable(disabled);
+                            hintTxF.setText(item.getHint());
+                            hintTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
+                            {
+                                item.setHint(hintTxF.getText());
+                            });
+                            hintTxF.setDisable(disabled);
+                            typeCbo.getItems().addAll(QuestionType.SINGLE, QuestionType.MULTIPLE, QuestionType.FREE);
+                            typeCbo.setCellFactory((ListView<QuestionType> param) ->
+                            {
+                                return new QuestionTypeCell();
+                            });
+                            typeCbo.setButtonCell(new QuestionTypeCell());
+                            typeCbo.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends QuestionType> observable, QuestionType oldValue, QuestionType newValue) ->
+                            {
+                                item.setType(newValue);
+                                switch (newValue) {
+                                    //TODO Implement different Views
+                                    case SINGLE:
+                                        answerAddTextTxt.setVisible(true);
+                                        answerAddTextTxF.setVisible(true);
+                                        answerAddValueTxt.setVisible(true);
+                                        answerAddValueTxF.setVisible(true);
+                                        answerAddBtn.setVisible(true);
+                                        answerList.setVisible(true);
+                                        answerRemoveBtn.setVisible(true);
+                                        answerFreetext.setVisible(false);
+                                        break;
+                                    case MULTIPLE:
+                                        answerAddTextTxt.setVisible(true);
+                                        answerAddTextTxF.setVisible(true);
+                                        answerAddValueTxt.setVisible(true);
+                                        answerAddValueTxF.setVisible(true);
+                                        answerAddBtn.setVisible(true);
+                                        answerList.setVisible(true);
+                                        answerRemoveBtn.setVisible(true);
+                                        answerFreetext.setVisible(false);
+                                        break;
+                                    case FREE:
+                                        answerAddTextTxt.setVisible(false);
+                                        answerAddTextTxF.setVisible(false);
+                                        answerAddValueTxt.setVisible(false);
+                                        answerAddValueTxF.setVisible(false);
+                                        answerAddBtn.setVisible(false);
+                                        answerList.setVisible(false);
+                                        answerRemoveBtn.setVisible(false);
+                                        answerFreetext.setVisible(true);
+                                        break;
+                                }
+                                answerList.setCellFactory((ListView<Answer> param) ->
+                                {
+                                    AnswerListCell answerListCell = new AnswerListCell();
+                                    answerListCell.setType(newValue);
+                                    return answerListCell;
+                                });
+                            });
+                            typeCbo.setValue(item.getType());
+                            answerAddBtn.setOnAction((ActionEvent event) ->
+                            {
+                                if (!answerAddTextTxF.getText().isEmpty()
+                                        && !answerAddValueTxF.getText().isEmpty()) {
+                                    try {
+                                        int value = Integer.parseInt(answerAddValueTxF.getText());
+                                        Answer answer = new Answer(answerAddTextTxF.getText(), "Test2");
+                                        item.getAnswers().add(answer);
+                                        answerList.getItems().add(answer);
+                                    } catch (NumberFormatException e) {
+                                        answerAddValueTxF.setText("Ungültiger Wert");
+                                    }
+                                }
+
+                            });
+                            answerAddBtn.setDisable(disabled);
+                            answerRemoveBtn.setOnAction((ActionEvent event) ->
+                            {
+                                if (!answerList.getSelectionModel().isEmpty()) {
+                                    Answer toRemove = answerList.getSelectionModel().getSelectedItem();
+                                    item.getAnswers().remove(toRemove);
+                                    answerList.getItems().remove(toRemove);
+                                }
+                            });
+                            answerRemoveBtn.setDisable(disabled);
+                            answerAddTextTxF.setDisable(disabled);
+                            answerAddValueTxF.setDisable(disabled);
+                            answerList.getItems().addAll(item.getAnswers());
+
+                            this.setGraphic(rootGird);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        this.setText(null);
+                        this.setGraphic(null);
+                    }
+                }
+            }
+
+            private class AnswerListCell extends ListCell<Answer> {
+                QuestionType type = QuestionType.SINGLE;
+
+                public void setType(QuestionType type) {
+                    this.type = type;
+                }
+
+                @Override
+                protected void updateItem(Answer item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (!empty && item != null) {
+                        try {
+                            switch (type) {
+                                case SINGLE:
+                                    RadioButton radioButton = (RadioButton) FXMLLoader.load(Client.this.getClass().getResource("/client/answer_single.fxml"));
+                                    radioButton.setText(item.getText());
+                                    this.setGraphic(radioButton);
+                                    break;
+                                case MULTIPLE:
+                                    CheckBox checkBox = (CheckBox) FXMLLoader.load(Client.this.getClass().getResource("/client/answer_multiple.fxml"));
+                                    checkBox.setText(item.getText());
+                                    this.setGraphic(checkBox);
+                                    break;
+                                default:
+                                    this.setText(null);
+                                    this.setGraphic(null);
+                                    break;
                             }
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
                         }
+                    } else {
+                        this.setText(null);
+                        this.setGraphic(null);
+                    }
+                }
+            }
 
-                    });
-                    answerAddBtn.setDisable(disabled);
-                    answerRemoveBtn.setOnAction((ActionEvent event) ->
-                    {
-                        if(!answerList.getSelectionModel().isEmpty())
-                        {
-                            Answer toRemove = answerList.getSelectionModel().getSelectedItem();
-                            item.getAnswers().remove(toRemove);
-                            answerList.getItems().remove(toRemove);
+            private class PollStateCell extends ListCell<PollState> {
+                @Override
+                protected void updateItem(PollState item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (item != null) {
+                        try {
+                            Text pollStateTxt = (Text) FXMLLoader.load(Client.this.getClass().getResource("/client/text.fxml"));
+                            String txt = "Unbekannt";
+                            switch (item) {
+                                case NEW:
+                                    txt = "Neu";
+                                    break;
+                                case OPEN:
+                                    txt = "Offen";
+                                    break;
+                                case CLOSED:
+                                    txt = "Geschlossen";
+                                    break;
+                            }
+                            pollStateTxt.setText(txt);
+
+                            this.setGraphic(pollStateTxt);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
                         }
-                    });
-                    answerRemoveBtn.setDisable(disabled);
-                    answerAddTextTxF.setDisable(disabled);
-                    answerAddValueTxF.setDisable(disabled);
-                    answerList.getItems().addAll(item.getAnswers());
-
-                    this.setGraphic(rootGird);
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            else
-            {
-                this.setText(null);
-                this.setGraphic(null);
-            }
-        }
-    }
-    private class AnswerListCell extends ListCell<Answer>
-    {
-        QuestionType type = QuestionType.SINGLE;
-
-        public void setType(QuestionType type)
-        {
-            this.type = type;
-        }
-
-        @Override
-        protected void updateItem(Answer item, boolean empty)
-        {
-            super.updateItem(item, empty);
-
-            if(!empty && item != null)
-            {
-                try
-                {
-                    switch(type)
-                    {
-                        case SINGLE:
-                            RadioButton radioButton = (RadioButton) FXMLLoader.load(Client.this.getClass().getResource("/client/answer_single.fxml"));
-                            radioButton.setText(item.getText());
-                            this.setGraphic(radioButton);
-                            break;
-                        case MULTIPLE:
-                            CheckBox checkBox = (CheckBox) FXMLLoader.load(Client.this.getClass().getResource("/client/answer_multiple.fxml"));
-                            checkBox.setText(item.getText());
-                            this.setGraphic(checkBox);
-                            break;
-                        default:
-                            this.setText(null);
-                            this.setGraphic(null);
-                            break;
                     }
                 }
-                catch (IOException ex)
-                {
-                    ex.printStackTrace();
-                }
             }
-            else
-            {
-                this.setText(null);
-                this.setGraphic(null);
-            }
-        }
-    }
-    private class PollStateCell extends ListCell<PollState>
-    {
-        @Override
-        protected void updateItem(PollState item, boolean empty)
-        {
-            super.updateItem(item, empty);
 
-            if(item != null)
-            {
-                try
-                {
-                    Text pollStateTxt = (Text) FXMLLoader.load(Client.this.getClass().getResource("/client/text.fxml"));
-                    String txt = "Unbekannt";
-                    switch (item)
-                    {
-                        case NEW: txt = "Neu"; break;
-                        case OPEN: txt = "Offen"; break;
-                        case CLOSED: txt = "Geschlossen"; break;
+            private class QuestionTypeCell extends ListCell<QuestionType> {
+                @Override
+                protected void updateItem(QuestionType item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (item != null) {
+                        try {
+                            Text pollStateTxt = (Text) FXMLLoader.load(Client.this.getClass().getResource("/client/text.fxml"));
+                            String txt = "Unbekannt";
+                            switch (item) {
+                                case SINGLE:
+                                    txt = "Einzelauswahl";
+                                    break;
+                                case MULTIPLE:
+                                    txt = "Mehrfachauswahl";
+                                    break;
+                                case FREE:
+                                    txt = "Freitext";
+                                    break;
+                            }
+                            pollStateTxt.setText(txt);
+
+                            this.setGraphic(pollStateTxt);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
                     }
-                    pollStateTxt.setText(txt);
-
-                    this.setGraphic(pollStateTxt);
-                }
-                catch (IOException ex)
-                {
-                    ex.printStackTrace();
                 }
             }
+
+        private void spawnWebServer(Poll poll) throws Exception {
+            Frontend.getInstance(poll);
+        }
+
+        private void spawnDatabase() throws Exception {
+            Database.getInstance();
         }
     }
-    private class QuestionTypeCell extends ListCell<QuestionType>
-    {
-        @Override
-        protected void updateItem(QuestionType item, boolean empty)
-        {
-            super.updateItem(item, empty);
-
-            if(item != null)
-            {
-                try
-                {
-                    Text pollStateTxt = (Text) FXMLLoader.load(Client.this.getClass().getResource("/client/text.fxml"));
-                    String txt = "Unbekannt";
-                    switch (item)
-                    {
-                        case SINGLE: txt = "Einzelauswahl"; break;
-                        case MULTIPLE: txt = "Mehrfachauswahl"; break;
-                        case FREE: txt = "Freitext"; break;
-                    }
-                    pollStateTxt.setText(txt);
-
-                    this.setGraphic(pollStateTxt);
-                }
-                catch (IOException ex)
-                {
-                    ex.printStackTrace();
-                }
-            }
-        }
-    }
-}

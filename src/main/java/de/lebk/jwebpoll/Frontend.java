@@ -40,17 +40,6 @@ public class Frontend {
         return Frontend.instance;
     }
 
-    public void stop()
-    {
-        if (isRunning())
-            instance.stop();
-    }
-
-    public boolean isRunning()
-    {
-        return instance.isRunning();
-    }
-
     private void initializeSparkConfiguration()
     {
         // so that all static files will be served directly by spark and we don't have to care any longer about them :)
@@ -70,7 +59,10 @@ public class Frontend {
             Map<String, Object> attributes = new HashMap<>();
 
             attributes.put("test", "Test123");
-            attributes.put("poll", activePoll);
+            if(activePoll!=null) {
+                attributes.put("poll", activePoll);
+            }
+
 
             // TEST FOR FORMS
             Map<String, String> testArray1 = new HashMap<String, String>();
