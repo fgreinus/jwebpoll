@@ -2,10 +2,8 @@ package de.lebk.jwebpoll.client;
 
 import de.lebk.jwebpoll.data.*;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -52,7 +50,7 @@ public class Client extends Application
 
         //Example polls (to be deleted in future)
         polls.add(new Poll("1. Umfrage", "Eine Beschreibung", PollState.OPEN));
-        polls.add(new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.CLOESED));
+        polls.add(new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
 
         //ListView (Left side)
         SplitPane rootSplit = (SplitPane) FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));

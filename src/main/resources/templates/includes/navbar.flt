@@ -8,7 +8,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="#">jWebPoll</a>
-            <p class="navbar-text hidden-xs">Umfrage: Kartoffel-Umfrage</p>
+            <p class="navbar-text hidden-xs">Umfrage: ${poll.getTitle()}</p>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
             <ul class="nav navbar-nav navbar-right">
