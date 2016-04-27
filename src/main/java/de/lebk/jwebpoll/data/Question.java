@@ -23,24 +23,22 @@ public class Question
     @DatabaseField
     private QuestionType type;
 
-    private final ArrayList<Answer> answers = new ArrayList<>();
+    @DatabaseField(canBeNull = false, foreign = true)
+    private Poll poll;
 
     public Question() { }
 
-    public Question(String title, boolean required, QuestionType type)
+    public Question(String title, boolean required, QuestionType type, Poll poll)
     {
         this.title = title;
         this.hint = "";
         this.required = required;
         this.type = type;
+        this.poll = poll;
     }
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getTitle() {
@@ -77,6 +75,8 @@ public class Question
 
     public ArrayList<Answer> getAnswers()
     {
-        return answers;
+        // TODO
+
+        return new ArrayList<>();
     }
 }

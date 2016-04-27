@@ -148,10 +148,10 @@ public class Client extends Application
         this.questionsAddBtn = (Button) pollDetail.lookup("#questionsAddBtn");
         this.questionsAddBtn.setOnAction((ActionEvent event) ->
         {
-            Question newQuestion = new Question("", true, QuestionType.SINGLE);
-            if(this.poll != null)
+            //Question newQuestion = new Question("", true, QuestionType.SINGLE);
+            /*if(this.poll != null)
                 this.poll.getQuestions().add(newQuestion);
-            this.questionList.getItems().add(newQuestion);
+            this.questionList.getItems().add(newQuestion);*/
         });
         this.questionsRemoveBtn = (Button) pollDetail.lookup("#questionsRemoveBtn");
         this.questionsRemoveBtn.setOnAction((ActionEvent event) ->
