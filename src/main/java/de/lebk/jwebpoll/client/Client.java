@@ -45,12 +45,12 @@ public class Client extends Application
         primaryStage.setTitle("JWebPoll");
 
         //Default Poll: new poll
-        Poll newPoll = new Poll("Neue Umfrage", "", PollState.NEW);
+        Poll newPoll = new Poll(0, "Neue Umfrage", "", PollState.NEW);
         polls.add(newPoll);
 
         //Example polls (to be deleted in future)
-        polls.add(new Poll("1. Umfrage", "Eine Beschreibung", PollState.OPEN));
-        polls.add(new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
+        polls.add(new Poll(0, "1. Umfrage", "Eine Beschreibung", PollState.OPEN));
+        polls.add(new Poll(0, "Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
 
         //ListView (Left side)
         SplitPane rootSplit = (SplitPane) FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
@@ -93,7 +93,7 @@ public class Client extends Application
         this.createdDateTxF = (TextField) pollDetail.lookup("#createdDateTxF");
         this.createdTimeTxF = (TextField) pollDetail.lookup("#createdTimeTxF");
         this.stateCbo = (ComboBox<PollState>) pollDetail.lookup("#stateCbo");
-        this.stateCbo.getItems().addAll(PollState.NEW, PollState.OPEN, PollState.CLOESED);
+        this.stateCbo.getItems().addAll(PollState.NEW, PollState.OPEN, PollState.CLOSED);
         this.stateCbo.setCellFactory((ListView<PollState> param) ->
         {
             return new PollStateCell();
@@ -115,7 +115,7 @@ public class Client extends Application
         {
             if(this.poll != null)
             {
-                this.poll.setState(PollState.CLOESED);
+                this.poll.setState(PollState.CLOSED);
                 this.closeBtn.setVisible(false);
                 this.openBtn.setVisible(true);
                 this.stateCbo.setValue(this.poll.getState());
@@ -172,7 +172,7 @@ public class Client extends Application
             this.createdDateTxF.setText(outputFormatDate.format(this.poll.getCreated()));
             this.createdTimeTxF.setText(outputFormatTime.format(this.poll.getCreated()));
             this.stateCbo.setValue(this.poll.getState());
-            this.openBtn.setVisible(this.poll.getState() == PollState.NEW || this.poll.getState() == PollState.CLOESED);
+            this.openBtn.setVisible(this.poll.getState() == PollState.NEW || this.poll.getState() == PollState.CLOSED);
             this.closeBtn.setVisible(this.poll.getState() == PollState.OPEN);
             this.questionList.getItems().clear();
             for (Question q : this.poll.getQuestions())
@@ -396,7 +396,7 @@ public class Client extends Application
                     {
                         case NEW: txt = "Neu"; break;
                         case OPEN: txt = "Offen"; break;
-                        case CLOESED: txt = "Geschlossen"; break;
+                        case CLOSED: txt = "Geschlossen"; break;
                     }
                     pollStateTxt.setText(txt);
 
