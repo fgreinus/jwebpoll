@@ -15,9 +15,6 @@ public class Answer
     @DatabaseField
     private String value;
 
-    @DatabaseField(canBeNull = false, foreign = true)
-    private Question question;
-
     public Answer()
     {
     }

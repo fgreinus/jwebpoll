@@ -36,8 +36,9 @@ public class Poll
 
     }
 
-    public Poll(String title, String description, PollState state)
+    public Poll(int id, String title, String description, PollState state)
     {
+        this.id = id;
         this.created = new Date();
         this.title = title;
         this.description = description;
@@ -67,6 +68,11 @@ public class Poll
     public ForeignCollection<Question> getQuestions()
     {
         return questions;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
     }
 
     public void setCreated(Date created) {

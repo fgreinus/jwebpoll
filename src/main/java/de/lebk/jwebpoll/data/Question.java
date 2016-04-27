@@ -23,22 +23,23 @@ public class Question
     @DatabaseField
     private QuestionType type;
 
-    @DatabaseField(canBeNull = false, foreign = true)
-    private Poll poll;
-
     public Question() { }
 
-    public Question(String title, boolean required, QuestionType type, Poll poll)
+    public Question(String title, boolean required, QuestionType type)
     {
         this.title = title;
         this.hint = "";
         this.required = required;
         this.type = type;
-        this.poll = poll;
     }
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id)
+    {
+        this.id = id;
     }
 
     public String getTitle() {
