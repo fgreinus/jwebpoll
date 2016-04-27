@@ -45,12 +45,12 @@ public class Client extends Application
         primaryStage.setTitle("JWebPoll");
 
         //Default Poll: new poll
-        Poll newPoll = new Poll(0, "Neue Umfrage", "", PollState.NEW);
+        Poll newPoll = new Poll("Neue Umfrage", "", PollState.NEW);
         polls.add(newPoll);
 
         //Example polls (to be deleted in future)
-        polls.add(new Poll(0, "1. Umfrage", "Eine Beschreibung", PollState.OPEN));
-        polls.add(new Poll(0, "Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
+        polls.add(new Poll("1. Umfrage", "Eine Beschreibung", PollState.OPEN));
+        polls.add(new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
 
         //ListView (Left side)
         SplitPane rootSplit = (SplitPane) FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
@@ -135,10 +135,10 @@ public class Client extends Application
         this.questionsAddBtn = (Button) pollDetail.lookup("#questionsAddBtn");
         this.questionsAddBtn.setOnAction((ActionEvent event) ->
         {
-            Question newQuestion = new Question("", true, QuestionType.SINGLE);
-            if(this.poll != null)
+            //Question newQuestion = new Question("", true, QuestionType.SINGLE);
+            /*if(this.poll != null)
                 this.poll.getQuestions().add(newQuestion);
-            this.questionList.getItems().add(newQuestion);
+            this.questionList.getItems().add(newQuestion);*/
         });
         this.questionsRemoveBtn = (Button) pollDetail.lookup("#questionsRemoveBtn");
         this.questionsRemoveBtn.setOnAction((ActionEvent event) ->
