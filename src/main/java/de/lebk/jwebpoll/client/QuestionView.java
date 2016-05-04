@@ -1,24 +1,19 @@
 package de.lebk.jwebpoll.client;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.QuestionType;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.StreamCorruptedException;
 
 public class QuestionView {
     public static void setQuestionView(TitledPane parent, Question item, boolean disabled) {

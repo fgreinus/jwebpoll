@@ -79,7 +79,7 @@ public class Client extends Application {
         }
         this.pollList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Poll> observable, Poll oldValue, Poll newValue) ->
         {
-            if (newValue != null)
+            if(newValue != null)
                 Client.this.setPoll(newValue);
         });
         rootSplit.getItems().add(this.pollList);
@@ -190,7 +190,8 @@ public class Client extends Application {
         this.enableControls();
 
         boolean disabled = this.activePoll != null && this.activePoll == this.poll;
-        for (Question item : this.poll.getQuestions()) {
+        for(Question item : this.poll.getQuestions())
+        {
             TitledPane tp = new TitledPane();
             QuestionView.setQuestionView(tp, item, disabled);
             this.questionsAccordion.getPanes().add(tp);
