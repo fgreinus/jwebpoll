@@ -1,5 +1,7 @@
 package de.lebk.jwebpoll.client;
 
+import de.lebk.jwebpoll.Database;
+import de.lebk.jwebpoll.Frontend;
 import de.lebk.jwebpoll.data.*;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
@@ -17,17 +19,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Client extends Application
-{
+public class Client extends Application {
     //- Main -
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         Client.launch(args);
     }
 
     //- Data -
     private List<Poll> polls = new ArrayList<>();
+    //poll selected in client window
     private Poll poll;
+    //poll running on serve
     private Poll activePoll;
 
     //- View -
@@ -41,8 +43,7 @@ public class Client extends Application
     private Button questionsAddBtn;
 
     @Override
-    public void start(Stage primaryStage) throws Exception
-    {
+    public void start(Stage primaryStage) throws Exception {
         //Title
         primaryStage.setTitle("JWebPoll");
 
@@ -54,11 +55,15 @@ public class Client extends Application
         this.polls.add(new Poll(0, "1. Umfrage", "Eine Beschreibung", PollState.OPEN));
         this.polls.add(new Poll(0, "Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
 
-        for (Poll p : this.polls)
-        {
-            if(p.getState() == PollState.OPEN)
-            {
+        for (Poll p : this.polls) {
+            if (p.getState() == PollState.OPEN) {
                 this.activePoll = p;
+                try {
+                    spawnDatabase();
+                    spawnWebServer(activePoll);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 break;
             }
         }
@@ -69,13 +74,12 @@ public class Client extends Application
         {
             return new PollListCell();
         });
-        for (Poll p : this.polls)
-        {
+        for (Poll p : this.polls) {
             this.pollList.getItems().add(p);
         }
         this.pollList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Poll> observable, Poll oldValue, Poll newValue) ->
         {
-            if(newValue != null)
+            if (newValue != null)
                 Client.this.setPoll(newValue);
         });
         rootSplit.getItems().add(this.pollList);
@@ -91,15 +95,15 @@ public class Client extends Application
         this.titleTxF = (TextField) pollDetail.lookup("#titleTxF");
         this.titleTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
         {
-            if(Client.this.poll != null
-            && !Client.this.poll.getTitle().equals(newValue))
+            if (Client.this.poll != null
+                    && !Client.this.poll.getTitle().equals(newValue))
                 Client.this.poll.setTitle(newValue);
         });
         this.descTxF = (TextArea) pollDetail.lookup("#descTxF");
         this.descTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
         {
-            if(Client.this.poll != null
-            && !Client.this.poll.getDescription().equals(newValue))
+            if (Client.this.poll != null
+                    && !Client.this.poll.getDescription().equals(newValue))
                 Client.this.poll.setDescription(newValue);
         });
         this.createdDateTxF = (TextField) pollDetail.lookup("#createdDateTxF");
@@ -120,6 +124,12 @@ public class Client extends Application
             this.closeBtn.setVisible(true);
             this.stateCbo.setValue(this.poll.getState());
             this.enableControls();
+            try {
+                spawnDatabase();
+                spawnWebServer(activePoll);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
         this.closeBtn = (Button) pollDetail.lookup("#closeBtn");
         this.closeBtn.setOnAction((ActionEvent event) ->
@@ -130,6 +140,12 @@ public class Client extends Application
             this.openBtn.setVisible(true);
             this.stateCbo.setValue(this.poll.getState());
             this.enableControls();
+            try {
+                spawnDatabase();
+                spawnWebServer(activePoll);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
         this.resultsBtn = (Button) pollDetail.lookup("#resultsBtn");
         this.resultsBtn.setOnAction((ActionEvent event) ->
@@ -158,8 +174,7 @@ public class Client extends Application
         primaryStage.show();
     }
 
-    public void setPoll(Poll newPoll)
-    {
+    public void setPoll(Poll newPoll) {
         this.poll = newPoll;
 
         this.titleTxF.setText(this.poll.getTitle());
@@ -175,8 +190,7 @@ public class Client extends Application
         this.enableControls();
 
         boolean disabled = this.activePoll != null && this.activePoll == this.poll;
-        for(Question item : this.poll.getQuestions())
-        {
+        for (Question item : this.poll.getQuestions()) {
             TitledPane tp = new TitledPane();
             QuestionView.setQuestionView(tp, item, disabled);
             this.questionsAccordion.getPanes().add(tp);
@@ -184,8 +198,7 @@ public class Client extends Application
         }
     }
 
-    public void enableControls()
-    {
+    public void enableControls() {
         boolean disable = this.activePoll != null && this.activePoll == this.poll;
         this.titleTxF.setDisable(disable);
         this.descTxF.setDisable(disable);
@@ -197,5 +210,13 @@ public class Client extends Application
         //TODO Enable / disable Accordion
 
         this.questionsAddBtn.setDisable(disable);
+    }
+
+    private void spawnWebServer(Poll poll) throws Exception {
+        Frontend.getInstance(poll);
+    }
+
+    private void spawnDatabase() throws Exception {
+        Database.getInstance();
     }
 }
