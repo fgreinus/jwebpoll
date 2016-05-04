@@ -1,5 +1,7 @@
 package de.lebk.jwebpoll.client;
 
+import de.lebk.jwebpoll.data.Poll;
+
 import de.lebk.jwebpoll.data.*;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
@@ -13,6 +15,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +54,21 @@ public class Client extends Application
         polls.add(newPoll);
 
         //Example polls (to be deleted in future)
-        polls.add(new Poll(0, "1. Umfrage", "Eine Beschreibung", PollState.OPEN));
-        polls.add(new Poll(0, "Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
+        // polls.add(new Poll(0, "1. Umfrage", "Eine Beschreibung", PollState.OPEN));
+        // polls.add(new Poll(0, "Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
+
+
+        polls = Serializer.read("jWebPoll_import.csv");
+/*
+        // TODO: Remove debug code
+        File f = new File("polls.jpl");
+        f.delete();
+
+        Poll[] arr = new Poll[polls.size()];
+        Serializer.write("polls.jpl", polls.toArray(arr));
+        polls = Serializer.read("polls.jpl");
+        // Debug code end
+*/
 
         //ListView (Left side)
         SplitPane rootSplit = (SplitPane) FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
