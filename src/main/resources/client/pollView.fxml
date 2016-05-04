@@ -12,6 +12,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.Accordion?>
 <GridPane xmlns="http://javafx.com/javafx/8"
           id="detailGrid"
           hgap="10"
@@ -113,10 +114,14 @@
                GridPane.rowIndex="5"
                GridPane.columnSpan="4"/>
 
-    <ListView id="questionList"
+    <Accordion id="questionsAccordion"
+               GridPane.columnIndex="0"
+               GridPane.columnSpan="4"
+               GridPane.rowIndex="6"/>
+    <!--ListView id="questionList"
               GridPane.columnIndex="0"
               GridPane.columnSpan="4"
-              GridPane.rowIndex="6"/>
+              GridPane.rowIndex="6"/-->
 
     <GridPane id="questionsBtns"
               GridPane.columnIndex="0"
@@ -124,7 +129,6 @@
               GridPane.columnSpan="4"
               hgap="10">
         <columnConstraints>
-            <ColumnConstraints hgrow="ALWAYS"/>
             <ColumnConstraints hgrow="ALWAYS"/>
         </columnConstraints>
 
@@ -134,11 +138,5 @@
                 maxWidth="Infinity"
                 GridPane.hgrow="SOMETIMES"
                 GridPane.columnIndex="0"/>
-        <Button id="questionsRemoveBtn"
-                text="Entfernen"
-                textFill="red"
-                maxWidth="Infinity"
-                GridPane.hgrow="SOMETIMES"
-                GridPane.columnIndex="1"/>
     </GridPane>
 </GridPane>

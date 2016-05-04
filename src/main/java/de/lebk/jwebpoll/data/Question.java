@@ -4,6 +4,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @DatabaseTable(tableName = "questions")
 public class Question
@@ -22,6 +23,8 @@ public class Question
 
     @DatabaseField
     private QuestionType type;
+
+    private List<Answer> answers = new ArrayList<>();
 
     public Question() { }
 
@@ -74,10 +77,8 @@ public class Question
         this.type = type;
     }
 
-    public ArrayList<Answer> getAnswers()
+    public List<Answer> getAnswers()
     {
-        // TODO
-
-        return new ArrayList<>();
+        return this.answers;
     }
 }
