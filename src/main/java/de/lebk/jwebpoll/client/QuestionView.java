@@ -114,10 +114,10 @@ public class QuestionView {
                                     try {
                                         switch (type) {
                                             case SINGLE:
-                                                graphic = FXMLLoader.load(AnswerListCell.class.getResource("/client/answer_single.fxml"));
+                                                graphic = FXMLLoader.load(QuestionView.class.getResource("/client/answer_single.fxml"));
                                                 break;
                                             case MULTIPLE:
-                                                graphic = FXMLLoader.load(AnswerListCell.class.getResource("/client/answer_multiple.fxml"));
+                                                graphic = FXMLLoader.load(QuestionView.class.getResource("/client/answer_multiple.fxml"));
                                                 break;
                                         }
                                     } catch (IOException ex) {
