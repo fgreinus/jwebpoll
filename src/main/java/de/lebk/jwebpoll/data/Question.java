@@ -23,8 +23,6 @@ public class Question
     @DatabaseField
     private QuestionType type;
 
-    private final ArrayList<Answer> answers = new ArrayList<>();
-
     public Question() { }
 
     public Question(String title, boolean required, QuestionType type)
@@ -39,7 +37,8 @@ public class Question
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(int id)
+    {
         this.id = id;
     }
 
@@ -77,6 +76,8 @@ public class Question
 
     public ArrayList<Answer> getAnswers()
     {
-        return answers;
+        // TODO
+
+        return new ArrayList<>();
     }
 }

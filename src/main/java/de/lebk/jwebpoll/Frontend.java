@@ -66,7 +66,23 @@ public class Frontend {
 
     private void bindSparkRoutes()
     {
-        get("/", RequestHandler::indexAction, fmEngine);
+        get("/", (request, response) -> {
+            Map<String, Object> attributes = new HashMap<>();
+
+            attributes.put("test", "Test123");
+            attributes.put("poll", activePoll);
+
+            // TEST FOR FORMS
+            Map<String, String> testArray1 = new HashMap<String, String>();
+            ArrayList<HashMap> testArray = new ArrayList<HashMap>();
+
+
+            // testArray.add("EINS");
+
+            attributes.put("formArray", testArray1);
+
+            return new ModelAndView(attributes, "index.ftl");
+        }, fmEngine);
     }
 
     private Frontend(Poll activePoll) throws Exception
@@ -75,33 +91,5 @@ public class Frontend {
         bindSparkRoutes();
         db = Database.getInstance();
         this.activePoll = activePoll;
-    }
-
-    private static class RequestHandler
-    {
-        public static ModelAndView indexAction(Request request, Response response)
-        {
-            Map<String, Object> attributes = new HashMap<>();
-
-            attributes.put("test", "Test123");
-
-            // TEST FOR FORMS
-            Map<String, String> testArray1 = new HashMap<String, String>();
-            ArrayList<HashMap> testArray = new ArrayList<HashMap>();
-
-
-           // testArray.add("EINS");
-
-            attributes.put("formArray", testArray1);
-
-            return new ModelAndView(attributes, "index.ftl");
-        }
-
-        public static ModelAndView pollAction(Request request, Response response)
-        {
-            Map<String, Object> attributes = new HashMap<>();
-
-            return new ModelAndView(attributes, "poll.ftl");
-        }
     }
 }

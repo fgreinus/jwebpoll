@@ -56,7 +56,7 @@ public class Serializer {
                     // Remove leading and trailing quote marks if any, otherwise return the original
                     String title = split[0].matches("\".*\"") ? split[0].substring(1, split[0].length() - 1) : split[0];
                     String description = split[1].matches("\".*\"") ? split[1].substring(1, split[1].length() - 1) : split[1];
-                    
+
                     result.add(new Poll(-1, title, description, PollState.NEW));
                 }
             }

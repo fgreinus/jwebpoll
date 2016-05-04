@@ -32,6 +32,7 @@ public class Client extends Application
     //- Data -
     private List<Poll> polls = new ArrayList<>();
     private Poll poll;
+    private Poll activePoll;
 
     //- View -
     private ListView<Poll> pollList = new ListView<>();
@@ -51,12 +52,7 @@ public class Client extends Application
 
         //Default Poll: new poll
         Poll newPoll = new Poll(0, "Neue Umfrage", "", PollState.NEW);
-        polls.add(newPoll);
-
-        //Example polls (to be deleted in future)
-        // polls.add(new Poll(0, "1. Umfrage", "Eine Beschreibung", PollState.OPEN));
-        // polls.add(new Poll(0, "Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
-
+        this.polls.add(newPoll);
 
         polls = Serializer.read("jWebPoll_import.csv");
 /*
@@ -69,6 +65,21 @@ public class Client extends Application
         polls = Serializer.read("polls.jpl");
         // Debug code end
 */
+
+
+        //Example polls (to be deleted in future)
+
+        this.polls.add(new Poll(0, "1. Umfrage", "Eine Beschreibung", PollState.OPEN));
+        this.polls.add(new Poll(0, "Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
+
+        for (Poll p : this.polls)
+        {
+            if(p.getState() == PollState.OPEN)
+            {
+                this.activePoll = p;
+                break;
+            }
+        }
 
         //ListView (Left side)
         SplitPane rootSplit = (SplitPane) FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
@@ -123,9 +134,11 @@ public class Client extends Application
             if(this.poll != null)
             {
                 this.poll.setState(PollState.OPEN);
+                this.activePoll = this.poll;
                 this.openBtn.setVisible(false);
                 this.closeBtn.setVisible(true);
                 this.stateCbo.setValue(this.poll.getState());
+                this.enableControls();
             }
         });
         this.closeBtn = (Button) pollDetail.lookup("#closeBtn");
@@ -134,9 +147,11 @@ public class Client extends Application
             if(this.poll != null)
             {
                 this.poll.setState(PollState.CLOSED);
+                this.activePoll = null;
                 this.closeBtn.setVisible(false);
                 this.openBtn.setVisible(true);
                 this.stateCbo.setValue(this.poll.getState());
+                this.enableControls();
             }
         });
         this.resultsBtn = (Button) pollDetail.lookup("#resultsBtn");
@@ -149,14 +164,13 @@ public class Client extends Application
         {
             return new QuestionListCell();
         });
-        this.pollList.getSelectionModel().selectFirst();
         this.questionsAddBtn = (Button) pollDetail.lookup("#questionsAddBtn");
         this.questionsAddBtn.setOnAction((ActionEvent event) ->
         {
-            Question newQuestion = new Question("", true, QuestionType.SINGLE);
-            if(this.poll != null)
+            //Question newQuestion = new Question("", true, QuestionType.SINGLE);
+            /*if(this.poll != null)
                 this.poll.getQuestions().add(newQuestion);
-            this.questionList.getItems().add(newQuestion);
+            this.questionList.getItems().add(newQuestion);*/
         });
         this.questionsRemoveBtn = (Button) pollDetail.lookup("#questionsRemoveBtn");
         this.questionsRemoveBtn.setOnAction((ActionEvent event) ->
@@ -173,6 +187,7 @@ public class Client extends Application
         rootSplit.getItems().add(pollDetailScroller);
 
         //Stage size and finally show
+        this.pollList.getSelectionModel().selectFirst();
         primaryStage.setScene(new Scene(rootSplit, 800, 600));
         primaryStage.show();
     }
@@ -192,12 +207,27 @@ public class Client extends Application
             this.stateCbo.setValue(this.poll.getState());
             this.openBtn.setVisible(this.poll.getState() == PollState.NEW || this.poll.getState() == PollState.CLOSED);
             this.closeBtn.setVisible(this.poll.getState() == PollState.OPEN);
+            this.enableControls();
             this.questionList.getItems().clear();
             for (Question q : this.poll.getQuestions())
             {
                 this.questionList.getItems().add(q);
             }
         }
+    }
+
+    public void enableControls()
+    {
+        boolean disable = this.activePoll != null && this.activePoll == this.poll;
+        this.titleTxF.setDisable(disable);
+        this.descTxF.setDisable(disable);
+        this.createdDateTxF.setDisable(disable);
+        this.createdTimeTxF.setDisable(disable);
+        this.openBtn.setDisable(this.activePoll != null);
+        this.closeBtn.setDisable(!disable);
+        this.questionList.refresh();
+        this.questionsAddBtn.setDisable(disable);
+        this.questionsRemoveBtn.setDisable(disable);
     }
 
     //- Classes -
@@ -223,6 +253,8 @@ public class Client extends Application
             {
                 try
                 {
+                    boolean disabled = Client.this.activePoll != null && Client.this.activePoll == Client.this.poll;
+
                     GridPane rootGird = (GridPane) FXMLLoader.load(Client.this.getClass().getResource("/client/questionView.fxml"));
                     GridPane questionView = (GridPane) rootGird.lookup("#questionGrid");
                     Text titelTxt = (Text) questionView.lookup("#titelTxt");
@@ -244,16 +276,19 @@ public class Client extends Application
                     {
                         item.setTitle(titleTxF.getText());
                     });
+                    titleTxF.setDisable(disabled);
                     requiredCkB.setSelected(item.isRequired());
                     requiredCkB.setOnAction((ActionEvent event) ->
                     {
                         item.setRequired(requiredCkB.isSelected());
                     });
+                    requiredCkB.setDisable(disabled);
                     hintTxF.setText(item.getHint());
                     hintTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
                     {
                         item.setHint(hintTxF.getText());
                     });
+                    hintTxF.setDisable(disabled);
                     typeCbo.getItems().addAll(QuestionType.SINGLE, QuestionType.MULTIPLE, QuestionType.FREE);
                     typeCbo.setCellFactory((ListView<QuestionType> param) ->
                     {
@@ -324,6 +359,7 @@ public class Client extends Application
                         }
 
                     });
+                    answerAddBtn.setDisable(disabled);
                     answerRemoveBtn.setOnAction((ActionEvent event) ->
                     {
                         if(!answerList.getSelectionModel().isEmpty())
@@ -333,6 +369,9 @@ public class Client extends Application
                             answerList.getItems().remove(toRemove);
                         }
                     });
+                    answerRemoveBtn.setDisable(disabled);
+                    answerAddTextTxF.setDisable(disabled);
+                    answerAddValueTxF.setDisable(disabled);
                     answerList.getItems().addAll(item.getAnswers());
 
                     this.setGraphic(rootGird);
