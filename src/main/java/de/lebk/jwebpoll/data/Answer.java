@@ -15,6 +15,9 @@ public class Answer
     @DatabaseField
     private String value;
 
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "question_id", canBeNull = true)
+    private Question question;
+
     public Answer()
     {
     }

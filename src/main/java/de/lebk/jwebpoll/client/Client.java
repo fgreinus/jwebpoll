@@ -1,5 +1,7 @@
 package de.lebk.jwebpoll.client;
 
+import com.j256.ormlite.dao.Dao;
+import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.data.Poll;
 
 import de.lebk.jwebpoll.data.*;
@@ -51,7 +53,7 @@ public class Client extends Application
         primaryStage.setTitle("JWebPoll");
 
         //Default Poll: new poll
-        Poll newPoll = new Poll(0, "Neue Umfrage", "", PollState.NEW);
+        Poll newPoll = new Poll("Neue Umfrage", "", PollState.NEW);
         this.polls.add(newPoll);
 
         polls = Serializer.read("jWebPoll_import.csv");
@@ -69,8 +71,12 @@ public class Client extends Application
 
         //Example polls (to be deleted in future)
 
-        this.polls.add(new Poll(0, "1. Umfrage", "Eine Beschreibung", PollState.OPEN));
-        this.polls.add(new Poll(0, "Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
+        Poll poll1 = new Poll("1. Umfrage", "Eine Beschreibung", PollState.OPEN);
+        Poll poll2 = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED);
+        Dao pollDao = Database.getInstance().getDaoForClass(Poll.class.getName());
+        pollDao.create(poll1);
+        pollDao.create(poll2);
+
 
         for (Poll p : this.polls)
         {

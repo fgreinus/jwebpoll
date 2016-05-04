@@ -3,6 +3,8 @@ package de.lebk.jwebpoll;
 import com.j256.ormlite.dao.Dao;
 import de.lebk.jwebpoll.data.Poll;
 import de.lebk.jwebpoll.data.PollState;
+import de.lebk.jwebpoll.data.Question;
+import de.lebk.jwebpoll.data.QuestionType;
 
 import java.sql.SQLException;
 
@@ -36,6 +38,17 @@ public class Main {
         }
 
         Dao dao = db.getDaoForClass(Poll.class.getName());
+        try {
+            Poll poll = new Poll("1. Umfrage", "Eine Beschreibung", PollState.OPEN);
+            dao.create(poll);
+
+            Dao dao2 = db.getDaoForClass(Question.class.getName());
+            dao2.create(new Question("Tolle Antwort", true, QuestionType.SINGLE, poll));
+            dao2.create(new Question("Tolle Antwort2", false, QuestionType.FREE, poll));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         try {
             Object result = dao.queryBuilder().where().eq("state", PollState.OPEN).queryForFirst();
             if (result != null) {

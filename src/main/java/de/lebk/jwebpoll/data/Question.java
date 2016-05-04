@@ -1,6 +1,8 @@
 package de.lebk.jwebpoll.data;
 
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.util.ArrayList;
@@ -23,14 +25,21 @@ public class Question
     @DatabaseField
     private QuestionType type;
 
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "poll_id")
+    private Poll poll;
+
+    @ForeignCollectionField(eager = true)
+    private ForeignCollection<Answer> answers;
+
     public Question() { }
 
-    public Question(String title, boolean required, QuestionType type)
+    public Question(String title, boolean required, QuestionType type, Poll poll)
     {
         this.title = title;
         this.hint = "";
         this.required = required;
         this.type = type;
+        this.poll = poll;
     }
 
     public int getId() {
@@ -74,10 +83,9 @@ public class Question
         this.type = type;
     }
 
-    public ArrayList<Answer> getAnswers()
+    public ForeignCollection<Answer> getAnswers()
     {
-        // TODO
-
-        return new ArrayList<>();
+        return answers;
     }
+
 }
