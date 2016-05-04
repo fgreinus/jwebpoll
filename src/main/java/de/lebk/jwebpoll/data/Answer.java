@@ -8,31 +8,31 @@ import javafx.beans.property.SimpleStringProperty;
 @DatabaseTable(tableName = "answers")
 public class Answer {
     @DatabaseField(generatedId = true)
-    private SimpleIntegerProperty id = new SimpleIntegerProperty();
+    private int id;
 
     @DatabaseField
-    private SimpleStringProperty text = new SimpleStringProperty();
+    private String text;
 
     @DatabaseField
-    private SimpleIntegerProperty value = new SimpleIntegerProperty();
+    private int value;
 
     public Answer() {
     }
 
     public Answer(String text, int value) {
-        this.text.set(text);
-        this.value.set(value);
+        this.text = text;
+        this.value = value;
     }
 
     public int getId() {
-        return id.get();
+        return id;
     }
 
     public String getText() {
-        return text.get();
+        return text;
     }
 
     public int getValue() {
-        return value.get();
+        return value;
     }
 }

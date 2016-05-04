@@ -96,8 +96,11 @@ public class Client extends Application {
         this.titleTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
         {
             if (Client.this.poll != null
-                    && !Client.this.poll.getTitle().equals(newValue))
+            && !Client.this.poll.getTitle().equals(newValue))
+            {
                 Client.this.poll.setTitle(newValue);
+                Client.this.pollList.refresh();
+            }
         });
         this.descTxF = (TextArea) pollDetail.lookup("#descTxF");
         this.descTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
