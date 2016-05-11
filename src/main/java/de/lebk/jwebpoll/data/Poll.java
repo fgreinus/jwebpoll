@@ -1,9 +1,14 @@
 package de.lebk.jwebpoll.data;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+import de.lebk.jwebpoll.Database;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +30,8 @@ public class Poll {
     @DatabaseField
     public PollState state;
 
-    public List<Question> questions = new ArrayList<>();
+    @ForeignCollectionField(eager = true)
+    public ForeignCollection<Question> questions;
 
     public Poll() {
 
@@ -36,6 +42,14 @@ public class Poll {
         this.title = title;
         this.description = description;
         this.state = state;
+
+        Dao dao = Database.getInstance().getDaoForClass(this.getClass().getName());
+
+        try {
+            this.questions = dao.getEmptyForeignCollection("questions");
+        } catch (SQLException e) {
+            this.questions = null;
+        }
     }
 
     public int getId() {
@@ -58,7 +72,7 @@ public class Poll {
         return state;
     }
 
-    public List<Question> getQuestions() {
+    public ForeignCollection<Question> getQuestions() {
         return questions;
     }
 
