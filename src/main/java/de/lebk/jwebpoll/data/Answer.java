@@ -22,10 +22,11 @@ public class Answer
     {
     }
 
-    public Answer(String text, String value)
+    public Answer(String text, String value, Question question)
     {
         this.text = text;
         this.value = value;
+        this.question = question;
     }
 
     public int getId()
@@ -41,5 +42,15 @@ public class Answer
     public String getValue()
     {
         return value;
+    }
+
+    public Question getQuestion()
+    {
+        return question;
+    }
+
+    public void setQuestion(Question question)
+    {
+        this.question = question;
     }
 }
