@@ -106,6 +106,7 @@ public class QuestionView {
                 }
 
                 TableColumn<Answer, QuestionType> typeColumn = (TableColumn<Answer, QuestionType>) answerTable.getColumns().get(0);
+                typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.1));
                 typeColumn.setCellValueFactory(new QuestionTypeTableCell(item.getType()));
                 typeColumn.setCellFactory(new Callback<TableColumn<Answer, QuestionType>, TableCell<Answer, QuestionType>>() {
                     @Override
@@ -185,9 +186,11 @@ public class QuestionView {
 
             TableColumn<Answer, String> textColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(1);
             textColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
+            textColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.75));
 
             TableColumn<Answer, String> valueColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(2);
             valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("value"));
+            valueColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.15));
             if(item.getAnswers() != null)
                 answerTable.getItems().addAll(item.getAnswers());
 
