@@ -148,11 +148,23 @@ public class QuestionView {
                         && !answerAddValueTxF.getText().isEmpty()) {
                     try {
                         int value = Integer.parseInt(answerAddValueTxF.getText());
-                        Answer answer = new Answer(answerAddTextTxF.getText(), value);
-                        item.getAnswers().add(answer);
-                        answerTable.getItems().add(answer);
-                        answerAddTextTxF.clear();
-                        QuestionView.updateAddValueTxF(item, answerAddValueTxF);
+                        boolean valueUsed = false;
+                        for(Answer a : item.getAnswers())
+                            if(a.getValue() == value)
+                            {
+                                valueUsed = true;
+                                break;
+                            }
+                        if(valueUsed)
+                            answerAddValueTxF.setText("Wert wird bereits verwendet");
+                        else
+                        {
+                            Answer answer = new Answer(answerAddTextTxF.getText(), value, item);
+                            item.getAnswers().add(answer);
+                            answerTable.getItems().add(answer);
+                            answerAddTextTxF.clear();
+                            QuestionView.updateAddValueTxF(item, answerAddValueTxF);
+                        }
                     } catch (NumberFormatException e) {
                         answerAddValueTxF.setText("Ungültiger Wert");
                     }
@@ -176,7 +188,8 @@ public class QuestionView {
 
             TableColumn<Answer, String> valueColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(2);
             valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("value"));
-            answerTable.getItems().addAll(item.getAnswers());
+            if(item.getAnswers() != null)
+                answerTable.getItems().addAll(item.getAnswers());
 
             tp.setContent(rootGird);
             accordion.getPanes().add(tp);
@@ -187,7 +200,7 @@ public class QuestionView {
     }
 
     private static void updateAddValueTxF(Question item, TextField answerAddValueTxF) {
-        if (item.getAnswers().isEmpty())
+        if (item.getAnswers() == null || item.getAnswers().isEmpty())
             answerAddValueTxF.setText(String.valueOf(1));
         else {
             int highest = Integer.MIN_VALUE;

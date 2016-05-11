@@ -36,7 +36,7 @@ public class Client extends Application {
     private Poll activePoll;
 
     //- View -
-    private ListView<Poll> pollList = new ListView<>();
+    private ListView<Poll> pollList;
     private TextField titleTxF;
     private TextArea descTxF;
     private TextField createdDateTxF, createdTimeTxF;
@@ -50,14 +50,12 @@ public class Client extends Application {
         //Title
         primaryStage.setTitle("JWebPoll");
         //Set on close action
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            public void handle(WindowEvent we) {
-                try {
-                    Frontend.kill();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+        primaryStage.setOnCloseRequest((WindowEvent we) ->
+        {
+            try {
+                Frontend.kill();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
         //start DB
@@ -99,7 +97,9 @@ public class Client extends Application {
         }
 
         //ListView (Left side)
-        SplitPane rootSplit = (SplitPane) FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
+        SplitPane rootSplit = FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
+        GridPane pollListView = FXMLLoader.load(this.getClass().getResource("/client/pollListView.fxml"));
+        this.pollList = (ListView<Poll>) pollListView.lookup("#pollList");
         this.pollList.setCellFactory((ListView<Poll> param) ->
         {
             return new PollListCell();
@@ -112,7 +112,7 @@ public class Client extends Application {
             if (newValue != null)
                 Client.this.setPoll(newValue);
         });
-        rootSplit.getItems().add(this.pollList);
+        rootSplit.getItems().add(pollListView);
         rootSplit.setDividerPositions(1d / 5d);
 
         //PollView (Right side)
@@ -220,7 +220,7 @@ public class Client extends Application {
         boolean disabled = this.activePoll != null && this.activePoll == this.poll;
 
         this.questionsAccordion.getPanes().clear();
-        for(Question item : this.poll.getQuestions())
+        for (Question item : this.poll.getQuestions())
             QuestionView.setQuestionView(this.questionsAccordion, item, disabled);
     }
 

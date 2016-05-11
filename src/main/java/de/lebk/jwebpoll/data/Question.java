@@ -1,13 +1,19 @@
 package de.lebk.jwebpoll.data;
 
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.dao.LazyForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+import de.lebk.jwebpoll.Database;
+
+import java.sql.SQLException;
 
 @DatabaseTable(tableName = "questions")
-public class Question {
-    @DatabaseField(generatedId = true)
+public class Question
+{
+    @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     private int id;
 
     @DatabaseField
@@ -28,8 +34,10 @@ public class Question {
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Answer> answers;
 
-    public Question() {
-    }
+    @ForeignCollectionField(eager = true)
+    private ForeignCollection<Vote> votes;
+
+    public Question() { }
 
     public Question(String title, boolean required, QuestionType type, Poll poll) {
         this.title = title;
@@ -37,6 +45,20 @@ public class Question {
         this.required = required;
         this.type = type;
         this.poll = poll;
+
+        Dao dao = Database.getInstance().getDaoForClass(this.getClass().getName());
+
+        try {
+            this.answers = dao.getEmptyForeignCollection("answers");
+        } catch (SQLException e) {
+            this.answers = null;
+        }
+
+        try {
+            this.votes = dao.getEmptyForeignCollection("votes");
+        } catch (SQLException e) {
+            this.votes = null;
+        }
     }
 
     public int getId() {
@@ -85,5 +107,9 @@ public class Question {
 
     public ForeignCollection<Answer> getAnswers() {
         return answers;
+    }
+
+    public ForeignCollection<Vote> getVotes() {
+        return votes;
     }
 }
