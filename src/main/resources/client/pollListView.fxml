@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.GridPane?>
+
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<GridPane xmlns="http://javafx.com/javafx/8"
+          id="detailGrid"
+          maxWidth="Infinity">
+
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS"/>
+    </columnConstraints>
+
+    <rowConstraints>
+        <RowConstraints vgrow="ALWAYS"/>
+        <RowConstraints/>
+    </rowConstraints>
+
+    <ListView id="pollList"
+              maxWidth="Infinity"
+              GridPane.rowIndex="0"/>
+
+    <Button id="pollAddBtn"
+            text="Neue Umfrage"
+            textFill="green"
+            maxWidth="Infinity"
+            GridPane.rowIndex="1"/>
+
+</GridPane>
