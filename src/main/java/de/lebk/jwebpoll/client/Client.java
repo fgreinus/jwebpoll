@@ -50,14 +50,12 @@ public class Client extends Application {
         //Title
         primaryStage.setTitle("JWebPoll");
         //Set on close action
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            public void handle(WindowEvent we) {
-                try {
-                    Frontend.kill();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+        primaryStage.setOnCloseRequest((WindowEvent we) ->
+        {
+            try {
+                Frontend.kill();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
         //Default Poll: new poll
@@ -221,7 +219,7 @@ public class Client extends Application {
         boolean disabled = this.activePoll != null && this.activePoll == this.poll;
 
         this.questionsAccordion.getPanes().clear();
-        for(Question item : this.poll.getQuestions())
+        for (Question item : this.poll.getQuestions())
             QuestionView.setQuestionView(this.questionsAccordion, item, disabled);
     }
 

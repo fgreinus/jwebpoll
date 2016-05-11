@@ -28,21 +28,25 @@ public class Database {
     private Hashtable<String, Dao> daoList;
 
 
-    private Database() throws Exception {
-        Class.forName("org.sqlite.JDBC");
+    private Database() {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (Exception e) {
+            System.exit(0);
+        }
         SQLiteConfig sqliteConfig = new SQLiteConfig();
         String databaseUrl = "jdbc:sqlite:jwebpoll.sqlite";
         try {
             dbConn = new JdbcConnectionSource(databaseUrl);
         } catch (SQLException e) {
-            throw new Exception("Error connecting to sqlite database");
+            System.exit(0);
         }
 
         initializeDatabaseTables();
         initializeModelDataAccessObjects();
     }
 
-    public static Database getInstance() throws Exception {
+    public static Database getInstance() {
         if (instance == null) {
             instance = new Database();
         }
