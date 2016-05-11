@@ -10,6 +10,7 @@ import java.sql.SQLException;
 
 public class Main {
 
+
     protected static Poll activePoll;
 
     public static void main(String[] args) throws Exception {
@@ -43,8 +44,8 @@ public class Main {
             dao.create(poll);
 
             Dao dao2 = db.getDaoForClass(Question.class.getName());
-            dao2.create(new Question("Tolle Antwort", true, QuestionType.SINGLE, poll));
-            dao2.create(new Question("Tolle Antwort2", false, QuestionType.FREE, poll));
+            dao2.create(new Question("Tolle Frage", true, QuestionType.SINGLE, poll));
+            dao2.create(new Question("Tolle Frage 2", true, QuestionType.FREE, poll));
         } catch (SQLException e) {
             e.printStackTrace();
         }

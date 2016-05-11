@@ -1,135 +1,77 @@
 <hr>
-<#list formArray as arrayElement>
-<b> ${arrayElement} </b>
-</#list>
-<hr>
 <form role="form" id="pollform" method="post" action="">
     <fieldset>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <span class="badge">1</span> Grundlagen
+<#list poll.getQuestions() as question>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="badge">${question.getId()}</span> ${question.getTitle()}
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <label class="control-label" for="${question.getId()}">${question.getHint()}</label>
+            <#if question.getTypeString() = 'FREE'>
+            <div class="input-field">
+                <input class="form-control" id="${question.getId()}" name="${question.getId()}" <#if question.isRequired()>required</#if>>
             </div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label class="control-label" for="name">Name</label>
-                    <div class="input-field">
-                        <input class="form-control" id="name" name="name" required>
-                    </div>
+            <#else>
+                <#list question.getAnswers() as answers>
+                <div class="<#if question.getTypeString() = 'SINGLE'>radio<#else>checkbox</#if>">
+                    <label>
+                        <input type="<#if question.getTypeString() = 'SINGLE'>radio<#else>checkbox</#if>" name="${question.getId()}[${answers.getId()}]" id="${question.getId()}[${answers.getId()}]"" value="true">${answers.getText()}
+                    </label>
                 </div>
-                <div class="form-group">
-                    <label class="control-label" for="ausbildungsgang">Ausbildungsgang</label>
-                    <div class="input-field">
-                        <input class="form-control" id="ausbildungsgang" name="ausbildungsgang" required>
-                    </div>
-                </div>
-            </div>
+                </#list>
+            </#if>
         </div>
-
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <span class="badge">2</span> Schulgebäude
-            </div>
-            <div class="panel-body">
-                <div class="form-group">
-                    <label>Welche Ausstattungen nutzen Sie?</label>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" value="">Computerraum
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" value="">Pausenraum
-                        </label>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" value="">Casino
-                        </label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Wie bewerten Sie die allgemeine Sauberkeit?</label>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>Sehr
-                            gut
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">Gut
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">Weniger gut
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">Schlecht
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">Katastrophal
-                        </label>
-                    </div>
-                    <div class="radio">
-                        <label>
-                            <input type="radio" name="optionsRadios" id="optionsRadios3" value="option3">Berlin Marzahn
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <hr/>
-        <button type="submit" class="btn btn-success btn-lg btn-block">Umfrage absenden</button>
-    </fieldset>
-</form>
+    </div>
 </div>
-<script type="text/javascript">
-    jQuery.extend(jQuery.validator.messages, {
-        required: "Dieses Feld muss ausgefüllt sein!",
-    });
-    $(document).ready(function () {
+</#list>
+    </fieldset>
 
-        $("#pollform").validate({
-            errorElement: "em",
-            errorPlacement: function (error, element) {
-                // Add the `help-block` class to the error element
-                error.addClass("help-block");
-
-                // Add `has-feedback` class to the parent div.form-group
-                // in order to add icons to inputs
-                element.parents(".input-field").addClass("has-feedback");
-
-                if (element.prop("type") === "checkbox") {
-                    error.insertAfter(element.parent("label"));
-                } else {
-                    error.insertAfter(element);
-                }
-
-                // Add the span element, if doesn't exists, and apply the icon classes to it.
-                if (!element.next("span")[0]) {
-                    $("<span class='glyphicon glyphicon-remove form-control-feedback'></span>").insertAfter(element);
-                }
-            },
-            success: function (label, element) {
-                // Add the span element, if doesn't exists, and apply the icon classes to it.
-                if (!$(element).next("span")[0]) {
-                    $("<span class='glyphicon glyphicon-ok form-control-feedback'></span>").insertAfter($(element));
-                }
-            },
-            highlight: function (element, errorClass, validClass) {
-                $(element).parents(".input-field").addClass("has-error").removeClass("has-success");
-                $(element).next("span").addClass("glyphicon-remove").removeClass("glyphicon-ok");
-            },
-            unhighlight: function (element, errorClass, validClass) {
-                $(element).parents(".input-field").addClass("has-success").removeClass("has-error");
-                $(element).next("span").addClass("glyphicon-ok").removeClass("glyphicon-remove");
-            }
+    <button type="submit" class="btn btn-success btn-lg btn-block">Umfrage absenden</button>
+    <script type="text/javascript">
+        jQuery.extend(jQuery.validator.messages, {
+            required: "Dieses Feld muss ausgefüllt sein!",
         });
-    });
-</script>
+        $(document).ready(function () {
+
+            $("#pollform").validate({
+                errorElement: "em",
+                errorPlacement: function (error, element) {
+                    // Add the `help-block` class to the error element
+                    error.addClass("help-block");
+
+                    // Add `has-feedback` class to the parent div.form-group
+                    // in order to add icons to inputs
+                    element.parents(".input-field").addClass("has-feedback");
+
+                    if (element.prop("type") === "checkbox") {
+                        error.insertAfter(element.parent("label"));
+                    } else {
+                        error.insertAfter(element);
+                    }
+
+                    // Add the span element, if doesn't exists, and apply the icon classes to it.
+                    if (!element.next("span")[0]) {
+                        $("<span class='glyphicon glyphicon-remove form-control-feedback'></span>").insertAfter(element);
+                    }
+                },
+                success: function (label, element) {
+                    // Add the span element, if doesn't exists, and apply the icon classes to it.
+                    if (!$(element).next("span")[0]) {
+                        $("<span class='glyphicon glyphicon-ok form-control-feedback'></span>").insertAfter($(element));
+                    }
+                },
+                highlight: function (element, errorClass, validClass) {
+                    $(element).parents(".input-field").addClass("has-error").removeClass("has-success");
+                    $(element).next("span").addClass("glyphicon-remove").removeClass("glyphicon-ok");
+                },
+                unhighlight: function (element, errorClass, validClass) {
+                    $(element).parents(".input-field").addClass("has-success").removeClass("has-error");
+                    $(element).next("span").addClass("glyphicon-ok").removeClass("glyphicon-remove");
+                }
+            });
+        });
+    </script>
+</form>
+<hr>

@@ -9,6 +9,7 @@
         <div class="row">
             <h1>Umfrage</h1>
             <h3>${poll.getTitle()}</h3>
+            <p><i>${poll.getDescription()}</i></p>
             <#include "includes/poll.flt">
             </div>
     </div>
