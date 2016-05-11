@@ -23,17 +23,21 @@ public class Serializer {
         }
     }
 
-    public static void write(String fullyNamedPath, Poll... polls) {
+    public static String serialize(Poll... polls) {
         StringBuilder sb = new StringBuilder();
         sb.append("PollTitle;PollDescription");
         sb.append("\r\n");
         for (Poll poll : polls) {
-            sb.append('"').append(poll.getTitle()).append('"').append(';');
+            sb.append(convert(poll.getTitle()));
             sb.append('"').append(poll.getDescription()).append('"');//.append(';');
             //sb.append('"').append(poll.getState()).append('"');
             sb.append("\r\n");
         }
-        write(fullyNamedPath, sb.toString());
+        return sb.toString();
+    }
+
+    public static void write(String fullyNamedPath, Poll... polls) {
+        write(fullyNamedPath, serialize(polls));
     }
 
     public static ArrayList<Poll> read(String fullyNamedPath) {
@@ -67,5 +71,9 @@ public class Serializer {
         }
 
         return result;
+    }
+
+    public static String convert(Object obj) {
+        return "\"" + obj.toString() + "\";";
     }
 }
