@@ -34,7 +34,7 @@ public class Frontend {
         if (Frontend.instance == null) {
             Frontend.instance = new Frontend(activePoll);
         } else {
-           // Frontend.instance.activePoll = activePoll;
+            Frontend.instance.activePoll = activePoll;
         }
 
         return Frontend.instance;
@@ -42,17 +42,11 @@ public class Frontend {
 
     public  static void kill()
     {
-
-       // if (isRunning()){
            stop();
-        //}
-
+        
     }
 
-    public boolean isRunning()
-    {
-        return instance.isRunning();
-    }
+
 
     private void initializeSparkConfiguration()
     {
