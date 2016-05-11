@@ -9,8 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @DatabaseTable(tableName = "polls")
-public class Poll
-{
+public class Poll {
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     public int id;
 
@@ -28,13 +27,11 @@ public class Poll
 
     public List<Question> questions = new ArrayList<>();
 
-    public Poll()
-    {
+    public Poll() {
 
     }
 
-    public Poll(int id, String title, String description, PollState state)
-    {
+    public Poll(int id, String title, String description, PollState state) {
         this.id = id;
         this.created = new Date();
         this.title = title;
@@ -62,13 +59,11 @@ public class Poll
         return state;
     }
 
-    public List<Question> getQuestions()
-    {
+    public List<Question> getQuestions() {
         return questions;
     }
 
-    public void setId(int id)
-    {
+    public void setId(int id) {
         this.id = id;
     }
 

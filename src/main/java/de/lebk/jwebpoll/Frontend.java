@@ -34,16 +34,19 @@ public class Frontend {
         if (Frontend.instance == null) {
             Frontend.instance = new Frontend(activePoll);
         } else {
-            Frontend.instance.activePoll = activePoll;
+           // Frontend.instance.activePoll = activePoll;
         }
 
         return Frontend.instance;
     }
 
-    public void stop()
+    public  static void kill()
     {
-        if (isRunning())
-            instance.stop();
+
+       // if (isRunning()){
+           stop();
+        //}
+
     }
 
     public boolean isRunning()
@@ -75,9 +78,6 @@ public class Frontend {
             // TEST FOR FORMS
             Map<String, String> testArray1 = new HashMap<String, String>();
             ArrayList<HashMap> testArray = new ArrayList<HashMap>();
-
-
-            // testArray.add("EINS");
 
             attributes.put("formArray", testArray1);
 

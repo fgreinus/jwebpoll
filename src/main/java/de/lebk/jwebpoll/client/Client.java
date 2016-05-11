@@ -2,19 +2,21 @@ package de.lebk.jwebpoll.client;
 
 import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.Frontend;
-import de.lebk.jwebpoll.data.*;
+import de.lebk.jwebpoll.data.Poll;
+import de.lebk.jwebpoll.data.PollState;
+import de.lebk.jwebpoll.data.Question;
+import de.lebk.jwebpoll.data.QuestionType;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +48,17 @@ public class Client extends Application {
     public void start(Stage primaryStage) throws Exception {
         //Title
         primaryStage.setTitle("JWebPoll");
+        //Set on close action
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            public void handle(WindowEvent we) {
+                try {
+                    Frontend.kill();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
+            }
+        });
         //Default Poll: new poll
         Poll newPoll = new Poll(0, "Neue Umfrage", "", PollState.NEW);
         this.polls.add(newPoll);
@@ -79,7 +91,7 @@ public class Client extends Application {
         }
         this.pollList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Poll> observable, Poll oldValue, Poll newValue) ->
         {
-            if(newValue != null)
+            if (newValue != null)
                 Client.this.setPoll(newValue);
         });
         rootSplit.getItems().add(this.pollList);
@@ -96,8 +108,7 @@ public class Client extends Application {
         this.titleTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
         {
             if (Client.this.poll != null
-            && !Client.this.poll.getTitle().equals(newValue))
-            {
+                    && !Client.this.poll.getTitle().equals(newValue)) {
                 Client.this.poll.setTitle(newValue);
                 Client.this.pollList.refresh();
             }
@@ -190,6 +201,7 @@ public class Client extends Application {
         this.enableControls();
 
         boolean disabled = this.activePoll != null && this.activePoll == this.poll;
+
         this.questionsAccordion.getPanes().clear();
         for(Question item : this.poll.getQuestions())
             QuestionView.setQuestionView(this.questionsAccordion, this.poll, item, disabled);
@@ -216,4 +228,6 @@ public class Client extends Application {
     private void spawnDatabase() throws Exception {
         Database.getInstance();
     }
+
+
 }
