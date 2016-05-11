@@ -60,6 +60,8 @@ public class Client extends Application {
 
             }
         });
+        //start DB
+        spawnDatabase();
         //Default Poll: new poll
         Poll newPoll = new Poll("Neue Umfrage", "", PollState.NEW);
         this.polls.add(newPoll);
@@ -87,7 +89,7 @@ public class Client extends Application {
             if (p.getState() == PollState.OPEN) {
                 this.activePoll = p;
                 try {
-                    spawnDatabase();
+
                     spawnWebServer(activePoll);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -155,7 +157,7 @@ public class Client extends Application {
             this.stateCbo.setValue(this.poll.getState());
             this.enableControls();
             try {
-                spawnDatabase();
+
                 spawnWebServer(activePoll);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -171,7 +173,6 @@ public class Client extends Application {
             this.stateCbo.setValue(this.poll.getState());
             this.enableControls();
             try {
-                spawnDatabase();
                 spawnWebServer(activePoll);
             } catch (Exception e) {
                 e.printStackTrace();
