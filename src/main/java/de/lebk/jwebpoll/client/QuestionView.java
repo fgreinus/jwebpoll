@@ -148,11 +148,23 @@ public class QuestionView {
                         && !answerAddValueTxF.getText().isEmpty()) {
                     try {
                         int value = Integer.parseInt(answerAddValueTxF.getText());
-                        Answer answer = new Answer(answerAddTextTxF.getText(), value);
-                        item.getAnswers().add(answer);
-                        answerTable.getItems().add(answer);
-                        answerAddTextTxF.clear();
-                        QuestionView.updateAddValueTxF(item, answerAddValueTxF);
+                        boolean valueUsed = false;
+                        for(Answer a : item.getAnswers())
+                            if(a.getValue() == value)
+                            {
+                                valueUsed = true;
+                                break;
+                            }
+                        if(valueUsed)
+                            answerAddValueTxF.setText("Wert wird bereits verwendet");
+                        else
+                        {
+                            Answer answer = new Answer(answerAddTextTxF.getText(), value, item);
+                            item.getAnswers().add(answer);
+                            answerTable.getItems().add(answer);
+                            answerAddTextTxF.clear();
+                            QuestionView.updateAddValueTxF(item, answerAddValueTxF);
+                        }
                     } catch (NumberFormatException e) {
                         answerAddValueTxF.setText("Ungültiger Wert");
                     }
