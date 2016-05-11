@@ -163,10 +163,7 @@ public class Client extends Application {
         {
             Question newQuestion = new Question("", true, QuestionType.SINGLE);
             this.poll.getQuestions().add(newQuestion);
-            TitledPane tp = new TitledPane();
-            QuestionView.setQuestionView(tp, newQuestion, this.activePoll != null && this.activePoll == this.poll);
-            this.questionsAccordion.getPanes().add(tp);
-            this.questionsAccordion.setExpandedPane(tp);
+            QuestionView.setQuestionView(this.questionsAccordion, this.poll, newQuestion, this.activePoll != null && this.activePoll == this.poll);
         });
         pollDetailScroller.setContent(pollDetail);
         rootSplit.getItems().add(pollDetailScroller);
@@ -193,13 +190,9 @@ public class Client extends Application {
         this.enableControls();
 
         boolean disabled = this.activePoll != null && this.activePoll == this.poll;
+        this.questionsAccordion.getPanes().clear();
         for(Question item : this.poll.getQuestions())
-        {
-            TitledPane tp = new TitledPane();
-            QuestionView.setQuestionView(tp, item, disabled);
-            this.questionsAccordion.getPanes().add(tp);
-            this.questionsAccordion.setExpandedPane(tp);
-        }
+            QuestionView.setQuestionView(this.questionsAccordion, this.poll, item, disabled);
     }
 
     public void enableControls() {

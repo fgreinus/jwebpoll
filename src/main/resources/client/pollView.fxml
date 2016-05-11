@@ -106,8 +106,16 @@
     <Text id="questionsTxt"
           text="Fragen"
           GridPane.columnIndex="0"
-          GridPane.columnSpan="4"
+          GridPane.columnSpan="2"
           GridPane.rowIndex="4"/>
+    <Button id="questionsAddBtn"
+            text="Frage hinzufügen"
+            textFill="green"
+            maxWidth="Infinity"
+            GridPane.hgrow="SOMETIMES"
+            GridPane.columnIndex="2"
+            GridPane.columnSpan="2"
+            GridPane.rowIndex="4"/>
     <Separator id="questionsSep"
                orientation="HORIZONTAL"
                GridPane.columnIndex="0"
@@ -118,25 +126,4 @@
                GridPane.columnIndex="0"
                GridPane.columnSpan="4"
                GridPane.rowIndex="6"/>
-    <!--ListView id="questionList"
-              GridPane.columnIndex="0"
-              GridPane.columnSpan="4"
-              GridPane.rowIndex="6"/-->
-
-    <GridPane id="questionsBtns"
-              GridPane.columnIndex="0"
-              GridPane.rowIndex="7"
-              GridPane.columnSpan="4"
-              hgap="10">
-        <columnConstraints>
-            <ColumnConstraints hgrow="ALWAYS"/>
-        </columnConstraints>
-
-        <Button id="questionsAddBtn"
-                text="Hinzufügen"
-                textFill="green"
-                maxWidth="Infinity"
-                GridPane.hgrow="SOMETIMES"
-                GridPane.columnIndex="0"/>
-    </GridPane>
 </GridPane>

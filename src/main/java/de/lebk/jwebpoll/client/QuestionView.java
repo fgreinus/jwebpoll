@@ -1,6 +1,7 @@
 package de.lebk.jwebpoll.client;
 
 import de.lebk.jwebpoll.data.Answer;
+import de.lebk.jwebpoll.data.Poll;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.QuestionType;
 import javafx.beans.value.ObservableValue;
@@ -16,12 +17,13 @@ import javafx.util.Callback;
 import java.io.IOException;
 
 public class QuestionView {
-    public static void setQuestionView(TitledPane parent, Question item, boolean disabled) {
+    public static void setQuestionView(Accordion accordion, Poll poll, Question item, boolean disabled) {
         try {
-            GridPane rootGird = (GridPane) FXMLLoader.load(QuestionView.class.getResource("/client/questionView.fxml"));
-            Text titelTxt = (Text) rootGird.lookup("#titelTxt");
+            TitledPane tp = new TitledPane();
+            GridPane rootGird = FXMLLoader.load(QuestionView.class.getResource("/client/questionView.fxml"));
             TextField titleTxF = (TextField) rootGird.lookup("#titleTxF");
             CheckBox requiredCkB = (CheckBox) rootGird.lookup("#requiredCkB");
+            Button removeBtn = (Button) rootGird.lookup("#removeBtn");
             TextField hintTxF = (TextField) rootGird.lookup("#hintTxF");
             ComboBox<QuestionType> typeCbo = (ComboBox<QuestionType>) rootGird.lookup("#typeCbo");
             Text answerAddTextTxt = (Text) rootGird.lookup("#answerAddTextTxt");
@@ -39,9 +41,9 @@ public class QuestionView {
                 item.setTitle(titleTxF.getText());
 
                 if (item.getTitle() == null || item.getTitle().isEmpty())
-                    parent.setText("<Neue Frage>");
+                    tp.setText("<Neue Frage>");
                 else
-                    parent.setText(item.getTitle());
+                    tp.setText(item.getTitle());
             });
             titleTxF.setText(item.getTitle());
             titleTxF.setDisable(disabled);
@@ -51,6 +53,11 @@ public class QuestionView {
                 item.setRequired(requiredCkB.isSelected());
             });
             requiredCkB.setDisable(disabled);
+            removeBtn.setOnAction((ActionEvent ev) ->
+            {
+                poll.getQuestions().remove(item);
+                accordion.getPanes().remove(tp);
+            });
             hintTxF.setText(item.getHint());
             hintTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
             {
@@ -172,7 +179,9 @@ public class QuestionView {
             valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("value"));
             answerTable.getItems().addAll(item.getAnswers());
 
-            parent.setContent(rootGird);
+            tp.setContent(rootGird);
+            accordion.getPanes().add(tp);
+            accordion.setExpandedPane(tp);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
