@@ -6,8 +6,9 @@ import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "questions")
-public class Question {
-    @DatabaseField(generatedId = true)
+public class Question
+{
+    @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     private int id;
 
     @DatabaseField
@@ -28,8 +29,10 @@ public class Question {
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Answer> answers;
 
-    public Question() {
-    }
+    @ForeignCollectionField(eager = true)
+    private ForeignCollection<Vote> votes;
+
+    public Question() { }
 
     public Question(String title, boolean required, QuestionType type, Poll poll) {
         this.title = title;

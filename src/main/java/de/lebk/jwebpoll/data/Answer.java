@@ -6,8 +6,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 @DatabaseTable(tableName = "answers")
-public class Answer {
-    @DatabaseField(generatedId = true)
+public class Answer
+{
+    @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     private int id;
 
     @DatabaseField

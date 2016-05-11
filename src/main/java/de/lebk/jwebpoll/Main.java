@@ -1,10 +1,7 @@
 package de.lebk.jwebpoll;
 
 import com.j256.ormlite.dao.Dao;
-import de.lebk.jwebpoll.data.Poll;
-import de.lebk.jwebpoll.data.PollState;
-import de.lebk.jwebpoll.data.Question;
-import de.lebk.jwebpoll.data.QuestionType;
+import de.lebk.jwebpoll.data.*;
 
 import java.sql.SQLException;
 
@@ -43,8 +40,24 @@ public class Main {
             dao.create(poll);
 
             Dao dao2 = db.getDaoForClass(Question.class.getName());
-            dao2.create(new Question("Tolle Antwort", true, QuestionType.SINGLE, poll));
-            dao2.create(new Question("Tolle Antwort2", false, QuestionType.FREE, poll));
+            Question q1 = new Question("Tolle Antwort", true, QuestionType.SINGLE, poll);
+            dao2.create(q1);
+            Question q2 = new Question("Tolle Antwort2", false, QuestionType.FREE, poll);
+            dao2.create(q2);
+
+            Dao dao3 = db.getDaoForClass(Answer.class.getName());
+            Answer a1 = new Answer("Antwort Nummer 1", 1, q1);
+            dao3.create(a1);
+            Answer a2 = new Answer("Antwort Nummer 1", 2, q2);
+            dao3.create(a2);
+            Answer a3 = new Answer("Antwort Nummer 2", 1, q2);
+            dao3.create(a3);
+
+            Dao dao4 = db.getDaoForClass(Vote.class.getName());
+            Vote v1 = new Vote("sessid123123", q1, a1, "");
+            Vote v2 = new Vote("sessid1231212", q1, a2, "");
+            dao4.create(v1);
+            dao4.create(v2);
         } catch (SQLException e) {
             e.printStackTrace();
         }
