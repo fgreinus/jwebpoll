@@ -10,7 +10,7 @@ import java.util.Date;
 @DatabaseTable(tableName = "votes")
 public class Vote
 {
-    @DatabaseField(id = true)
+    @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     private int id;
 
     @DatabaseField
@@ -28,15 +28,61 @@ public class Vote
     @DatabaseField
     private String userText;
 
-    ArrayList<Question> questions;
+    public int getId() {
+        return id;
+    }
 
-    public Vote(String session, Question question, Answer answer)
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getSession() {
+        return session;
+    }
+
+    public void setSession(String session) {
+        this.session = session;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
+
+    public Answer getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(Answer answer) {
+        this.answer = answer;
+    }
+
+    public String getUserText() {
+        return userText;
+    }
+
+    public void setUserText(String userText) {
+        this.userText = userText;
+    }
+
+    public Vote(String session, Question question, Answer answer, String userText)
     {
         this.created = new Date();
         this.question = question;
         this.answer = answer;
         this.session = session;
-        this.userText = "";
+        this.userText = userText;
     }
 
     public Vote() { }
