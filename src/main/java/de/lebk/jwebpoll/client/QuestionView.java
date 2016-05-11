@@ -1,7 +1,6 @@
 package de.lebk.jwebpoll.client;
 
 import de.lebk.jwebpoll.data.Answer;
-import de.lebk.jwebpoll.data.Poll;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.QuestionType;
 import javafx.beans.value.ObservableValue;
