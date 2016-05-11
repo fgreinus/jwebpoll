@@ -31,8 +31,7 @@ public class Poll {
 
     }
 
-    public Poll(int id, String title, String description, PollState state) {
-        this.id = id;
+    public Poll(String title, String description, PollState state) {
         this.created = new Date();
         this.title = title;
         this.description = description;

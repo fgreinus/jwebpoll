@@ -67,7 +67,7 @@ public class Frontend {
         fmEngine = new FreeMarkerEngine(fmConfig);
     }
 
-    private void bindSparkRoutes()
+    private void bindSparkRoutes()      
     {
         get("/", (request, response) -> {
             Map<String, Object> attributes = new HashMap<>();

@@ -16,12 +16,25 @@ public class Answer {
     @DatabaseField
     private int value;
 
+<<<<<<< HEAD
     public Answer() {
     }
 
     public Answer(String text, int value) {
+=======
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = "question_id", canBeNull = true)
+    private Question question;
+
+    public Answer()
+    {
+    }
+
+    public Answer(String text, String value, Question question)
+    {
+>>>>>>> master
         this.text = text;
         this.value = value;
+        this.question = question;
     }
 
     public int getId() {
@@ -34,5 +47,15 @@ public class Answer {
 
     public int getValue() {
         return value;
+    }
+
+    public Question getQuestion()
+    {
+        return question;
+    }
+
+    public void setQuestion(Question question)
+    {
+        this.question = question;
     }
 }

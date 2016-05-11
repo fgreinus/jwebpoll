@@ -1,11 +1,9 @@
 package de.lebk.jwebpoll.client;
 
+import com.j256.ormlite.dao.Dao;
 import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.Frontend;
-import de.lebk.jwebpoll.data.Poll;
-import de.lebk.jwebpoll.data.PollState;
-import de.lebk.jwebpoll.data.Question;
-import de.lebk.jwebpoll.data.QuestionType;
+import de.lebk.jwebpoll.data.*;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -18,6 +16,9 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.text.SimpleDateFormat;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,12 +61,27 @@ public class Client extends Application {
             }
         });
         //Default Poll: new poll
-        Poll newPoll = new Poll(0, "Neue Umfrage", "", PollState.NEW);
+        Poll newPoll = new Poll("Neue Umfrage", "", PollState.NEW);
         this.polls.add(newPoll);
 
+        polls = Serializer.read("jWebPoll_import.csv");
+/*
+        // TODO: Remove debug code
+        File f = new File("polls.jpl");
+        f.delete();
+
+        Poll[] arr = new Poll[polls.size()];
+        Serializer.write("polls.jpl", polls.toArray(arr));
+        polls = Serializer.read("polls.jpl");
+        // Debug code end
+*/
         //Example polls (to be deleted in future)
-        this.polls.add(new Poll(0, "1. Umfrage", "Eine Beschreibung", PollState.OPEN));
-        this.polls.add(new Poll(0, "Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED));
+        Poll poll1 = new Poll("1. Umfrage", "Eine Beschreibung", PollState.OPEN);
+        Poll poll2 = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED);
+        Dao pollDao = Database.getInstance().getDaoForClass(Poll.class.getName());
+        pollDao.create(poll1);
+        pollDao.create(poll2);
+
 
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
@@ -172,9 +188,9 @@ public class Client extends Application {
         this.questionsAddBtn = (Button) pollDetail.lookup("#questionsAddBtn");
         this.questionsAddBtn.setOnAction((ActionEvent event) ->
         {
-            Question newQuestion = new Question("", true, QuestionType.SINGLE);
+            Question newQuestion = new Question("", true, QuestionType.SINGLE, this.poll);
             this.poll.getQuestions().add(newQuestion);
-            QuestionView.setQuestionView(this.questionsAccordion, this.poll, newQuestion, this.activePoll != null && this.activePoll == this.poll);
+            QuestionView.setQuestionView(this.questionsAccordion, newQuestion, this.activePoll != null && this.activePoll == this.poll);
         });
         pollDetailScroller.setContent(pollDetail);
         rootSplit.getItems().add(pollDetailScroller);
@@ -204,7 +220,7 @@ public class Client extends Application {
 
         this.questionsAccordion.getPanes().clear();
         for(Question item : this.poll.getQuestions())
-            QuestionView.setQuestionView(this.questionsAccordion, this.poll, item, disabled);
+            QuestionView.setQuestionView(this.questionsAccordion, item, disabled);
     }
 
     public void enableControls() {

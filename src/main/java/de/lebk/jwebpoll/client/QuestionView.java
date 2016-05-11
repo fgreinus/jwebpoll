@@ -17,7 +17,7 @@ import javafx.util.Callback;
 import java.io.IOException;
 
 public class QuestionView {
-    public static void setQuestionView(Accordion accordion, Poll poll, Question item, boolean disabled) {
+    public static void setQuestionView(Accordion accordion, Question item, boolean disabled) {
         try {
             TitledPane tp = new TitledPane();
             GridPane rootGird = FXMLLoader.load(QuestionView.class.getResource("/client/questionView.fxml"));
@@ -55,7 +55,7 @@ public class QuestionView {
             requiredCkB.setDisable(disabled);
             removeBtn.setOnAction((ActionEvent ev) ->
             {
-                poll.getQuestions().remove(item);
+                item.getPoll().getQuestions().remove(item);
                 accordion.getPanes().remove(tp);
             });
             hintTxF.setText(item.getHint());
