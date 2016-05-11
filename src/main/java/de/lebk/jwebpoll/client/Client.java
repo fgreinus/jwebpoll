@@ -124,7 +124,7 @@ public class Client extends Application {
             if (Client.this.poll != null
                     && !Client.this.poll.getTitle().equals(newValue)) {
                 Client.this.poll.setTitle(newValue);
-                Client.this.pollList.refresh();
+                //Client.this.pollList.refresh();
             }
         });
         this.descTxF = (TextArea) pollDetail.lookup("#descTxF");

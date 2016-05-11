@@ -17,8 +17,12 @@
                 <#list question.getAnswers() as answers>
                 <div class="<#if question.getTypeString() = 'SINGLE'>radio<#else>checkbox</#if>">
                     <label>
-                        <input type="<#if question.getTypeString() = 'SINGLE'>radio<#else>checkbox</#if>" name="${question.getId()}[${answers.getId()}]" id="${question.getId()}[${answers.getId()}]"" value="true">${answers.getText()}
-                    </label>
+                    <#if question.getTypeString() = 'SINGLE'>
+                    <input type="radio" name="${question.getId()}" id="${question.getId()}" value="${answers.getId()}" <#if question.isRequired()>required</#if>>${answers.getText()}
+                    <#else>
+                        <input type="checkbox" name="${question.getId()}[${answers.getId()}]" id="${question.getId()}[${answers.getId()}]" value="true">${answers.getText()}
+                    </#if>
+                        </label>
                 </div>
                 </#list>
             </#if>
@@ -45,10 +49,10 @@
                     // in order to add icons to inputs
                     element.parents(".input-field").addClass("has-feedback");
 
-                    if (element.prop("type") === "checkbox") {
-                        error.insertAfter(element.parent("label"));
+                    if (element.prop("type") === "radio") {
+                        error.insertBefore(element.parent("label"));
                     } else {
-                        error.insertAfter(element);
+                        error.insertBefore(element);
                     }
 
                     // Add the span element, if doesn't exists, and apply the icon classes to it.
