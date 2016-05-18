@@ -7,7 +7,6 @@ import de.lebk.jwebpoll.data.*;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -16,9 +15,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.text.SimpleDateFormat;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +34,7 @@ public class Client extends Application {
     //- View -
     private ListView<Poll> pollList;
     private TextField titleTxF;
+    private Button pollRemoveBtn;
     private TextArea descTxF;
     private TextField createdDateTxF, createdTimeTxF;
     private ComboBox<PollState> stateCbo;
@@ -47,9 +44,7 @@ public class Client extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //Title
         primaryStage.setTitle("JWebPoll");
-        //Set on close action
         primaryStage.setOnCloseRequest((WindowEvent we) ->
         {
             try {
@@ -58,30 +53,32 @@ public class Client extends Application {
                 e.printStackTrace();
             }
         });
-        //start DB
+
+        // Start DB
         spawnDatabase();
-        //Default Poll: new poll
-        Poll newPoll = new Poll("Neue Umfrage", "", PollState.NEW);
-        this.polls.add(newPoll);
 
-        polls = Serializer.read("jWebPoll_import.csv");
-/*
-        // TODO: Remove debug code
-        File f = new File("polls.jpl");
-        f.delete();
+        // Example polls (to be deleted in future)
+        Poll poll1 = new Poll("1. Umfrage", "Eine Beschreibung", PollState.NEW);
 
-        Poll[] arr = new Poll[polls.size()];
-        Serializer.write("polls.jpl", polls.toArray(arr));
-        polls = Serializer.read("polls.jpl");
-        // Debug code end
-*/
-        //Example polls (to be deleted in future)
-        Poll poll1 = new Poll("1. Umfrage", "Eine Beschreibung", PollState.OPEN);
-        Poll poll2 = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED);
+        Poll bundestagswahl = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.NEW);
+        Question kanzlerkandidat = new Question("Wer ist ihr Kanzlerkandidat?", true, QuestionType.SINGLE, bundestagswahl);
+        Answer merkel = new Answer("Merkel", -100, kanzlerkandidat);
+        Answer trump = new Answer("Trump", -666, kanzlerkandidat);
+        Answer haustier = new Answer("Mein Haustier", 1000, kanzlerkandidat);
+        Answer nachbar = new Answer("Mein Nachbar", 10, kanzlerkandidat);
+        Vote vote1 = new Vote("", kanzlerkandidat, haustier, "");
+
         Dao pollDao = Database.getInstance().getDaoForClass(Poll.class.getName());
+        haustier.getVotes().add(vote1);
+        kanzlerkandidat.getAnswers().add(merkel);
+        kanzlerkandidat.getAnswers().add(trump);
+        kanzlerkandidat.getAnswers().add(haustier);
+        kanzlerkandidat.getAnswers().add(nachbar);
+        bundestagswahl.getQuestions().add(kanzlerkandidat);
+        this.polls.add(poll1);
+        this.polls.add(bundestagswahl);
         pollDao.create(poll1);
-        pollDao.create(poll2);
-
+        pollDao.create(bundestagswahl);
 
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
@@ -96,7 +93,7 @@ public class Client extends Application {
             }
         }
 
-        //ListView (Left side)
+        // ListView (Left side)
         SplitPane rootSplit = FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
         GridPane pollListView = FXMLLoader.load(this.getClass().getResource("/client/pollListView.fxml"));
         this.pollList = (ListView<Poll>) pollListView.lookup("#pollList");
@@ -115,7 +112,7 @@ public class Client extends Application {
         rootSplit.getItems().add(pollListView);
         rootSplit.setDividerPositions(1d / 5d);
 
-        //PollView (Right side)
+        // PollView (Right side)
         ScrollPane pollDetailScroller = new ScrollPane();
         pollDetailScroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         pollDetailScroller.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -131,6 +128,18 @@ public class Client extends Application {
                 //Client.this.pollList.refresh();
             }
         });
+
+        this.pollRemoveBtn = (Button) pollDetail.lookup("#pollRemoveBtn");
+        this.pollRemoveBtn.setOnAction((ActionEvent ev) ->
+        {
+            ConfirmDialog.show("Umfrage wirklich entfernen?", (boolean confirmed) ->
+            {
+                if (confirmed) {
+                    // TODO Umfrage entfernen!
+                }
+            });
+        });
+
         this.descTxF = (TextArea) pollDetail.lookup("#descTxF");
         this.descTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
         {
@@ -182,6 +191,11 @@ public class Client extends Application {
         this.resultsBtn.setOnAction((ActionEvent event) ->
         {
             //TODO View Results
+            for (Question question : Client.this.poll.questions) {
+                for (Answer answer : question.getAnswers()) {
+                    System.out.println(answer.getValue());
+                }
+            }
         });
 
         this.questionsAccordion = (Accordion) pollDetail.lookup("#questionsAccordion");
@@ -196,9 +210,10 @@ public class Client extends Application {
         pollDetailScroller.setContent(pollDetail);
         rootSplit.getItems().add(pollDetailScroller);
 
-        //Stage size and finally show
+        // Stage size and finally show
         this.pollList.getSelectionModel().selectFirst();
-        primaryStage.setScene(new Scene(rootSplit, 800, 600));
+        primaryStage.setScene(new Scene(rootSplit));
+        primaryStage.sizeToScene();
         primaryStage.show();
     }
 
@@ -245,6 +260,4 @@ public class Client extends Application {
     private void spawnDatabase() throws Exception {
         Database.getInstance();
     }
-
-
 }

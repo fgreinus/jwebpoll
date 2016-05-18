@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+
+<GridPane xmlns="http://javafx.com/javafx/8"
+          id="msgBoxGrid"
+          hgap="10"
+          vgap="10">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints/>
+    </rowConstraints>
+
+    <Label id="confirmMsg"
+           GridPane.columnIndex="0"
+           GridPane.rowIndex="0"/>
+
+    <Button id="okBtn"
+            text="OK"
+            maxWidth="Infinity"
+            GridPane.columnIndex="0"
+            GridPane.rowIndex="1"/>
+
+</GridPane>

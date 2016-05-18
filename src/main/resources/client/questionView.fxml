@@ -124,8 +124,9 @@
                    GridPane.columnSpan="2"
                    GridPane.rowIndex="4"
                    GridPane.vgrow="SOMETIMES"
-                   maxHeight="Infinity"
-                   prefWidth="-Infinity">
+                   minHeight="150"
+                   prefWidth="-Infinity"
+                   maxHeight="Infinity">
             <columns>
                 <TableColumn id="#controlColumn"/>
                 <TableColumn id="#textColumn" text="Text"/>

@@ -54,8 +54,13 @@ public class QuestionView {
             requiredCkB.setDisable(disabled);
             removeBtn.setOnAction((ActionEvent ev) ->
             {
-                item.getPoll().getQuestions().remove(item);
-                accordion.getPanes().remove(tp);
+                ConfirmDialog.show("Frage wirklich entfernen?", (boolean confirmed) ->
+                {
+                    if (confirmed) {
+                        item.getPoll().getQuestions().remove(item);
+                        accordion.getPanes().remove(tp);
+                    }
+                });
             });
             hintTxF.setText(item.getHint());
             hintTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
@@ -150,16 +155,14 @@ public class QuestionView {
                     try {
                         int value = Integer.parseInt(answerAddValueTxF.getText());
                         boolean valueUsed = false;
-                        for(Answer a : item.getAnswers())
-                            if(a.getValue() == value)
-                            {
+                        for (Answer a : item.getAnswers())
+                            if (a.getValue() == value) {
                                 valueUsed = true;
                                 break;
                             }
-                        if(valueUsed)
+                        if (valueUsed)
                             answerAddValueTxF.setText("Wert wird bereits verwendet");
-                        else
-                        {
+                        else {
                             Answer answer = new Answer(answerAddTextTxF.getText(), value, item);
                             item.getAnswers().add(answer);
                             answerTable.getItems().add(answer);
@@ -175,12 +178,16 @@ public class QuestionView {
             answerAddBtn.setDisable(disabled);
             answerRemoveBtn.setOnAction((ActionEvent event) ->
             {
-                if (!answerTable.getSelectionModel().isEmpty()) {
-                    Answer toRemove = answerTable.getSelectionModel().getSelectedItem();
-                    item.getAnswers().remove(toRemove);
-                    answerTable.getItems().remove(toRemove);
-                    QuestionView.updateAddValueTxF(item, answerAddValueTxF);
-                }
+                if (!answerTable.getSelectionModel().isEmpty())
+                    ConfirmDialog.show("Antwortmöglichkeit wirklich entfernen?", (boolean confirmed) ->
+                    {
+                        if (confirmed) {
+                            Answer toRemove = answerTable.getSelectionModel().getSelectedItem();
+                            item.getAnswers().remove(toRemove);
+                            answerTable.getItems().remove(toRemove);
+                            QuestionView.updateAddValueTxF(item, answerAddValueTxF);
+                        }
+                    });
             });
             answerRemoveBtn.setDisable(disabled);
 
@@ -191,7 +198,7 @@ public class QuestionView {
             TableColumn<Answer, String> valueColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(2);
             valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("value"));
             valueColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.15));
-            if(item.getAnswers() != null)
+            if (item.getAnswers() != null)
                 answerTable.getItems().addAll(item.getAnswers());
 
             tp.setContent(rootGird);
