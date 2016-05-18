@@ -260,6 +260,4 @@ public class Client extends Application {
     private void spawnDatabase() throws Exception {
         Database.getInstance();
     }
-
-
 }
