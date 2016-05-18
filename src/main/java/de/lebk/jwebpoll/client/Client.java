@@ -16,8 +16,10 @@ import javafx.stage.WindowEvent;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Client extends Application {
     //- Main -
@@ -69,9 +71,13 @@ public class Client extends Application {
         Answer haustier = new Answer("Mein Haustier", 1000, kanzlerkandidat);
         Answer nachbar = new Answer("Mein Nachbar", 10, kanzlerkandidat);
         Vote vote1 = new Vote("", kanzlerkandidat, haustier, "");
+        Vote vote2 = new Vote("", kanzlerkandidat, haustier, "");
+        Vote vote3 = new Vote("", kanzlerkandidat, nachbar, "");
 
         Dao pollDao = Database.getInstance().getDaoForClass(Poll.class.getName());
         haustier.getVotes().add(vote1);
+        haustier.getVotes().add(vote2);
+        nachbar.getVotes().add(vote3);
         kanzlerkandidat.getAnswers().add(merkel);
         kanzlerkandidat.getAnswers().add(trump);
         kanzlerkandidat.getAnswers().add(haustier);
@@ -207,9 +213,11 @@ public class Client extends Application {
         this.resultsBtn.setOnAction((ActionEvent event) ->
         {
             //TODO View Results
+            ArrayList<Map.Entry<Answer, Integer>> answerCounter = new ArrayList<Map.Entry<Answer, Integer>>();
             for (Question question : Client.this.poll.questions) {
+                System.out.println(question.getTitle());
                 for (Answer answer : question.getAnswers()) {
-                    System.out.println(answer.getValue());
+                    System.out.println("  " + answer.getText() + ": " + answer.getVotes().size());
                 }
             }
         });
