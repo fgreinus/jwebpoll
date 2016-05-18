@@ -14,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class Client extends Application {
 
     //- View -
     private ListView<Poll> pollList;
+    private Button pollAddBtn;
     private TextField titleTxF;
     private Button pollRemoveBtn;
     private TextArea descTxF;
@@ -109,6 +111,20 @@ public class Client extends Application {
             if (newValue != null)
                 Client.this.setPoll(newValue);
         });
+
+        this.pollAddBtn = (Button) pollListView.lookup("#pollAddBtn");
+        this.pollAddBtn.setOnAction((ActionEvent ev) ->
+        {
+            Poll newPoll = new Poll("<Neue Umfrage>", "", PollState.NEW);
+            this.polls.add(newPoll);
+            try {
+                pollDao.create(newPoll);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            this.pollList.getItems().addAll(newPoll);
+        });
+
         rootSplit.getItems().add(pollListView);
         rootSplit.setDividerPositions(1d / 5d);
 
