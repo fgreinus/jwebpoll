@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.Dao;
 import de.lebk.jwebpoll.data.Poll;
 import freemarker.template.Configuration;
 import spark.ModelAndView;
+import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -61,7 +62,7 @@ public class Frontend {
         fmEngine = new FreeMarkerEngine(fmConfig);
     }
 
-    private void bindSparkRoutes()      
+    private void bindSparkRoutes()
     {
         get("/", (request, response) -> {
             Map<String, Object> attributes = new HashMap<>();
@@ -69,6 +70,16 @@ public class Frontend {
             attributes.put("poll", activePoll);
 
             return new ModelAndView(attributes, "index.ftl");
+        }, fmEngine);
+
+        post("/", (request, response) -> {
+            // Do request-Handling here! // @TODO: finish!
+            System.out.println("response");
+            for (String requestString : request.queryParams()
+                 ) {
+                System.out.println(requestString + " --> " + request.queryParams(requestString));
+            }
+            return new ModelAndView(null, "success.ftl"); //@TODO: Create "success.ftl"-Template/Page
         }, fmEngine);
     }
 
