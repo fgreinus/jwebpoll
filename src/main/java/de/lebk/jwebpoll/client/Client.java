@@ -7,7 +7,6 @@ import de.lebk.jwebpoll.data.*;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -16,9 +15,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.text.SimpleDateFormat;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +34,7 @@ public class Client extends Application {
     //- View -
     private ListView<Poll> pollList;
     private TextField titleTxF;
+    private Button pollRemoveBtn;
     private TextArea descTxF;
     private TextField createdDateTxF, createdTimeTxF;
     private ComboBox<PollState> stateCbo;
@@ -131,6 +128,18 @@ public class Client extends Application {
                 Client.this.pollList.refresh();
             }
         });
+
+        this.pollRemoveBtn = (Button) pollDetail.lookup("#pollRemoveBtn");
+        this.pollRemoveBtn.setOnAction((ActionEvent ev) ->
+        {
+            ConfirmDialog.show("Umfrage wirklich entfernen?", (boolean confirmed) ->
+            {
+                if (confirmed) {
+                    // TODO Umfrage entfernen!
+                }
+            });
+        });
+
         this.descTxF = (TextArea) pollDetail.lookup("#descTxF");
         this.descTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
         {
