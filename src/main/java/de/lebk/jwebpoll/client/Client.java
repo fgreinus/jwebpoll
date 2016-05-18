@@ -1,6 +1,7 @@
 package de.lebk.jwebpoll.client;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.Where;
 import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.Frontend;
 import de.lebk.jwebpoll.data.*;
@@ -58,27 +59,36 @@ public class Client extends Application {
         //start DB
         spawnDatabase();
         //Default Poll: new poll
-        Poll newPoll = new Poll("Neue Umfrage", "", PollState.NEW);
-        this.polls.add(newPoll);
+        //Poll newPoll = new Poll("Neue Umfrage", "", PollState.NEW);
+        //this.polls.add(newPoll);
 
-        polls = Serializer.read("jWebPoll_import.csv");
-/*
-        // TODO: Remove debug code
-        File f = new File("polls.jpl");
-        f.delete();
-
-        Poll[] arr = new Poll[polls.size()];
-        Serializer.write("polls.jpl", polls.toArray(arr));
-        polls = Serializer.read("polls.jpl");
-        // Debug code end
-*/
         //Example polls (to be deleted in future)
-        Poll poll1 = new Poll("1. Umfrage", "Eine Beschreibung", PollState.OPEN);
-        Poll poll2 = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.CLOSED);
+        Poll poll1 = new Poll("1. Umfrage", "Eine Beschreibung", PollState.NEW);
+        Poll poll2 = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.NEW);
+
+        Question question1 = new Question("title", true, QuestionType.SINGLE, poll2);
+
+        Answer answer1 = new Answer("Ja", 1, question1);
+        Answer answer2 = new Answer("Nein", 2, question1);
+
+        Vote vote1 = new Vote("", question1, answer1, "");
+
         Dao pollDao = Database.getInstance().getDaoForClass(Poll.class.getName());
+        //pollDao.queryBuilder().where().eq("title", "Bundestagswahl").queryForFirst();
+        this.polls.add(poll1);
+        this.polls.add(poll2);
         pollDao.create(poll1);
         pollDao.create(poll2);
 
+        Dao questionDao = Database.getInstance().getDaoForClass(Question.class.getName());
+        questionDao.create(question1);
+
+        Dao answerDao = Database.getInstance().getDaoForClass(Answer.class.getName());
+        answerDao.create(answer1);
+        answerDao.create(answer2);
+
+        Dao voteDao = Database.getInstance().getDaoForClass(Vote.class.getName());
+        voteDao.create(vote1);
 
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
@@ -191,6 +201,11 @@ public class Client extends Application {
         this.resultsBtn.setOnAction((ActionEvent event) ->
         {
             //TODO View Results
+            for (Question question : Client.this.poll.questions) {
+                for (Answer answer : question.getAnswers()) {
+                    System.out.println(answer.getValue());
+                }
+            }
         });
 
         this.questionsAccordion = (Accordion) pollDetail.lookup("#questionsAccordion");
