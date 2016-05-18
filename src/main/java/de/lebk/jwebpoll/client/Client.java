@@ -190,7 +190,7 @@ public class Client extends Application {
         this.resultsBtn = (Button) pollDetail.lookup("#resultsBtn");
         this.resultsBtn.setOnAction((ActionEvent event) ->
         {
-            //TODO View Results
+           EvaluationDialog.show(this.poll);
         });
 
         this.questionsAccordion = (Accordion) pollDetail.lookup("#questionsAccordion");
