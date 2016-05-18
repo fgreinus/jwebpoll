@@ -21,25 +21,27 @@ public class ConfirmDialog {
         confirmStage.setTitle("Bestätigen");
 
         GridPane confirmGrid;
+        Label confirmMsg;
+        Button yesBtn, noBtn;
         try {
             confirmGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/confirm.fxml"));
 
-            Label confirmMsg = (Label) confirmGrid.lookup("#confirmMsg");
+            confirmMsg = (Label) confirmGrid.lookup("#confirmMsg");
             confirmMsg.setText(msg);
 
-            Button yesBtn = (Button) confirmGrid.lookup("#yesBtn");
+            yesBtn = (Button) confirmGrid.lookup("#yesBtn");
             yesBtn.setOnAction((ActionEvent ev) ->
             {
                 callback.confirm(true);
                 confirmStage.close();
             });
-            Button noBtn = (Button) confirmGrid.lookup("#noBtn");
+            noBtn = (Button) confirmGrid.lookup("#noBtn");
             noBtn.setOnAction((ActionEvent ev) ->
             {
                 callback.confirm(false);
                 confirmStage.close();
             });
-            noBtn.requestFocus();
+
         } catch (IOException ex) {
             callback.confirm(false);
             return;
@@ -53,5 +55,7 @@ public class ConfirmDialog {
         confirmStage.setScene(new Scene(confirmGrid));
         confirmStage.sizeToScene();
         confirmStage.show();
+
+        noBtn.requestFocus();
     }
 }

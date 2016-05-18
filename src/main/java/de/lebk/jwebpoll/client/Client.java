@@ -248,7 +248,9 @@ public class Client extends Application {
         this.openBtn.setDisable(this.activePoll != null);
         this.closeBtn.setDisable(!disable);
 
-        //TODO Enable / disable Accordion
+        this.questionsAccordion.getPanes().clear();
+        for (Question item : this.poll.getQuestions())
+            QuestionView.setQuestionView(this.questionsAccordion, item, disable);
 
         this.questionsAddBtn.setDisable(disable);
     }
