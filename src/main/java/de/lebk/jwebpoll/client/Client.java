@@ -1,7 +1,6 @@
 package de.lebk.jwebpoll.client;
 
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.Where;
 import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.Frontend;
 import de.lebk.jwebpoll.data.*;
@@ -45,9 +44,7 @@ public class Client extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        //Title
         primaryStage.setTitle("JWebPoll");
-        //Set on close action
         primaryStage.setOnCloseRequest((WindowEvent we) ->
         {
             try {
@@ -56,33 +53,32 @@ public class Client extends Application {
                 e.printStackTrace();
             }
         });
-        //start DB
+
+        // Start DB
         spawnDatabase();
-        //Default Poll: new poll
-        //Poll newPoll = new Poll("Neue Umfrage", "", PollState.NEW);
-        //this.polls.add(newPoll);
 
-        //Example polls (to be deleted in future)
+        // Example polls (to be deleted in future)
         Poll poll1 = new Poll("1. Umfrage", "Eine Beschreibung", PollState.NEW);
-        Poll poll2 = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.NEW);
 
-        Question question1 = new Question("title", true, QuestionType.SINGLE, poll2);
-
-        Answer answer1 = new Answer("Ja", 1, question1);
-        Answer answer2 = new Answer("Nein", 2, question1);
-
-        Vote vote1 = new Vote("", question1, answer1, "");
+        Poll bundestagswahl = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.NEW);
+        Question kanzlerkandidat = new Question("Wer ist ihr Kanzlerkandidat?", true, QuestionType.SINGLE, bundestagswahl);
+        Answer merkel = new Answer("Merkel", -100, kanzlerkandidat);
+        Answer trump = new Answer("Trump", -666, kanzlerkandidat);
+        Answer haustier = new Answer("Mein Haustier", 1000, kanzlerkandidat);
+        Answer nachbar = new Answer("Mein Nachbar", 10, kanzlerkandidat);
+        Vote vote1 = new Vote("", kanzlerkandidat, haustier, "");
 
         Dao pollDao = Database.getInstance().getDaoForClass(Poll.class.getName());
-        //pollDao.queryBuilder().where().eq("title", "Bundestagswahl").queryForFirst();
-        answer1.getVotes().add(vote1);
-        question1.getAnswers().add(answer1);
-        question1.getAnswers().add(answer2);
-        poll2.getQuestions().add(question1);
+        haustier.getVotes().add(vote1);
+        kanzlerkandidat.getAnswers().add(merkel);
+        kanzlerkandidat.getAnswers().add(trump);
+        kanzlerkandidat.getAnswers().add(haustier);
+        kanzlerkandidat.getAnswers().add(nachbar);
+        bundestagswahl.getQuestions().add(kanzlerkandidat);
         this.polls.add(poll1);
-        this.polls.add(poll2);
+        this.polls.add(bundestagswahl);
         pollDao.create(poll1);
-        pollDao.create(poll2);
+        pollDao.create(bundestagswahl);
 
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
@@ -97,7 +93,7 @@ public class Client extends Application {
             }
         }
 
-        //ListView (Left side)
+        // ListView (Left side)
         SplitPane rootSplit = FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
         GridPane pollListView = FXMLLoader.load(this.getClass().getResource("/client/pollListView.fxml"));
         this.pollList = (ListView<Poll>) pollListView.lookup("#pollList");
@@ -116,7 +112,7 @@ public class Client extends Application {
         rootSplit.getItems().add(pollListView);
         rootSplit.setDividerPositions(1d / 5d);
 
-        //PollView (Right side)
+        // PollView (Right side)
         ScrollPane pollDetailScroller = new ScrollPane();
         pollDetailScroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         pollDetailScroller.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -214,9 +210,10 @@ public class Client extends Application {
         pollDetailScroller.setContent(pollDetail);
         rootSplit.getItems().add(pollDetailScroller);
 
-        //Stage size and finally show
+        // Stage size and finally show
         this.pollList.getSelectionModel().selectFirst();
-        primaryStage.setScene(new Scene(rootSplit, 800, 600));
+        primaryStage.setScene(new Scene(rootSplit));
+        primaryStage.sizeToScene();
         primaryStage.show();
     }
 
