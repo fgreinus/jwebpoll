@@ -20,7 +20,7 @@
                     <#if question.getTypeString() = 'SINGLE'>
                     <input type="radio" name="${question.getId()}" id="${question.getId()}" value="${answers.getId()}" <#if question.isRequired()>required</#if>>${answers.getText()}
                     <#else>
-                        <input type="checkbox" name="${question.getId()}[${answers.getId()}]" id="${question.getId()}[${answers.getId()}]" value="true">${answers.getText()}
+                        <input type="checkbox" name="${question.getId()}[]" id="${question.getId()}[${answers.getId()}]" value="${answers.getId()}">${answers.getText()}
                     </#if>
                         </label>
                 </div>
@@ -35,11 +35,19 @@
     <button type="submit" class="btn btn-success btn-lg btn-block">Umfrage absenden</button>
     <script type="text/javascript">
         jQuery.extend(jQuery.validator.messages, {
-            required: "Dieses Feld muss ausgefüllt sein!",
+            required: "Diese Frage muss beantwortet werden!",
         });
         $(document).ready(function () {
-
             $("#pollform").validate({
+                rules: {
+                    <#list poll.getQuestions() as question>
+                        <#if question.getTypeString() = 'MULTIPLE'>
+                            <#if question.isRequired()>
+                    '${question.getId()}[]': { required: true, minlength: 1 },
+                            </#if>
+                        </#if>
+                    </#list>
+                },
                 errorElement: "em",
                 errorPlacement: function (error, element) {
                     // Add the `help-block` class to the error element
@@ -49,7 +57,7 @@
                     // in order to add icons to inputs
                     element.parents(".input-field").addClass("has-feedback");
 
-                    if (element.prop("type") === "radio") {
+                    if (element.prop("type") === "radio" || element.prop("type") === "checkbox") {
                         error.insertBefore(element.parent("label"));
                     } else {
                         error.insertBefore(element);
