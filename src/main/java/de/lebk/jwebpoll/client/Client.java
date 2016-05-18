@@ -258,6 +258,7 @@ public class Client extends Application {
     public void enableControls() {
         boolean disable = this.activePoll != null && this.activePoll == this.poll;
         this.titleTxF.setDisable(disable);
+        this.pollRemoveBtn.setDisable(disable);
         this.descTxF.setDisable(disable);
         this.createdDateTxF.setDisable(disable);
         this.createdTimeTxF.setDisable(disable);
