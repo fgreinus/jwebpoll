@@ -75,20 +75,14 @@ public class Client extends Application {
 
         Dao pollDao = Database.getInstance().getDaoForClass(Poll.class.getName());
         //pollDao.queryBuilder().where().eq("title", "Bundestagswahl").queryForFirst();
+        answer1.getVotes().add(vote1);
+        question1.getAnswers().add(answer1);
+        question1.getAnswers().add(answer2);
+        poll2.getQuestions().add(question1);
         this.polls.add(poll1);
         this.polls.add(poll2);
         pollDao.create(poll1);
         pollDao.create(poll2);
-
-        Dao questionDao = Database.getInstance().getDaoForClass(Question.class.getName());
-        questionDao.create(question1);
-
-        Dao answerDao = Database.getInstance().getDaoForClass(Answer.class.getName());
-        answerDao.create(answer1);
-        answerDao.create(answer2);
-
-        Dao voteDao = Database.getInstance().getDaoForClass(Vote.class.getName());
-        voteDao.create(vote1);
 
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
