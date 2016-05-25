@@ -16,7 +16,6 @@ import javafx.stage.WindowEvent;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +30,14 @@ public class Client extends Application {
     private List<Poll> polls = new ArrayList<>();
     //poll selected in client window
     private Poll poll;
-    //poll running on serve
+    //poll running on server
     private Poll activePoll;
+
+    //- DataAccessObjects -
+    Dao pollDao;
+    Dao questionDao;
+    Dao answerDao;
+    Dao voteDao;
 
     //- View -
     private ListView<Poll> pollList;
@@ -59,40 +64,61 @@ public class Client extends Application {
         });
 
         // Start DB
-        spawnDatabase();
-
-        // Example polls (to be deleted in future)
-        Poll poll1 = new Poll("1. Umfrage", "Eine Beschreibung", PollState.NEW);
+        Database db = Database.getInstance();
+        this.pollDao = db.getDaoForClass(Poll.class.getName());
+        this.questionDao = db.getDaoForClass(Question.class.getName());
+        this.answerDao = db.getDaoForClass(Answer.class.getName());
+        this.voteDao = db.getDaoForClass(Vote.class.getName());
 
         Poll bundestagswahl = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.NEW);
-        Question kanzlerkandidat = new Question("Wer ist ihr Kanzlerkandidat?", true, QuestionType.SINGLE, bundestagswahl);
-        Answer merkel = new Answer("Merkel", -100, kanzlerkandidat);
-        Answer trump = new Answer("Trump", -666, kanzlerkandidat);
-        Answer haustier = new Answer("Mein Haustier", 1000, kanzlerkandidat);
-        Answer nachbar = new Answer("Mein Nachbar", 10, kanzlerkandidat);
-        Vote vote1 = new Vote("", kanzlerkandidat, haustier, "");
-        Vote vote2 = new Vote("", kanzlerkandidat, haustier, "");
-        Vote vote3 = new Vote("", kanzlerkandidat, nachbar, "");
+        this.polls.addAll(this.pollDao.queryForAll());
+        boolean addDefaultPoll = this.polls.isEmpty();
 
-        Dao pollDao = Database.getInstance().getDaoForClass(Poll.class.getName());
-        haustier.getVotes().add(vote1);
-        haustier.getVotes().add(vote2);
-        nachbar.getVotes().add(vote3);
-        kanzlerkandidat.getAnswers().add(merkel);
-        kanzlerkandidat.getAnswers().add(trump);
-        kanzlerkandidat.getAnswers().add(haustier);
-        kanzlerkandidat.getAnswers().add(nachbar);
-        bundestagswahl.getQuestions().add(kanzlerkandidat);
-        this.polls.add(poll1);
-        this.polls.add(bundestagswahl);
-        pollDao.create(poll1);
-        pollDao.create(bundestagswahl);
+        if (addDefaultPoll) {
+            for (Poll p : this.polls) {
+                if (p.getTitle().equals(bundestagswahl.getTitle()))
+                    addDefaultPoll = false;
+            }
+
+            if (addDefaultPoll) {
+                this.pollDao.create(bundestagswahl);
+
+                Question kanzlerkandidat = new Question("Wer ist ihr Kanzlerkandidat?", true, QuestionType.SINGLE, bundestagswahl);
+                this.questionDao.create(kanzlerkandidat);
+
+                Answer merkel = new Answer("Merkel", -100, kanzlerkandidat);
+                this.answerDao.create(merkel);
+                Answer trump = new Answer("Trump", -666, kanzlerkandidat);
+                this.answerDao.create(trump);
+                Answer haustier = new Answer("Mein Haustier", 1000, kanzlerkandidat);
+                this.answerDao.create(haustier);
+                Answer nachbar = new Answer("Mein Nachbar", 10, kanzlerkandidat);
+                this.answerDao.create(nachbar);
+                Vote vote1 = new Vote("DefaultVoter1", kanzlerkandidat, haustier, "");
+                this.voteDao.create(vote1);
+                Vote vote2 = new Vote("DefaultVoter2", kanzlerkandidat, haustier, "");
+                this.voteDao.create(vote2);
+                Vote vote3 = new Vote("DefaultVoter3", kanzlerkandidat, nachbar, "");
+                this.voteDao.create(vote3);
+
+                bundestagswahl = (Poll) pollDao.queryForId(bundestagswahl.getId());
+
+//            haustier.getVotes().add(vote1);
+//            haustier.getVotes().add(vote2);
+//            nachbar.getVotes().add(vote3);
+//            kanzlerkandidat.getAnswers().add(merkel);
+//            kanzlerkandidat.getAnswers().add(trump);
+//            kanzlerkandidat.getAnswers().add(haustier);
+//            kanzlerkandidat.getAnswers().add(nachbar);
+//            bundestagswahl.getQuestions().add(kanzlerkandidat);
+                this.polls.add(bundestagswahl);
+            }
+        }
 
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
                 this.activePoll = p;
                 try {
-
                     spawnWebServer(activePoll);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -109,9 +135,7 @@ public class Client extends Application {
         {
             return new PollListCell();
         });
-        for (Poll p : this.polls) {
-            this.pollList.getItems().add(p);
-        }
+        this.pollList.getItems().addAll(this.polls);
         this.pollList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Poll> observable, Poll oldValue, Poll newValue) ->
         {
             if (newValue != null)
@@ -124,7 +148,7 @@ public class Client extends Application {
             Poll newPoll = new Poll("<Neue Umfrage>", "", PollState.NEW);
             this.polls.add(newPoll);
             try {
-                pollDao.create(newPoll);
+                this.pollDao.create(newPoll);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -157,7 +181,19 @@ public class Client extends Application {
             ConfirmDialog.show("Umfrage wirklich entfernen?", (boolean confirmed) ->
             {
                 if (confirmed) {
-                    // TODO Umfrage entfernen!
+                    try {
+                        this.pollDao.delete(this.poll);
+                        this.polls.remove(this.poll);
+                        int index = this.pollList.getItems().indexOf(this.poll);
+                        this.pollList.getItems().remove(this.poll);
+                        if (index > 0)
+                            this.pollList.getSelectionModel().select(--index);
+                        else
+                            this.pollList.getSelectionModel().selectFirst();
+                        this.poll = null;
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             });
         });
@@ -282,9 +318,5 @@ public class Client extends Application {
 
     private void spawnWebServer(Poll poll) throws Exception {
         Frontend.getInstance(poll);
-    }
-
-    private void spawnDatabase() throws Exception {
-        Database.getInstance();
     }
 }
