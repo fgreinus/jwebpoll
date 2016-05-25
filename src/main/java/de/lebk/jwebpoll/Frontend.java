@@ -86,7 +86,7 @@ public class Frontend {
             attributes.put("poll", activePoll);
             attributes.put("success", true);
 
-            return new ModelAndView(attributes, "index.ftl"); //@TODO: Create "success.ftl"-Template/Page
+            return new ModelAndView(attributes, "index.ftl");
         }, fmEngine);
     }
 
