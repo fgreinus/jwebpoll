@@ -35,10 +35,11 @@ public class EvaluationDialog {
 
             ArrayList<Map.Entry<Answer, Integer>> answerCounter = new ArrayList<Map.Entry<Answer, Integer>>();
             for (Question question : poll.questions) {
-                EvaluationQuestionView.setQuestionView(questionsAccordion, item, false);
+                EvaluationQuestionView.setQuestionView(questionsAccordion, question, false);
 
                 for (Answer answer : question.getAnswers()) {
-                    System.out.println("  " + answer.getText() + ": " + answer.getVotes().size());
+                    int voteCount = answer.getVotes().size();
+                    System.out.println("  " + answer.getText() + ": " + voteCount + " (weighted: " + voteCount * answer.getValue() + ")");
                 }
             }
             evaluationGrid.setVisible(true);
