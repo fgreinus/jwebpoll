@@ -2,10 +2,12 @@
 <form role="form" id="pollform" method="post" action="">
     <fieldset>
         <input class="hidden" id="pollid" name="pollid" value="${poll.getId()}">
+    <#assign x = 0>
 <#list poll.getQuestions() as question>
+    <#assign x = x+1>
 <div class="panel panel-default">
     <div class="panel-heading">
-        <span class="badge">${question.getId()}</span> ${question.getTitle()} <#if question.isRequired()><span class="pull-right"><i>(Pflichtfeld)</i></span></#if>
+        <span class="badge">${x}</span> ${question.getTitle()} <#if question.isRequired()><span class="pull-right"><i>(Pflichtfeld)</i></span></#if>
     </div>
     <div class="panel-body">
         <div class="form-group">
@@ -30,6 +32,7 @@
         </div>
     </div>
 </div>
+
 </#list>
     </fieldset>
 
