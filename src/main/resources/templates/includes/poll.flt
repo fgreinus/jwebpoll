@@ -39,10 +39,13 @@
             required: "Diese Frage muss beantwortet werden!",
         });
         $(document).ready(function () {
+    <#if success>
+        swal("Erfolg!", "Die Umfrage wurde erfolgreich abgesendet.", "success");
+    </#if>
+
             formValid = true;
             $("#pollform").validate({
                 invalidHandler: function(event, validator) {
-                    // 'this' refers to the form
                     var errors = validator.numberOfInvalids();
                     if (errors) {
                         swal("Fehler!", "Bitte füllen Sie alle Pflichtfelder aus.", "error");
@@ -58,11 +61,8 @@
                 </#list>},
                 errorElement: "em",
                 errorPlacement: function (error, element) {
-                    // Add the `help-block` class to the error element
                     error.addClass("help-block");
 
-                    // Add `has-feedback` class to the parent div.form-group
-                    // in order to add icons to inputs
                     element.parents(".input-field").addClass("has-feedback");
 
                     if (element.prop("type") === "radio" || element.prop("type") === "checkbox") {
@@ -71,13 +71,11 @@
                         error.insertBefore(element);
                     }
 
-                    // Add the span element, if doesn't exists, and apply the icon classes to it.
                     if (!element.next("span")[0]) {
                         $("<span class='glyphicon glyphicon-remove form-control-feedback'></span>").insertAfter(element);
                     }
                 },
                 success: function (label, element) {
-                    // Add the span element, if doesn't exists, and apply the icon classes to it.
                     if (!$(element).next("span")[0]) {
                         $("<span class='glyphicon glyphicon-ok form-control-feedback'></span>").insertAfter($(element));
                     }

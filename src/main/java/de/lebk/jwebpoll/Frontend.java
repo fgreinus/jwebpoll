@@ -68,6 +68,7 @@ public class Frontend {
             Map<String, Object> attributes = new HashMap<>();
 
             attributes.put("poll", activePoll);
+            attributes.put("success", false);
 
             return new ModelAndView(attributes, "index.ftl");
         }, fmEngine);
@@ -83,7 +84,9 @@ public class Frontend {
             Map<String, Object> attributes = new HashMap<>();
 
             attributes.put("poll", activePoll);
-            return new ModelAndView(attributes, "success.ftl"); //@TODO: Create "success.ftl"-Template/Page
+            attributes.put("success", true);
+
+            return new ModelAndView(attributes, "index.ftl"); //@TODO: Create "success.ftl"-Template/Page
         }, fmEngine);
     }
 
