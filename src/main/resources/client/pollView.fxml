@@ -34,6 +34,7 @@
         <RowConstraints/>
         <RowConstraints/>
         <RowConstraints vgrow="ALWAYS"/>
+		<RowConstraints/>
     </rowConstraints>
 
     <Text id="titleTxt"
@@ -132,4 +133,10 @@
                GridPane.columnIndex="0"
                GridPane.columnSpan="4"
                GridPane.rowIndex="6"/>
+	<Button	id ="pollSaveBtn"
+			text="Poll speichern"
+			textFill="green"
+			maxWidth="Infinity"
+			GridPane.columnIndex="3"
+			GridPane.rowIndex="7"/>
 </GridPane>

@@ -39,6 +39,7 @@ public class Client extends Application {
     private Button pollAddBtn;
     private TextField titleTxF;
     private Button pollRemoveBtn;
+    private Button pollSaveBtn;
     private TextArea descTxF;
     private TextField createdDateTxF, createdTimeTxF;
     private ComboBox<PollState> stateCbo;
@@ -162,6 +163,12 @@ public class Client extends Application {
             });
         });
 
+        this.pollSaveBtn = (Button) pollDetail.lookup("#pollSaveBtn");
+        this.pollSaveBtn.setOnAction((ActionEvent ev) ->
+        {
+            // TODO: Add code to save poll do DB here
+        });
+
         this.descTxF = (TextArea) pollDetail.lookup("#descTxF");
         this.descTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
         {
@@ -267,6 +274,7 @@ public class Client extends Application {
         boolean disable = this.activePoll != null && this.activePoll == this.poll;
         this.titleTxF.setDisable(disable);
         this.pollRemoveBtn.setDisable(disable);
+        this.pollSaveBtn.setDisable(disable);
         this.descTxF.setDisable(disable);
         this.createdDateTxF.setDisable(disable);
         this.createdTimeTxF.setDisable(disable);
