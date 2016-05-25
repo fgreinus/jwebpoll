@@ -103,14 +103,6 @@ public class Client extends Application {
 
                 bundestagswahl = (Poll) pollDao.queryForId(bundestagswahl.getId());
 
-//            haustier.getVotes().add(vote1);
-//            haustier.getVotes().add(vote2);
-//            nachbar.getVotes().add(vote3);
-//            kanzlerkandidat.getAnswers().add(merkel);
-//            kanzlerkandidat.getAnswers().add(trump);
-//            kanzlerkandidat.getAnswers().add(haustier);
-//            kanzlerkandidat.getAnswers().add(nachbar);
-//            bundestagswahl.getQuestions().add(kanzlerkandidat);
                 this.polls.add(bundestagswahl);
             }
         }
@@ -171,7 +163,7 @@ public class Client extends Application {
             if (Client.this.poll != null
                     && !Client.this.poll.getTitle().equals(newValue)) {
                 Client.this.poll.setTitle(newValue);
-                //Client.this.pollList.refresh();
+                Client.this.pollList.refresh();
             }
         });
 
