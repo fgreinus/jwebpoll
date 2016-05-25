@@ -23,7 +23,7 @@
                     <#if question.getTypeString() = 'SINGLE'>
                     <input type="radio" name="${question.getId()}" id="${question.getId()}" value="${answers.getId()}" <#if question.isRequired()>required</#if>>${answers.getText()}
                     <#else>
-                        <input type="checkbox" name="${question.getId()}_${answers.getId()}" id="${question.getId()}[${answers.getId()}]" value="${answers.getId()}">${answers.getText()}
+                        <input type="checkbox" name="${question.getId()}[]" id="${question.getId()}[${answers.getId()}]" value="${answers.getId()}">${answers.getText()}
                     </#if>
                         </label>
                 </div>

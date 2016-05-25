@@ -40,7 +40,7 @@ public class Main {
             dao.create(poll);
 
             Dao dao2 = db.getDaoForClass(Question.class.getName());
-            Question q1 = new Question("Tolle Frage", true, QuestionType.FREE, poll);
+            Question q1 = new Question("Tolle Frage", false, QuestionType.FREE, poll);
             dao2.create(q1);
             Question q2 = new Question("Tolle Frage 2", true, QuestionType.MULTIPLE, poll);
             dao2.create(q2);
