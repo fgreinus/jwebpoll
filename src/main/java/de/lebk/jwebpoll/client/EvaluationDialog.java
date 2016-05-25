@@ -1,6 +1,7 @@
 package de.lebk.jwebpoll.client;
 
 import com.j256.ormlite.dao.ForeignCollection;
+import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Poll;
 import de.lebk.jwebpoll.data.Question;
 import javafx.event.ActionEvent;
@@ -15,6 +16,8 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Created by lostincoding on 18.05.16.
@@ -29,8 +32,13 @@ public class EvaluationDialog {
         try {
             evaluationGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/evaluationDialog.fxml"));
             Accordion questionsAccordion = (Accordion) evaluationGrid.lookup("#questionsAccordion");
-            for (Question item : poll.getQuestions()) {
+            ArrayList<Map.Entry<Answer, Integer>> answerCounter = new ArrayList<Map.Entry<Answer, Integer>>();
+            for (Question question : poll.questions) {
                 EvaluationQuestionView.setQuestionView(questionsAccordion, item, false);
+
+                for (Answer answer : question.getAnswers()) {
+                    System.out.println("  " + answer.getText() + ": " + answer.getVotes().size());
+                }
             }
             evaluationGrid.setVisible(true);
             questionsAccordion.setVisible(true);
