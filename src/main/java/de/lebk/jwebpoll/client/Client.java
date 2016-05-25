@@ -14,9 +14,11 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Client extends Application {
     //- Main -
@@ -28,11 +30,18 @@ public class Client extends Application {
     private List<Poll> polls = new ArrayList<>();
     //poll selected in client window
     private Poll poll;
-    //poll running on serve
+    //poll running on server
     private Poll activePoll;
+
+    //- DataAccessObjects -
+    Dao pollDao;
+    Dao questionDao;
+    Dao answerDao;
+    Dao voteDao;
 
     //- View -
     private ListView<Poll> pollList;
+    private Button pollAddBtn;
     private TextField titleTxF;
     private Button pollRemoveBtn;
     private TextArea descTxF;
@@ -55,36 +64,61 @@ public class Client extends Application {
         });
 
         // Start DB
-        spawnDatabase();
-
-        // Example polls (to be deleted in future)
-        Poll poll1 = new Poll("1. Umfrage", "Eine Beschreibung", PollState.NEW);
+        Database db = Database.getInstance();
+        this.pollDao = db.getDaoForClass(Poll.class.getName());
+        this.questionDao = db.getDaoForClass(Question.class.getName());
+        this.answerDao = db.getDaoForClass(Answer.class.getName());
+        this.voteDao = db.getDaoForClass(Vote.class.getName());
 
         Poll bundestagswahl = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.NEW);
-        Question kanzlerkandidat = new Question("Wer ist ihr Kanzlerkandidat?", true, QuestionType.SINGLE, bundestagswahl);
-        Answer merkel = new Answer("Merkel", -100, kanzlerkandidat);
-        Answer trump = new Answer("Trump", -666, kanzlerkandidat);
-        Answer haustier = new Answer("Mein Haustier", 1000, kanzlerkandidat);
-        Answer nachbar = new Answer("Mein Nachbar", 10, kanzlerkandidat);
-        Vote vote1 = new Vote("", kanzlerkandidat, haustier, "");
+        this.polls.addAll(this.pollDao.queryForAll());
+        boolean addDefaultPoll = this.polls.isEmpty();
 
-        Dao pollDao = Database.getInstance().getDaoForClass(Poll.class.getName());
-        haustier.getVotes().add(vote1);
-        kanzlerkandidat.getAnswers().add(merkel);
-        kanzlerkandidat.getAnswers().add(trump);
-        kanzlerkandidat.getAnswers().add(haustier);
-        kanzlerkandidat.getAnswers().add(nachbar);
-        bundestagswahl.getQuestions().add(kanzlerkandidat);
-        this.polls.add(poll1);
-        this.polls.add(bundestagswahl);
-        pollDao.create(poll1);
-        pollDao.create(bundestagswahl);
+        if (addDefaultPoll) {
+            for (Poll p : this.polls) {
+                if (p.getTitle().equals(bundestagswahl.getTitle()))
+                    addDefaultPoll = false;
+            }
+
+            if (addDefaultPoll) {
+                this.pollDao.create(bundestagswahl);
+
+                Question kanzlerkandidat = new Question("Wer ist ihr Kanzlerkandidat?", true, QuestionType.SINGLE, bundestagswahl);
+                this.questionDao.create(kanzlerkandidat);
+
+                Answer merkel = new Answer("Merkel", -100, kanzlerkandidat);
+                this.answerDao.create(merkel);
+                Answer trump = new Answer("Trump", -666, kanzlerkandidat);
+                this.answerDao.create(trump);
+                Answer haustier = new Answer("Mein Haustier", 1000, kanzlerkandidat);
+                this.answerDao.create(haustier);
+                Answer nachbar = new Answer("Mein Nachbar", 10, kanzlerkandidat);
+                this.answerDao.create(nachbar);
+                Vote vote1 = new Vote("DefaultVoter1", kanzlerkandidat, haustier, "");
+                this.voteDao.create(vote1);
+                Vote vote2 = new Vote("DefaultVoter2", kanzlerkandidat, haustier, "");
+                this.voteDao.create(vote2);
+                Vote vote3 = new Vote("DefaultVoter3", kanzlerkandidat, nachbar, "");
+                this.voteDao.create(vote3);
+
+                bundestagswahl = (Poll) pollDao.queryForId(bundestagswahl.getId());
+
+//            haustier.getVotes().add(vote1);
+//            haustier.getVotes().add(vote2);
+//            nachbar.getVotes().add(vote3);
+//            kanzlerkandidat.getAnswers().add(merkel);
+//            kanzlerkandidat.getAnswers().add(trump);
+//            kanzlerkandidat.getAnswers().add(haustier);
+//            kanzlerkandidat.getAnswers().add(nachbar);
+//            bundestagswahl.getQuestions().add(kanzlerkandidat);
+                this.polls.add(bundestagswahl);
+            }
+        }
 
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
                 this.activePoll = p;
                 try {
-
                     spawnWebServer(activePoll);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -101,14 +135,26 @@ public class Client extends Application {
         {
             return new PollListCell();
         });
-        for (Poll p : this.polls) {
-            this.pollList.getItems().add(p);
-        }
+        this.pollList.getItems().addAll(this.polls);
         this.pollList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Poll> observable, Poll oldValue, Poll newValue) ->
         {
             if (newValue != null)
                 Client.this.setPoll(newValue);
         });
+
+        this.pollAddBtn = (Button) pollListView.lookup("#pollAddBtn");
+        this.pollAddBtn.setOnAction((ActionEvent ev) ->
+        {
+            Poll newPoll = new Poll("<Neue Umfrage>", "", PollState.NEW);
+            this.polls.add(newPoll);
+            try {
+                this.pollDao.create(newPoll);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            this.pollList.getItems().addAll(newPoll);
+        });
+
         rootSplit.getItems().add(pollListView);
         rootSplit.setDividerPositions(1d / 5d);
 
@@ -135,7 +181,19 @@ public class Client extends Application {
             ConfirmDialog.show("Umfrage wirklich entfernen?", (boolean confirmed) ->
             {
                 if (confirmed) {
-                    // TODO Umfrage entfernen!
+                    try {
+                        this.pollDao.delete(this.poll);
+                        this.polls.remove(this.poll);
+                        int index = this.pollList.getItems().indexOf(this.poll);
+                        this.pollList.getItems().remove(this.poll);
+                        if (index > 0)
+                            this.pollList.getSelectionModel().select(--index);
+                        else
+                            this.pollList.getSelectionModel().selectFirst();
+                        this.poll = null;
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             });
         });
@@ -191,9 +249,11 @@ public class Client extends Application {
         this.resultsBtn.setOnAction((ActionEvent event) ->
         {
             //TODO View Results
+            ArrayList<Map.Entry<Answer, Integer>> answerCounter = new ArrayList<Map.Entry<Answer, Integer>>();
             for (Question question : Client.this.poll.questions) {
+                System.out.println(question.getTitle());
                 for (Answer answer : question.getAnswers()) {
-                    System.out.println(answer.getValue());
+                    System.out.println("  " + answer.getText() + ": " + answer.getVotes().size());
                 }
             }
         });
@@ -242,22 +302,21 @@ public class Client extends Application {
     public void enableControls() {
         boolean disable = this.activePoll != null && this.activePoll == this.poll;
         this.titleTxF.setDisable(disable);
+        this.pollRemoveBtn.setDisable(disable);
         this.descTxF.setDisable(disable);
         this.createdDateTxF.setDisable(disable);
         this.createdTimeTxF.setDisable(disable);
         this.openBtn.setDisable(this.activePoll != null);
         this.closeBtn.setDisable(!disable);
 
-        //TODO Enable / disable Accordion
+        this.questionsAccordion.getPanes().clear();
+        for (Question item : this.poll.getQuestions())
+            QuestionView.setQuestionView(this.questionsAccordion, item, disable);
 
         this.questionsAddBtn.setDisable(disable);
     }
 
     private void spawnWebServer(Poll poll) throws Exception {
         Frontend.getInstance(poll);
-    }
-
-    private void spawnDatabase() throws Exception {
-        Database.getInstance();
     }
 }

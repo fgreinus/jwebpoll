@@ -62,6 +62,7 @@ public class QuestionView {
                     }
                 });
             });
+            removeBtn.setDisable(disabled);
             hintTxF.setText(item.getHint());
             hintTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
             {
@@ -145,6 +146,7 @@ public class QuestionView {
                 });
             });
             typeCbo.setValue(item.getType());
+            typeCbo.setDisable(disabled);
             answerAddTextTxF.setDisable(disabled);
             QuestionView.updateAddValueTxF(item, answerAddValueTxF);
             answerAddValueTxF.setDisable(disabled);

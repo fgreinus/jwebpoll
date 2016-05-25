@@ -13,11 +13,11 @@
           vgap="10">
 
     <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
+        <Insets top="15" right="15" bottom="10" left="15"/>
     </padding>
     <columnConstraints>
-        <ColumnConstraints hgrow="ALWAYS"/>
-        <ColumnConstraints hgrow="ALWAYS"/>
+        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints/>
@@ -25,6 +25,7 @@
     </rowConstraints>
 
     <Label id="confirmMsg"
+           maxWidth="Infinity"
            GridPane.columnIndex="0"
            GridPane.rowIndex="0"
            GridPane.columnSpan="2"/>
