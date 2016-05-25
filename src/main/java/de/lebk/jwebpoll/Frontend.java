@@ -79,7 +79,7 @@ public class Frontend {
             for (String inputKey : request.queryParams()) {
 
                 String inputValue = request.queryParams(inputKey);
-                String realInputKey = inputKey.contains("[]") ? inputKey.substring(0, inputKey.length() - 2) : inputKey;
+                String realInputKey = inputKey.contains("_") ? inputKey.substring(0, inputKey.indexOf("_")) : inputKey;
 
                 if (!givenAnswersMap.containsKey(realInputKey)) {
                     givenAnswersMap.put(realInputKey, new ArrayList<>());
@@ -115,9 +115,7 @@ public class Frontend {
                     int answerId = 0;
                     try {
                         answerId = Integer.parseInt(answer);
-                    } catch (Exception e) {
-                        continue;
-                    }
+                    } catch (Exception e) { }
 
                     Object answerResult = answerDao.queryBuilder().where().eq("id", answerId).queryForFirst();
                     if (answerResult == null) {

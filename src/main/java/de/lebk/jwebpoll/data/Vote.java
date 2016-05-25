@@ -22,7 +22,7 @@ public class Vote
     @DatabaseField(canBeNull = false, foreign = true)
     private Question question;
 
-    @DatabaseField(canBeNull = false, foreign = true)
+    @DatabaseField(canBeNull = true, foreign = true)
     private Answer answer;
 
     @DatabaseField
