@@ -34,7 +34,7 @@ public class EvaluationDialog {
             evaluationGrid.setVisible(true);
             questionsAccordion.setVisible(true);
         } catch (IOException ex) {
-
+            ex.printStackTrace();
             return;
         }
 

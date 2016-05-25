@@ -15,18 +15,24 @@
 
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.layout.RowConstraints?>
 <GridPane xmlns="http://javafx.com/javafx/8"
           id="rootGrid"
           hgap="50"
           vgap="50"
           style="-fx-border-color: lightgray;">
 
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+    </rowConstraints>
 
     <TableView id="answerTable"
                GridPane.columnIndex="0"
-               GridPane.columnSpan="2"
-               GridPane.rowIndex="4"
-               GridPane.vgrow="SOMETIMES"
+               GridPane.rowIndex="0"
+               GridPane.vgrow="ALWAYS"
                maxHeight="Infinity"
                prefWidth="-Infinity">
         <columns>
