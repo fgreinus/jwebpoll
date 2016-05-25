@@ -72,6 +72,7 @@ public class Frontend {
 
         post("/", (request, response) -> {
             // Do request-Handling here! //@TODO: Handle Checkbox-inputs!
+            System.out.println(request.body()); // This is just a test
 
             HashMap<String, ArrayList<String>> givenAnswersMap = new HashMap<>();
 
