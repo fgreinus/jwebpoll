@@ -32,9 +32,8 @@ public class EvaluationDialog {
         try {
             evaluationGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/evaluationDialog.fxml"));
             Accordion questionsAccordion = (Accordion) evaluationGrid.lookup("#questionsAccordion");
-            ArrayList<Map.Entry<Answer, Integer>> answerCounter = new ArrayList<Map.Entry<Answer, Integer>>();
             for (Question question : poll.questions) {
-                EvaluationQuestionView.setQuestionView(questionsAccordion, item, false);
+                EvaluationQuestionView.setQuestionView(questionsAccordion, question, false);
 
                 for (Answer answer : question.getAnswers()) {
                     System.out.println("  " + answer.getText() + ": " + answer.getVotes().size());
