@@ -71,7 +71,7 @@ public class Frontend {
         }, fmEngine);
 
         post("/", (request, response) -> {
-            // Do request-Handling here!
+            // Do request-Handling here! //@TODO: Handle Checkbox-inputs!
 
             HashMap<String, ArrayList<String>> givenAnswersMap = new HashMap<>();
 
