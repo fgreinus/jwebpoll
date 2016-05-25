@@ -85,5 +85,8 @@ public class Vote
         this.userText = userText;
     }
 
-    public Vote() { }
+    public Vote()
+    {
+        this.created = new Date();
+    }
 }
