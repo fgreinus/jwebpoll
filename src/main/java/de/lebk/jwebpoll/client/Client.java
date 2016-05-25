@@ -249,13 +249,7 @@ public class Client extends Application {
         this.resultsBtn.setOnAction((ActionEvent event) ->
         {
             //TODO View Results
-            ArrayList<Map.Entry<Answer, Integer>> answerCounter = new ArrayList<Map.Entry<Answer, Integer>>();
-            for (Question question : Client.this.poll.questions) {
-                System.out.println(question.getTitle());
-                for (Answer answer : question.getAnswers()) {
-                    System.out.println("  " + answer.getText() + ": " + answer.getVotes().size());
-                }
-            }
+            EvaluationDialog.show(this.poll);
         });
 
         this.questionsAccordion = (Accordion) pollDetail.lookup("#questionsAccordion");
