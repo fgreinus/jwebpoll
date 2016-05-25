@@ -10,6 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -62,6 +63,7 @@ public class Client extends Application {
                 e.printStackTrace();
             }
         });
+        primaryStage.getIcons().add(new Image(Client.class.getResource("/icon.png").toString()));
 
         // Start DB
         Database db = Database.getInstance();
