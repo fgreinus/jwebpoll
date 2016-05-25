@@ -5,10 +5,13 @@ import de.lebk.jwebpoll.data.Question;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -61,8 +64,18 @@ public class EvaluationQuestionView {
         typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.75));
 
         TableColumn<Answer, String> countColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(1);
-        countColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("value"));
+        countColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures< Answer, String >, ObservableValue< String >>()
+        {
+            public ObservableValue<String> call (TableColumn.CellDataFeatures< Answer, String > p){
+            // p.getValue() returns the Person instance for a particular TableView row
+            return new SimpleStringProperty("0") ;
+        }
+        });
         countColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.25));
+
+        if (item.getAnswers() != null) {
+            answerTable.getItems().addAll(item.getAnswers());
+        }
 
     }
 
