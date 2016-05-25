@@ -79,7 +79,11 @@ public class Frontend {
                  ) {
                 System.out.println(requestString + " --> " + request.queryParams(requestString));
             }
-            return new ModelAndView(null, "success.ftl"); //@TODO: Create "success.ftl"-Template/Page
+
+            Map<String, Object> attributes = new HashMap<>();
+
+            attributes.put("poll", activePoll);
+            return new ModelAndView(attributes, "success.ftl"); //@TODO: Create "success.ftl"-Template/Page
         }, fmEngine);
     }
 

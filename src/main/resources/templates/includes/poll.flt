@@ -1,10 +1,11 @@
 <hr>
 <form role="form" id="pollform" method="post" action="">
     <fieldset>
+        <input class="hidden" id="pollid" name="pollid" value="${poll.getId()}">
 <#list poll.getQuestions() as question>
 <div class="panel panel-default">
     <div class="panel-heading">
-        <span class="badge">${question.getId()}</span> ${question.getTitle()}
+        <span class="badge">${question.getId()}</span> ${question.getTitle()} <#if question.isRequired()><span class="pull-right"><i>(Pflichtfeld)</i></span></#if>
     </div>
     <div class="panel-body">
         <div class="form-group">
@@ -38,16 +39,23 @@
             required: "Diese Frage muss beantwortet werden!",
         });
         $(document).ready(function () {
+            formValid = true;
             $("#pollform").validate({
-                rules: {
-                    <#list poll.getQuestions() as question>
-                        <#if question.getTypeString() = 'MULTIPLE'>
-                            <#if question.isRequired()>
-                    '${question.getId()}[]': { required: true, minlength: 1 },
-                            </#if>
-                        </#if>
-                    </#list>
+                invalidHandler: function(event, validator) {
+                    // 'this' refers to the form
+                    var errors = validator.numberOfInvalids();
+                    if (errors) {
+                        swal("Fehler!", "Bitte füllen Sie alle Pflichtfelder aus.", "error");
+                    }
                 },
+                rules: {
+                <#list poll.getQuestions() as question>
+                    <#if question.getTypeString() = 'MULTIPLE'>
+                        <#if question.isRequired()>
+                            '${question.getId()}[]': {required: true, minlength: 1},
+                        </#if>
+                    </#if>
+                </#list>},
                 errorElement: "em",
                 errorPlacement: function (error, element) {
                     // Add the `help-block` class to the error element
