@@ -152,7 +152,7 @@ public class Client extends Application {
             }
         });
 
-        this.pollRemoveBtn = (Button) pollDetail.lookup("#pollRemoveBtn");
+        this.pollRemoveBtn = (Button) pollListView.lookup("#pollRemoveBtn");
         this.pollRemoveBtn.setOnAction((ActionEvent ev) ->
         {
             ConfirmDialog.show("Umfrage wirklich entfernen?", (boolean confirmed) ->
@@ -274,6 +274,7 @@ public class Client extends Application {
         boolean disable = this.activePoll != null && this.activePoll == this.poll;
         this.titleTxF.setDisable(disable);
         this.pollRemoveBtn.setDisable(disable);
+        this.pollAddBtn.setDisable(disable);
         this.pollSaveBtn.setDisable(disable);
         this.descTxF.setDisable(disable);
         this.createdDateTxF.setDisable(disable);

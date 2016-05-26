@@ -32,9 +32,8 @@
         <RowConstraints/>
         <RowConstraints/>
         <RowConstraints/>
-        <RowConstraints/>
         <RowConstraints vgrow="ALWAYS"/>
-		<RowConstraints/>
+        <RowConstraints/>
     </rowConstraints>
 
     <Text id="titleTxt"
@@ -44,15 +43,9 @@
     <TextField id="titleTxF"
                text=""
                GridPane.columnIndex="1"
-               GridPane.columnSpan="2"
+               GridPane.columnSpan="3"
                GridPane.rowIndex="0"
                maxWidth="Infinity"/>
-    <Button id="pollRemoveBtn"
-            text="Entfernen"
-            textFill="red"
-            maxWidth="Infinity"
-            GridPane.columnIndex="3"
-            GridPane.rowIndex="0"/>
 
     <Text id="descTxt"
           text="Beschreibung"
@@ -77,66 +70,62 @@
     <TextField id="createdTimeTxF"
                editable="false"
                GridPane.columnIndex="2"
-               GridPane.rowIndex="2"
-               GridPane.columnSpan="2"/>
-
-    <Text id="stateTxt"
-          text="Status"
-          GridPane.columnIndex="0"
-          GridPane.rowIndex="3"/>
-    <ComboBox id="stateCbo"
-              disable="true"
-              maxWidth="Infinity"
-              GridPane.columnIndex="1"
-              GridPane.rowIndex="3"
-              GridPane.hgrow="ALWAYS"/>
-
-    <Button id="openBtn"
-            text="Öffnen"
-            textFill="green"
-            maxWidth="Infinity"
-            GridPane.columnIndex="2"
-            GridPane.rowIndex="3"/>
-    <Button id="closeBtn"
-            text="Schliessen"
-            textFill="red"
-            maxWidth="Infinity"
-            GridPane.columnIndex="2"
-            GridPane.rowIndex="3"/>
-
-    <Button id="resultsBtn"
-            text="Ergebnisse"
-            maxWidth="Infinity"
-            GridPane.columnIndex="3"
-            GridPane.rowIndex="3"/>
+               GridPane.rowIndex="2"/>
 
     <Text id="questionsTxt"
           text="Fragen"
           GridPane.columnIndex="0"
           GridPane.columnSpan="2"
-          GridPane.rowIndex="4"/>
+          GridPane.rowIndex="3"/>
     <Button id="questionsAddBtn"
             text="Frage hinzufügen"
             textFill="green"
             maxWidth="Infinity"
             GridPane.hgrow="SOMETIMES"
-            GridPane.columnIndex="2"
-            GridPane.columnSpan="2"
-            GridPane.rowIndex="4"/>
+            GridPane.columnIndex="1"
+            GridPane.rowIndex="3"/>
+    <Button	id ="pollSaveBtn"
+               text="Umfrage speichern"
+               textFill="green"
+               maxWidth="Infinity"
+               GridPane.columnIndex="2"
+               GridPane.rowIndex="3"/>
+
     <Separator id="questionsSep"
                orientation="HORIZONTAL"
                GridPane.columnIndex="0"
-               GridPane.rowIndex="5"
+               GridPane.rowIndex="4"
                GridPane.columnSpan="4"/>
-
     <Accordion id="questionsAccordion"
                GridPane.columnIndex="0"
                GridPane.columnSpan="4"
-               GridPane.rowIndex="6"/>
-	<Button	id ="pollSaveBtn"
-			text="Poll speichern"
-			textFill="green"
-			maxWidth="Infinity"
-			GridPane.columnIndex="3"
-			GridPane.rowIndex="7"/>
+               GridPane.rowIndex="5"/>
+
+    <Text id="stateTxt"
+          text="Status"
+          GridPane.columnIndex="0"
+          GridPane.rowIndex="6"/>
+    <ComboBox id="stateCbo"
+              disable="true"
+              maxWidth="Infinity"
+              GridPane.columnIndex="1"
+              GridPane.rowIndex="6"
+              GridPane.hgrow="ALWAYS"/>
+    <Button id="openBtn"
+            text="Öffnen"
+            textFill="green"
+            maxWidth="Infinity"
+            GridPane.columnIndex="2"
+            GridPane.rowIndex="6"/>
+    <Button id="closeBtn"
+            text="Schliessen"
+            textFill="red"
+            maxWidth="Infinity"
+            GridPane.columnIndex="2"
+            GridPane.rowIndex="6"/>
+    <Button id="resultsBtn"
+            text="Ergebnisse"
+            maxWidth="Infinity"
+            GridPane.columnIndex="3"
+            GridPane.rowIndex="6"/>
 </GridPane>
