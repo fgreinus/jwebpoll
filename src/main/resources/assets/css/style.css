@@ -9,3 +9,20 @@ body {
     padding: 20px 15px 25px;
 }
 
+/* Color of invalid field */
+.has-error .control-label,
+.has-error .help-block,
+.has-error .form-control-feedback,
+.error.help-block,
+.glyphicon-remove{
+    color: #a94442; !important;
+}
+
+/* Color of valid field */
+.has-success .control-label,
+.has-success .help-block,
+.has-success .form-control-feedback,
+.glyphicon-ok{
+    color: #3c763d; !important;
+}
+
