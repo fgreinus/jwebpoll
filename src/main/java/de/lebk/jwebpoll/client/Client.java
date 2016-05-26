@@ -45,6 +45,7 @@ public class Client extends Application {
     private Button pollAddBtn;
     private TextField titleTxF;
     private Button pollRemoveBtn;
+    private Button pollSaveBtn;
     private TextArea descTxF;
     private TextField createdDateTxF, createdTimeTxF;
     private ComboBox<PollState> stateCbo;
@@ -169,7 +170,7 @@ public class Client extends Application {
             }
         });
 
-        this.pollRemoveBtn = (Button) pollDetail.lookup("#pollRemoveBtn");
+        this.pollRemoveBtn = (Button) pollListView.lookup("#pollRemoveBtn");
         this.pollRemoveBtn.setOnAction((ActionEvent ev) ->
         {
             ConfirmDialog.show("Umfrage wirklich entfernen?", (boolean confirmed) ->
@@ -190,6 +191,12 @@ public class Client extends Application {
                     }
                 }
             });
+        });
+
+        this.pollSaveBtn = (Button) pollDetail.lookup("#pollSaveBtn");
+        this.pollSaveBtn.setOnAction((ActionEvent ev) ->
+        {
+            // TODO: Add code to save poll do DB here
         });
 
         this.descTxF = (TextArea) pollDetail.lookup("#descTxF");
@@ -296,6 +303,8 @@ public class Client extends Application {
         boolean disable = Client.activePoll != null && Client.activePoll == Client.poll;
         this.titleTxF.setDisable(disable);
         this.pollRemoveBtn.setDisable(disable);
+        this.pollAddBtn.setDisable(disable);
+        this.pollSaveBtn.setDisable(disable);
         this.descTxF.setDisable(disable);
         this.createdDateTxF.setDisable(disable);
         this.createdTimeTxF.setDisable(disable);
