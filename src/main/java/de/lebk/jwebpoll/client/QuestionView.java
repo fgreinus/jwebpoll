@@ -16,13 +16,12 @@ import javafx.util.Callback;
 import java.io.IOException;
 
 public class QuestionView {
-    public static void setQuestionView(Accordion accordion, Question item, boolean disabled) {
+    public static TitledPane setQuestionView(Accordion accordion, Question item, boolean disabled) {
         try {
             TitledPane tp = new TitledPane();
             GridPane rootGird = FXMLLoader.load(QuestionView.class.getResource("/client/questionView.fxml"));
             TextField titleTxF = (TextField) rootGird.lookup("#titleTxF");
             CheckBox requiredCkB = (CheckBox) rootGird.lookup("#requiredCkB");
-            Button removeBtn = (Button) rootGird.lookup("#removeBtn");
             TextField hintTxF = (TextField) rootGird.lookup("#hintTxF");
             ComboBox<QuestionType> typeCbo = (ComboBox<QuestionType>) rootGird.lookup("#typeCbo");
             Text answerAddTextTxt = (Text) rootGird.lookup("#answerAddTextTxt");
@@ -52,17 +51,6 @@ public class QuestionView {
                 item.setRequired(requiredCkB.isSelected());
             });
             requiredCkB.setDisable(disabled);
-            removeBtn.setOnAction((ActionEvent ev) ->
-            {
-                ConfirmDialog.show("Frage wirklich entfernen?", (boolean confirmed) ->
-                {
-                    if (confirmed) {
-                        item.getPoll().getQuestions().remove(item);
-                        accordion.getPanes().remove(tp);
-                    }
-                });
-            });
-            removeBtn.setDisable(disabled);
             hintTxF.setText(item.getHint());
             hintTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
             {
@@ -206,9 +194,12 @@ public class QuestionView {
             tp.setContent(rootGird);
             accordion.getPanes().add(tp);
             accordion.setExpandedPane(tp);
+
+            return tp;
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        return null;
     }
 
     private static void updateAddValueTxF(Question item, TextField answerAddValueTxF) {

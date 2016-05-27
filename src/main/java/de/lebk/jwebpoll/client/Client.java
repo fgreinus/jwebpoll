@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Client extends Application {
     //- Main -
@@ -52,6 +51,7 @@ public class Client extends Application {
     private Button openBtn, closeBtn, resultsBtn;
     private Accordion questionsAccordion;
     private Button questionsAddBtn;
+    private Button questionsRemoveBtn;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -257,19 +257,32 @@ public class Client extends Application {
         this.questionsAccordion = (Accordion) pollDetail.lookup("#questionsAccordion");
 
         this.questionsAddBtn = (Button) pollDetail.lookup("#questionsAddBtn");
+        this.questionsRemoveBtn = (Button) pollDetail.lookup("#questionsRemoveBtn");
         this.questionsAddBtn.setOnAction((ActionEvent event) ->
         {
             Question newQuestion = new Question("", true, QuestionType.SINGLE, Client.poll);
             Client.poll.getQuestions().add(newQuestion);
-            QuestionView.setQuestionView(this.questionsAccordion, newQuestion, Client.activePoll != null && Client.activePoll == Client.poll);
+            TitledPane tp = QuestionView.setQuestionView(this.questionsAccordion, newQuestion, Client.activePoll != null && Client.activePoll == Client.poll);
+
+            this.questionsRemoveBtn.setOnAction((ActionEvent ev) ->
+            {
+                ConfirmDialog.show("Frage wirklich entfernen?", (boolean confirmed) ->
+                {
+                    if (confirmed) {
+                        this.poll.getQuestions().remove(newQuestion);
+                        this.questionsAccordion.getPanes().remove(tp);
+                    }
+                });
+            });
         });
+
         pollDetailScroller.setContent(pollDetail);
         rootSplit.getItems().add(pollDetailScroller);
 
         // Stage size and finally show
         this.pollList.getSelectionModel().selectFirst();
         primaryStage.setScene(new Scene(rootSplit));
-        primaryStage.sizeToScene();
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 
@@ -316,6 +329,7 @@ public class Client extends Application {
             QuestionView.setQuestionView(this.questionsAccordion, item, disable);
 
         this.questionsAddBtn.setDisable(disable);
+        this.questionsRemoveBtn.setDisable(disable);
     }
 
     private void spawnWebServer(Poll poll) throws Exception {
