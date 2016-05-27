@@ -18,6 +18,7 @@ import javafx.stage.WindowEvent;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Client extends Application {
@@ -41,17 +42,15 @@ public class Client extends Application {
 
     //- View -
     private ListView<Poll> pollList;
-    private Button pollAddBtn;
+    private Button pollAddBtn, pollRemoveBtn;
+    private Button pollSaveBtn, pollCancelBtn;
     private TextField titleTxF;
-    private Button pollRemoveBtn;
-    private Button pollSaveBtn;
     private TextArea descTxF;
     private TextField createdDateTxF, createdTimeTxF;
     private ComboBox<PollState> stateCbo;
     private Button openBtn, closeBtn, resultsBtn;
     private Accordion questionsAccordion;
-    private Button questionsAddBtn;
-    private Button questionsRemoveBtn;
+    private Button questionsAddBtn, questionsRemoveBtn;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -196,7 +195,55 @@ public class Client extends Application {
         this.pollSaveBtn = (Button) pollDetail.lookup("#pollSaveBtn");
         this.pollSaveBtn.setOnAction((ActionEvent ev) ->
         {
-            // TODO: Add code to save poll do DB here
+            try {
+                Poll dbPoll = (Poll) this.pollDao.queryForId(Client.poll.getId());
+                if (dbPoll != null) {
+                    for (Question q : dbPoll.getQuestions()) {
+                        for (Answer a : q.getAnswers()) {
+                            this.answerDao.delete(a);
+                        }
+                        this.questionDao.delete(q);
+                    }
+                }
+
+                for (Question q : Client.poll.getQuestions()) {
+                    this.questionDao.create(q);
+                    for (Answer a : q.getAnswers()) {
+                        this.answerDao.create(a);
+                    }
+                }
+
+                this.pollDao.update(Client.poll);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+        this.pollCancelBtn = (Button) pollDetail.lookup("#pollCancelBtn");
+        this.pollCancelBtn.setOnAction((ActionEvent ev) ->
+        {
+            ConfirmDialog.show("Änderungen wirklich verwerfen?", (boolean confirmed) ->
+            {
+                if (confirmed) {
+                    Poll edited = Client.poll;
+                    try {
+                        Poll reloaded = (Poll) this.pollDao.queryForId(edited.getId());
+
+                        if (Client.activePoll == edited)
+                            Client.activePoll = reloaded;
+                        this.polls.remove(edited);
+                        this.polls.add(reloaded);
+                        this.pollList.getItems().remove(edited);
+                        this.pollList.getItems().add(reloaded);
+                        this.pollList.getItems().sort((Poll poll1, Poll poll2) ->
+                        {
+                            return poll1.getTitle().compareTo(poll2.getTitle());
+                        });
+                        this.pollList.getSelectionModel().select(reloaded);
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
         });
 
         this.descTxF = (TextArea) pollDetail.lookup("#descTxF");
