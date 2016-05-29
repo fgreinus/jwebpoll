@@ -34,11 +34,8 @@ public class Client extends Application {
     //poll running on server
     private static Poll activePoll;
 
-    //- DataAccessObjects -
-    Dao pollDao;
-    Dao questionDao;
-    Dao answerDao;
-    Dao voteDao;
+    //- DB -
+    private Database db;
 
     //- View -
     private ListView<Poll> pollList;
@@ -67,13 +64,9 @@ public class Client extends Application {
 
         // Start DB
         Database db = Database.getInstance();
-        this.pollDao = db.getDaoForClass(Poll.class.getName());
-        this.questionDao = db.getDaoForClass(Question.class.getName());
-        this.answerDao = db.getDaoForClass(Answer.class.getName());
-        this.voteDao = db.getDaoForClass(Vote.class.getName());
 
-        Poll bundestagswahl = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.NEW);
-        this.polls.addAll(this.pollDao.queryForAll());
+        /*Poll bundestagswahl = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.NEW);
+        this.polls.addAll(db.getPollDao().queryForAll());
         boolean addDefaultPoll = this.polls.isEmpty();
 
         if (addDefaultPoll) {
@@ -107,7 +100,7 @@ public class Client extends Application {
 
                 this.polls.add(bundestagswahl);
             }
-        }
+        }*/
 
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
@@ -195,28 +188,7 @@ public class Client extends Application {
         this.pollSaveBtn = (Button) pollDetail.lookup("#pollSaveBtn");
         this.pollSaveBtn.setOnAction((ActionEvent ev) ->
         {
-            try {
-                Poll dbPoll = (Poll) this.pollDao.queryForId(Client.poll.getId());
-                if (dbPoll != null) {
-                    for (Question q : dbPoll.getQuestions()) {
-                        for (Answer a : q.getAnswers()) {
-                            this.answerDao.delete(a);
-                        }
-                        this.questionDao.delete(q);
-                    }
-                }
 
-                for (Question q : Client.poll.getQuestions()) {
-                    this.questionDao.create(q);
-                    for (Answer a : q.getAnswers()) {
-                        this.answerDao.create(a);
-                    }
-                }
-
-                this.pollDao.update(Client.poll);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
         });
         this.pollCancelBtn = (Button) pollDetail.lookup("#pollCancelBtn");
         this.pollCancelBtn.setOnAction((ActionEvent ev) ->
@@ -265,18 +237,22 @@ public class Client extends Application {
         this.openBtn = (Button) pollDetail.lookup("#openBtn");
         this.openBtn.setOnAction((ActionEvent event) ->
         {
-            Client.poll.setState(PollState.OPEN);
-            Client.activePoll = Client.poll;
-            this.openBtn.setVisible(false);
-            this.closeBtn.setVisible(true);
-            this.stateCbo.setValue(Client.poll.getState());
-            this.enableControls();
-            this.pollList.refresh();
-            try {
-                spawnWebServer(Client.activePoll);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            ConfirmDialog.show("Bevor die Umfrage geöffnet werden kann, muss sie noch einmal gespeichert werden.\n\nMöchten Sie die Umfrage jetzt speichern?", (boolean confirmed) ->
+            {
+                Client.poll.setState(PollState.OPEN);
+                Client.activePoll = Client.poll;
+                this.openBtn.setVisible(false);
+                this.closeBtn.setVisible(true);
+                this.stateCbo.setValue(Client.poll.getState());
+                this.enableControls();
+                this.pollList.refresh();
+                try {
+                    this.pollDao.update(Client.poll);
+                    spawnWebServer(Client.activePoll);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
         });
         this.closeBtn = (Button) pollDetail.lookup("#closeBtn");
         this.closeBtn.setOnAction((ActionEvent event) ->
@@ -297,7 +273,6 @@ public class Client extends Application {
         this.resultsBtn = (Button) pollDetail.lookup("#resultsBtn");
         this.resultsBtn.setOnAction((ActionEvent event) ->
         {
-            //TODO View Results
             EvaluationDialog.show(Client.poll);
         });
 
