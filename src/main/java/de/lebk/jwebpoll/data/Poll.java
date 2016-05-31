@@ -34,22 +34,19 @@ public class Poll {
     public ForeignCollection<Question> questions;
 
     public Poll() {
-
+        try {
+            this.questions = Database.getInstance().getPollDao().getEmptyForeignCollection("questions");
+        } catch (SQLException e) {
+            this.questions = null;
+        }
     }
 
     public Poll(String title, String description, PollState state) {
+        this();
         this.created = new Date();
         this.title = title;
         this.description = description;
         this.state = state;
-
-        Dao dao = Database.getInstance().getDaoForClass(this.getClass().getName());
-
-        try {
-            this.questions = dao.getEmptyForeignCollection("questions");
-        } catch (SQLException e) {
-            this.questions = null;
-        }
     }
 
     public int getId() {

@@ -12,12 +12,8 @@ import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 
-public class MsgBox
-{
+public class MsgBox {
     public static void show(String title, String msg, MsgBoxCallback callback) {
-        if (callback == null)
-            throw new IllegalArgumentException("Callback cannot be null.");
-
         Stage confirmStage = new Stage(StageStyle.UTILITY);
         confirmStage.setTitle(title);
 
@@ -31,17 +27,20 @@ public class MsgBox
             Button okBtn = (Button) confirmGrid.lookup("#okBtn");
             okBtn.setOnAction((ActionEvent ev) ->
             {
-                callback.confirm();
+                if (callback != null)
+                    callback.confirm();
                 confirmStage.close();
             });
         } catch (IOException ex) {
-            callback.confirm();
+            if (callback != null)
+                callback.confirm();
             return;
         }
 
         confirmStage.setOnCloseRequest((WindowEvent we) ->
         {
-            callback.confirm();
+            if (callback != null)
+                callback.confirm();
         });
 
         confirmStage.setScene(new Scene(confirmGrid));

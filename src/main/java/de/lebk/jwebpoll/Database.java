@@ -5,19 +5,13 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-import de.lebk.jwebpoll.client.Client;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Poll;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.Vote;
 import org.sqlite.SQLiteConfig;
-import org.sqlite.SQLiteConnection;
-import org.sqlite.jdbc4.JDBC4Connection;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class Database {
@@ -124,7 +118,10 @@ public class Database {
         return result;
     }
 
-    public void savePoll(Poll localPoll) {
+    public boolean savePoll(Poll localPoll) {
+        if (localPoll == null)
+            return false;
+
         try {
             Poll dbPoll = null;
             if (localPoll.getId() != 0)
@@ -192,8 +189,39 @@ public class Database {
                 this.getPollDao().update(localPoll);
             else
                 this.getPollDao().create(localPoll);
+
+            return true;
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        return false;
+    }
+
+    public boolean deletePoll(Poll localPoll) {
+        if (localPoll == null || localPoll.getId() == 0)
+            return false;
+        try {
+            Poll dbPoll = (Poll) this.getPollDao().queryForId(localPoll.getId());
+
+            if(dbPoll != null)
+            {
+                for(Question dbQ : dbPoll.getQuestions())
+                {
+                    for(Answer dbA : dbQ.getAnswers())
+                    {
+                        for(Vote dbV : dbA.getVotes())
+                            this.getVoteDao().delete(dbV);
+                        this.getAnswerDao().delete(dbA);
+                    }
+                    this.getQuestionDao().delete(dbQ);
+                }
+                this.getPollDao().delete(dbPoll);
+            }
+
+            return true;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
     }
 }

@@ -31,6 +31,7 @@ public class Client extends Application {
     private List<Poll> polls = new ArrayList<>();
     //poll selected in client window
     private static Poll poll;
+    private static boolean pollHasChanges;
     //poll running on server
     private static Poll activePoll;
 
@@ -65,43 +66,6 @@ public class Client extends Application {
         // Start DB
         Database db = Database.getInstance();
 
-        /*Poll bundestagswahl = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.NEW);
-        this.polls.addAll(db.getPollDao().queryForAll());
-        boolean addDefaultPoll = this.polls.isEmpty();
-
-        if (addDefaultPoll) {
-            for (Poll p : this.polls) {
-                if (p.getTitle().equals(bundestagswahl.getTitle()))
-                    addDefaultPoll = false;
-            }
-
-            if (addDefaultPoll) {
-                this.pollDao.create(bundestagswahl);
-
-                Question kanzlerkandidat = new Question("Wer ist ihr Kanzlerkandidat?", true, QuestionType.SINGLE, bundestagswahl);
-                this.questionDao.create(kanzlerkandidat);
-
-                Answer merkel = new Answer("Merkel", -100, kanzlerkandidat);
-                this.answerDao.create(merkel);
-                Answer trump = new Answer("Trump", -666, kanzlerkandidat);
-                this.answerDao.create(trump);
-                Answer haustier = new Answer("Mein Haustier", 1000, kanzlerkandidat);
-                this.answerDao.create(haustier);
-                Answer nachbar = new Answer("Mein Nachbar", 10, kanzlerkandidat);
-                this.answerDao.create(nachbar);
-                Vote vote1 = new Vote("DefaultVoter1", kanzlerkandidat, haustier, "");
-                this.voteDao.create(vote1);
-                Vote vote2 = new Vote("DefaultVoter2", kanzlerkandidat, haustier, "");
-                this.voteDao.create(vote2);
-                Vote vote3 = new Vote("DefaultVoter3", kanzlerkandidat, nachbar, "");
-                this.voteDao.create(vote3);
-
-                bundestagswahl = (Poll) pollDao.queryForId(bundestagswahl.getId());
-
-                this.polls.add(bundestagswahl);
-            }
-        }*/
-
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
                 Client.activePoll = p;
@@ -132,14 +96,20 @@ public class Client extends Application {
         this.pollAddBtn = (Button) pollListView.lookup("#pollAddBtn");
         this.pollAddBtn.setOnAction((ActionEvent ev) ->
         {
-            Poll newPoll = new Poll("<Neue Umfrage>", "", PollState.NEW);
-            this.polls.add(newPoll);
-            try {
-                this.pollDao.create(newPoll);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
+            if (Client.pollHasChanges) {
+                ConfirmDialog.show("Bevor die Umfrage geöffnet werden kann, muss sie noch einmal gespeichert werden.\n" +
+                        "\n" +
+                        "Möchten Sie die Umfrage jetzt speichern?", confirmed ->
+                {
+                    Client.pollHasChanges = !this.db.savePoll(Client.poll);
+                });
             }
-            this.pollList.getItems().addAll(newPoll);
+            if (!pollHasChanges) {
+                Poll newPoll = new Poll("<Neue Umfrage>", "", PollState.NEW);
+                this.polls.add(newPoll);
+                this.pollList.getItems().addAll(newPoll);
+                Client.poll = newPoll;
+            }
         });
 
         rootSplit.getItems().add(pollListView);
@@ -159,6 +129,7 @@ public class Client extends Application {
                     && !Client.poll.getTitle().equals(newValue)) {
                 Client.poll.setTitle(newValue);
                 Client.this.pollList.refresh();
+                Client.pollHasChanges = true;
             }
         });
 
@@ -168,8 +139,8 @@ public class Client extends Application {
             ConfirmDialog.show("Umfrage wirklich entfernen?", (boolean confirmed) ->
             {
                 if (confirmed) {
-                    try {
-                        this.pollDao.delete(Client.poll);
+                    if(this.db.deletePoll(Client.poll))
+                    {
                         this.polls.remove(Client.poll);
                         int index = this.pollList.getItems().indexOf(Client.poll);
                         this.pollList.getItems().remove(Client.poll);
@@ -178,8 +149,6 @@ public class Client extends Application {
                         else
                             this.pollList.getSelectionModel().selectFirst();
                         Client.poll = null;
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
                     }
                 }
             });
@@ -188,7 +157,8 @@ public class Client extends Application {
         this.pollSaveBtn = (Button) pollDetail.lookup("#pollSaveBtn");
         this.pollSaveBtn.setOnAction((ActionEvent ev) ->
         {
-
+            if(this.db.savePoll(Client.poll))
+                MsgBox.show("Bestätigung", "Die Umfrage wurde gespeichert!", null);
         });
         this.pollCancelBtn = (Button) pollDetail.lookup("#pollCancelBtn");
         this.pollCancelBtn.setOnAction((ActionEvent ev) ->
@@ -198,7 +168,7 @@ public class Client extends Application {
                 if (confirmed) {
                     Poll edited = Client.poll;
                     try {
-                        Poll reloaded = (Poll) this.pollDao.queryForId(edited.getId());
+                        Poll reloaded = (Poll) this.db.getPollDao().queryForId(edited.getId());
 
                         if (Client.activePoll == edited)
                             Client.activePoll = reloaded;
@@ -237,7 +207,9 @@ public class Client extends Application {
         this.openBtn = (Button) pollDetail.lookup("#openBtn");
         this.openBtn.setOnAction((ActionEvent event) ->
         {
-            ConfirmDialog.show("Bevor die Umfrage geöffnet werden kann, muss sie noch einmal gespeichert werden.\n\nMöchten Sie die Umfrage jetzt speichern?", (boolean confirmed) ->
+            ConfirmDialog.show("Bevor die Umfrage geöffnet werden kann, muss sie noch einmal gespeichert werden.\n" +
+                    "\n" +
+                    "Möchten Sie die Umfrage jetzt speichern?", confirmed ->
             {
                 Client.poll.setState(PollState.OPEN);
                 Client.activePoll = Client.poll;
@@ -246,8 +218,8 @@ public class Client extends Application {
                 this.stateCbo.setValue(Client.poll.getState());
                 this.enableControls();
                 this.pollList.refresh();
+                this.db.savePoll(Client.poll);
                 try {
-                    this.pollDao.update(Client.poll);
                     spawnWebServer(Client.activePoll);
                 } catch (Exception e) {
                     e.printStackTrace();
