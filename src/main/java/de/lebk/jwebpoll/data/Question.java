@@ -87,6 +87,10 @@ public class Question {
         return type;
     }
 
+    public String getTypeString() {
+        return type.toString();
+    }
+
     public void setType(QuestionType type) {
         this.type = type;
         this.update();
