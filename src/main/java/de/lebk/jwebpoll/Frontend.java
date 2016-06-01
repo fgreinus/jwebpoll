@@ -14,6 +14,8 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +50,14 @@ public class Frontend {
     }
 
     private void initializeSparkConfiguration() {
+        InetAddress host = null;
+        try {
+            host = InetAddress.getLocalHost();
+            String hostAddress = host.getHostAddress();
+            ipAddress(hostAddress);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         // so that all static files will be served directly by spark and we don't have to care any longer about them :)
         staticFileLocation(assetDir);
 
