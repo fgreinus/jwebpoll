@@ -89,9 +89,9 @@ public class Frontend {
             }
 
             Database db = Database.getInstance();
-            Dao voteDao = db.getDaoForClass(Vote.class.getName());
-            Dao questionDao = db.getDaoForClass(Question.class.getName());
-            Dao answerDao = db.getDaoForClass(Answer.class.getName());
+            Dao voteDao = db.getVoteDao();
+            Dao questionDao = db.getQuestionDao();
+            Dao answerDao = db.getAnswerDao();
 
             for (String questionKeyString : givenAnswersMap.keySet()) {
 

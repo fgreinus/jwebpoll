@@ -12,120 +12,216 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.control.Accordion?>
+
 <GridPane xmlns="http://javafx.com/javafx/8"
-          id="detailGrid"
+          id="pollView"
           hgap="10"
-          vgap="10">
+          vgap="25">
 
     <padding>
         <Insets top="25" right="25" bottom="25" left="25"/>
     </padding>
     <columnConstraints>
-        <ColumnConstraints/>
-        <ColumnConstraints hgrow="ALWAYS"/>
-        <ColumnConstraints hgrow="ALWAYS"/>
         <ColumnConstraints hgrow="ALWAYS"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints/>
-        <RowConstraints/>
-        <RowConstraints/>
-        <RowConstraints/>
         <RowConstraints/>
         <RowConstraints vgrow="ALWAYS"/>
         <RowConstraints/>
     </rowConstraints>
 
-    <Text id="titleTxt"
-          text="Titel"
-          GridPane.columnIndex="0"
-          GridPane.rowIndex="0"/>
-    <TextField id="titleTxF"
-               text=""
-               GridPane.columnIndex="1"
-               GridPane.columnSpan="3"
-               GridPane.rowIndex="0"
-               maxWidth="Infinity"/>
+    <GridPane id="pollDetails"
+              GridPane.rowIndex="0"
+              hgap="10"
+              vgap="10">
 
-    <Text id="descTxt"
-          text="Beschreibung"
-          GridPane.columnIndex="0"
-          GridPane.rowIndex="1"/>
-    <TextArea id="descTxF"
-              text=""
-              prefHeight="100"
-              wrapText="true"
-              GridPane.columnIndex="1"
-              GridPane.columnSpan="3"
-              GridPane.rowIndex="1"/>
+        <columnConstraints>
+            <ColumnConstraints/>
+            <ColumnConstraints/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
 
-    <Text id="createdTxt"
-          text="Erstellt am"
-          GridPane.columnIndex="0"
-          GridPane.rowIndex="2"/>
-    <TextField id="createdDateTxF"
-               editable="false"
-               GridPane.columnIndex="1"
-               GridPane.rowIndex="2"/>
-    <TextField id="createdTimeTxF"
-               editable="false"
-               GridPane.columnIndex="2"
-               GridPane.rowIndex="2"/>
+        <rowConstraints>
+            <RowConstraints/>
+            <RowConstraints/>
+            <RowConstraints/>
+            <RowConstraints/>
+            <RowConstraints/>
+        </rowConstraints>
 
-    <Text id="questionsTxt"
-          text="Fragen"
-          GridPane.columnIndex="0"
-          GridPane.columnSpan="2"
-          GridPane.rowIndex="3"/>
-    <Button id="questionsAddBtn"
-            text="Frage hinzufügen"
-            textFill="green"
-            maxWidth="Infinity"
-            GridPane.hgrow="SOMETIMES"
-            GridPane.columnIndex="1"
-            GridPane.rowIndex="3"/>
-    <Button	id ="pollSaveBtn"
-               text="Umfrage speichern"
-               textFill="green"
-               maxWidth="Infinity"
-               GridPane.columnIndex="2"
-               GridPane.rowIndex="3"/>
+        <Text id="pollTxt"
+              text="Umfrage"
+              style="-fx-font-weight:bold;"
+              GridPane.columnIndex="0"
+              GridPane.rowIndex="0"/>
 
-    <Separator id="questionsSep"
-               orientation="HORIZONTAL"
-               GridPane.columnIndex="0"
-               GridPane.rowIndex="4"
-               GridPane.columnSpan="4"/>
-    <Accordion id="questionsAccordion"
-               GridPane.columnIndex="0"
-               GridPane.columnSpan="4"
-               GridPane.rowIndex="5"/>
+        <Separator id="pollSep"
+                   orientation="HORIZONTAL"
+                   GridPane.columnIndex="0"
+                   GridPane.rowIndex="1"
+                   GridPane.columnSpan="3"/>
 
-    <Text id="stateTxt"
-          text="Status"
-          GridPane.columnIndex="0"
-          GridPane.rowIndex="6"/>
-    <ComboBox id="stateCbo"
-              disable="true"
-              maxWidth="Infinity"
-              GridPane.columnIndex="1"
-              GridPane.rowIndex="6"
-              GridPane.hgrow="ALWAYS"/>
-    <Button id="openBtn"
-            text="Öffnen"
-            textFill="green"
-            maxWidth="Infinity"
-            GridPane.columnIndex="2"
-            GridPane.rowIndex="6"/>
-    <Button id="closeBtn"
-            text="Schliessen"
-            textFill="red"
-            maxWidth="Infinity"
-            GridPane.columnIndex="2"
-            GridPane.rowIndex="6"/>
-    <Button id="resultsBtn"
-            text="Ergebnisse"
-            maxWidth="Infinity"
-            GridPane.columnIndex="3"
-            GridPane.rowIndex="6"/>
+        <Text id="titleTxt"
+              text="Titel"
+              GridPane.columnIndex="0"
+              GridPane.rowIndex="2"/>
+        <TextField id="titleTxF"
+                   text=""
+                   GridPane.columnIndex="1"
+                   GridPane.rowIndex="2"
+                   GridPane.columnSpan="2"
+                   maxWidth="Infinity"/>
+
+        <Text id="descTxt"
+              text="Beschreibung"
+              GridPane.columnIndex="0"
+              GridPane.rowIndex="3"/>
+        <TextArea id="descTxF"
+                  text=""
+                  prefHeight="100"
+                  wrapText="true"
+                  GridPane.columnIndex="1"
+                  GridPane.rowIndex="3"
+                  GridPane.columnSpan="2"/>
+
+        <Text id="createdTxt"
+              text="Erstellt am"
+              GridPane.columnIndex="0"
+              GridPane.rowIndex="4"/>
+        <TextField id="createdDateTxF"
+                   editable="false"
+                   alignment="CENTER"
+                   maxWidth="120"
+                   GridPane.columnIndex="1"
+                   GridPane.rowIndex="4"/>
+        <TextField id="createdTimeTxF"
+                   editable="false"
+                   alignment="CENTER"
+                   maxWidth="120"
+                   GridPane.columnIndex="2"
+                   GridPane.rowIndex="4"/>
+
+    </GridPane>
+
+    <GridPane id="questionsDetails"
+              GridPane.rowIndex="1"
+              hgap="10"
+              vgap="10">
+
+        <columnConstraints>
+            <ColumnConstraints/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+            <ColumnConstraints/>
+        </columnConstraints>
+
+        <rowConstraints>
+            <RowConstraints/>
+            <RowConstraints/>
+            <RowConstraints/>
+        </rowConstraints>
+
+        <Text id="questionsTxt"
+              text="Fragen"
+              style="-fx-font-weight:bold;"
+              GridPane.columnIndex="0"
+              GridPane.columnSpan="2"
+              GridPane.rowIndex="0"/>
+
+        <GridPane id="questionsBtns"
+                  maxWidth="225"
+                  GridPane.columnIndex="2"
+                  GridPane.rowIndex="0"
+                  GridPane.halignment="RIGHT"
+                  hgap="10"
+                  vgap="10">
+
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+            </columnConstraints>
+
+            <Button id="questionsAddBtn"
+                    text="Hinzufügen"
+                    textFill="green"
+                    maxWidth="Infinity"
+                    GridPane.columnIndex="0"/>
+            <Button id="questionsRemoveBtn"
+                    text="Entfernen"
+                    textFill="red"
+                    maxWidth="Infinity"
+                    GridPane.columnIndex="1"/>
+        </GridPane>
+
+        <Separator id="questionsSep"
+                   orientation="HORIZONTAL"
+                   GridPane.columnIndex="0"
+                   GridPane.rowIndex="1"
+                   GridPane.columnSpan="3"/>
+
+        <Accordion id="questionsAccordion"
+                   GridPane.columnIndex="0"
+                   GridPane.rowIndex="2"
+                   GridPane.columnSpan="3"/>
+
+    </GridPane>
+
+    <GridPane id="statusDetails"
+              GridPane.rowIndex="2"
+              hgap="10"
+              vgap="10">
+
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="25"/>
+        </columnConstraints>
+
+        <rowConstraints>
+            <RowConstraints/>
+            <RowConstraints/>
+            <RowConstraints/>
+        </rowConstraints>
+
+        <Text id="stateTxt"
+              text="Status"
+              style="-fx-font-weight:bold;"
+              GridPane.columnIndex="0"
+              GridPane.rowIndex="0"/>
+        <ComboBox id="stateCbo"
+                  disable="true"
+                  prefWidth="225"
+                  GridPane.columnIndex="1"
+                  GridPane.rowIndex="0"
+                  GridPane.columnSpan="3"
+                  GridPane.halignment="RIGHT"/>
+        <Separator id="statusSep"
+                   orientation="HORIZONTAL"
+                   GridPane.columnIndex="0"
+                   GridPane.rowIndex="1"
+                   GridPane.columnSpan="4"/>
+
+        <Button id="openBtn"
+                text="Öffnen"
+                textFill="green"
+                maxWidth="Infinity"
+                GridPane.columnIndex="0"
+                GridPane.rowIndex="2"
+                GridPane.columnSpan="2"/>
+        <Button id="closeBtn"
+                text="Schliessen"
+                textFill="red"
+                maxWidth="Infinity"
+                GridPane.columnIndex="0"
+                GridPane.rowIndex="2"
+                GridPane.columnSpan="2"/>
+        <Button id="resultsBtn"
+                text="Ergebnisse"
+                maxWidth="Infinity"
+                GridPane.columnIndex="2"
+                GridPane.rowIndex="2"
+                GridPane.columnSpan="2"/>
+
+    </GridPane>
+
 </GridPane>

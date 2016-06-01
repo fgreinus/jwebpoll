@@ -6,18 +6,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
 
 import java.io.IOException;
 
 public class ConfirmDialog {
-    public static void show(String msg, ConfirmCallback callback) {
+    public static void show(String msg, ConfirmCallback callback, Window owner) {
         if (callback == null)
             throw new IllegalArgumentException("Callback cannot be null.");
 
         Stage confirmStage = new Stage(StageStyle.UTILITY);
+        confirmStage.initModality(Modality.WINDOW_MODAL);
+        confirmStage.initOwner(owner);
         confirmStage.setTitle("Bestätigen");
 
         GridPane confirmGrid;

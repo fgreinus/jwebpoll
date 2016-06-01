@@ -13,18 +13,19 @@ public class PollListCell extends ListCell<Poll> {
         super.updateItem(item, empty);
 
         if (item != null) {
+            String tmpTitle = item.getTitle() == null || item.getTitle().isEmpty() ? "<Neue Umfrage>" : item.getTitle();
             if (item == Client.getActivePoll()) {
                 GridPane grid = new GridPane();
                 ImageView imageView = new ImageView(PollListCell.class.getResource("/icon.png").toString());
                 imageView.setFitWidth(20);
                 imageView.setFitHeight(20);
                 grid.add(imageView, 0, 0);
-                Text text = new Text(item.getTitle());
+                Text text = new Text(tmpTitle);
                 text.styleProperty().set("-fx-font-weight:bold;");
                 grid.add(text, 1, 0);
                 this.setGraphic(grid);
             } else
-                this.setText(item.getTitle());
+                this.setText(tmpTitle);
         } else {
             this.setGraphic(null);
             this.setText(null);

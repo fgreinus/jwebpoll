@@ -10,13 +10,8 @@ import de.lebk.jwebpoll.data.Poll;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.Vote;
 import org.sqlite.SQLiteConfig;
-import org.sqlite.SQLiteConnection;
-import org.sqlite.jdbc4.JDBC4Connection;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 public class Database {
@@ -26,7 +21,6 @@ public class Database {
     private ConnectionSource dbConn;
 
     private Hashtable<String, Dao> daoList;
-
 
     private Database() {
         try {
@@ -54,8 +48,7 @@ public class Database {
         return instance;
     }
 
-    public ConnectionSource getConnection()
-    {
+    public ConnectionSource getConnection() {
         if (dbConn.isOpen()) {
             return dbConn;
         } else {
@@ -63,8 +56,7 @@ public class Database {
         }
     }
 
-    private void initializeDatabaseTables()
-    {
+    private void initializeDatabaseTables() {
         try {
             TableUtils.createTableIfNotExists(dbConn, Answer.class);
             TableUtils.createTableIfNotExists(dbConn, Poll.class);
@@ -75,24 +67,20 @@ public class Database {
         }
     }
 
-    private void initializeModelDataAccessObjects()
-    {
+    private void initializeModelDataAccessObjects() {
         daoList = new Hashtable<>();
 
         try {
-
             daoList.put(Poll.class.getName(), DaoManager.createDao(dbConn, Poll.class));
             daoList.put(Answer.class.getName(), DaoManager.createDao(dbConn, Answer.class));
             daoList.put(Question.class.getName(), DaoManager.createDao(dbConn, Question.class));
             daoList.put(Vote.class.getName(), DaoManager.createDao(dbConn, Vote.class));
-
-        } catch (SQLException e) {
-
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
     }
 
-    public Dao getDaoForClass(String className)
-    {
+    private Dao getDaoForClass(String className) {
         if (daoList.containsKey(className)) {
             return daoList.get(className);
         } else {
@@ -100,19 +88,44 @@ public class Database {
         }
     }
 
-    public Object getLastObjectOfTable(String className)
-    {
-        Dao dao = getDaoForClass(className);
-
-        Object result = null;
-
-        try {
-            result = dao.queryBuilder().orderBy("id", false).queryForFirst();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return result;
+    public Dao<Poll, Integer> getPollDao() {
+        return (Dao<Poll, Integer>) this.getDaoForClass(Poll.class.getName());
     }
 
+    public Dao<Question, Integer> getQuestionDao() {
+        return (Dao<Question, Integer>) this.getDaoForClass(Question.class.getName());
+    }
+
+    public Dao<Answer, Integer> getAnswerDao() {
+        return (Dao<Answer, Integer>) this.getDaoForClass(Answer.class.getName());
+    }
+
+    public Dao<Vote, Integer> getVoteDao() {
+        return (Dao<Vote, Integer>) this.getDaoForClass(Vote.class.getName());
+    }
+
+    public boolean deletePoll(Poll localPoll) {
+        if (localPoll == null || localPoll.getId() == 0)
+            return false;
+        try {
+            Poll dbPoll = (Poll) this.getPollDao().queryForId(localPoll.getId());
+
+            if (dbPoll != null) {
+                for (Question dbQ : dbPoll.getQuestions()) {
+                    for (Answer dbA : dbQ.getAnswers()) {
+                        for (Vote dbV : dbA.getVotes())
+                            this.getVoteDao().delete(dbV);
+                        this.getAnswerDao().delete(dbA);
+                    }
+                    this.getQuestionDao().delete(dbQ);
+                }
+                this.getPollDao().delete(dbPoll);
+            }
+
+            return true;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
+    }
 }

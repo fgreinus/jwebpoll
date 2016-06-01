@@ -11,8 +11,8 @@
           maxWidth="Infinity">
 
     <columnConstraints>
-        <ColumnConstraints hgrow="ALWAYS"/>
-		<ColumnConstraints hgrow="ALWAYS"/>
+        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+		<ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
     </columnConstraints>
 
     <rowConstraints>
@@ -31,9 +31,9 @@
             maxWidth="Infinity"
 			GridPane.columnIndex="0"
             GridPane.rowIndex="1"/>
-	
+
 	<Button	id="pollRemoveBtn"
-			text="Entfernen"
+			text="Löschen"
 			textFill="red"
 			maxWidth="Infinity"
 			GridPane.columnIndex="1"

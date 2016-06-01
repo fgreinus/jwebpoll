@@ -6,20 +6,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
 
 import java.io.IOException;
 
-public class MsgBox
-{
-    public static void show(String title, String msg, MsgBoxCallback callback) {
-        if (callback == null)
-            throw new IllegalArgumentException("Callback cannot be null.");
-
-        Stage confirmStage = new Stage(StageStyle.UTILITY);
-        confirmStage.setTitle(title);
+public class MsgBox {
+    public static void show(String title, String msg, MsgBoxCallback callback, Window owner) {
+        Stage msgStage = new Stage(StageStyle.UTILITY);
+        msgStage.initModality(Modality.WINDOW_MODAL);
+        msgStage.initOwner(owner);
+        msgStage.setTitle(title);
 
         GridPane confirmGrid;
         try {
@@ -31,21 +27,24 @@ public class MsgBox
             Button okBtn = (Button) confirmGrid.lookup("#okBtn");
             okBtn.setOnAction((ActionEvent ev) ->
             {
-                callback.confirm();
-                confirmStage.close();
+                if (callback != null)
+                    callback.confirm();
+                msgStage.close();
             });
         } catch (IOException ex) {
-            callback.confirm();
+            if (callback != null)
+                callback.confirm();
             return;
         }
 
-        confirmStage.setOnCloseRequest((WindowEvent we) ->
+        msgStage.setOnCloseRequest((WindowEvent we) ->
         {
-            callback.confirm();
+            if (callback != null)
+                callback.confirm();
         });
 
-        confirmStage.setScene(new Scene(confirmGrid));
-        confirmStage.sizeToScene();
-        confirmStage.show();
+        msgStage.setScene(new Scene(confirmGrid));
+        msgStage.sizeToScene();
+        msgStage.show();
     }
 }

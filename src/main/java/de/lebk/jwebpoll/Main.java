@@ -35,18 +35,18 @@ public class Main {
             return false;
         }
 
-        Dao dao = db.getDaoForClass(Poll.class.getName());
+        Dao dao = db.getPollDao();
         try {
             Poll poll = new Poll("1. Umfrage", "Eine Beschreibung", PollState.OPEN);
             dao.create(poll);
 
-            Dao dao2 = db.getDaoForClass(Question.class.getName());
+            Dao dao2 = db.getQuestionDao();
             Question q1 = new Question("Tolle Frage", false, QuestionType.FREE, poll);
             dao2.create(q1);
             Question q2 = new Question("Tolle Frage 2", true, QuestionType.MULTIPLE, poll);
             dao2.create(q2);
 
-            Dao dao3 = db.getDaoForClass(Answer.class.getName());
+            Dao dao3 = db.getAnswerDao();
             Answer a1 = new Answer("Antwort Nummer 1", 1, q1);
             dao3.create(a1);
             Answer a2 = new Answer("Antwort Nummer 1", 2, q2);
@@ -54,7 +54,7 @@ public class Main {
             Answer a3 = new Answer("Antwort Nummer 2", 1, q2);
             dao3.create(a3);
 
-            Dao dao4 = db.getDaoForClass(Vote.class.getName());
+            Dao dao4 = db.getAnswerDao();
             Vote v1 = new Vote("sessid123123", q1, a1, "");
             Vote v2 = new Vote("sessid1231212", q1, a2, "");
             dao4.create(v1);

@@ -1,15 +1,13 @@
 package de.lebk.jwebpoll.client;
 
-import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Poll;
 import de.lebk.jwebpoll.data.Question;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
@@ -19,7 +17,8 @@ import java.io.IOException;
 public class EvaluationDialog {
     public static void show(Poll poll) {
 
-        Stage evaluationStage = new Stage(StageStyle.UTILITY);
+        Stage evaluationStage = new Stage();
+        evaluationStage.getIcons().add(new Image(EvaluationDialog.class.getResource("/icon.png").toString()));
         evaluationStage.setTitle("Auswertung: " + poll.getTitle());
 //        ScrollPane scroller = new ScrollPane();
 //        scroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -36,12 +35,11 @@ public class EvaluationDialog {
             }
             evaluationGrid.setVisible(true);
             questionsAccordion.setVisible(true);
-           // scroller.setContent(questionsAccordion);
+//            scroller.setContent(questionsAccordion);
         } catch (IOException ex) {
             ex.printStackTrace();
             return;
         }
-
 
         evaluationStage.setScene(new Scene(evaluationGrid));
         evaluationStage.sizeToScene();

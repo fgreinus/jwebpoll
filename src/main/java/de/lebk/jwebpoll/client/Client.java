@@ -1,6 +1,5 @@
 package de.lebk.jwebpoll.client;
 
-import com.j256.ormlite.dao.Dao;
 import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.Frontend;
 import de.lebk.jwebpoll.data.*;
@@ -19,6 +18,7 @@ import javafx.stage.WindowEvent;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 public class Client extends Application {
@@ -34,24 +34,21 @@ public class Client extends Application {
     //poll running on server
     private static Poll activePoll;
 
-    //- DataAccessObjects -
-    Dao pollDao;
-    Dao questionDao;
-    Dao answerDao;
-    Dao voteDao;
+    //- DB -
+    private Database db;
 
     //- View -
     private ListView<Poll> pollList;
-    private Button pollAddBtn;
+    private Button pollAddBtn, pollRemoveBtn;
     private TextField titleTxF;
-    private Button pollRemoveBtn;
-    private Button pollSaveBtn;
     private TextArea descTxF;
     private TextField createdDateTxF, createdTimeTxF;
     private ComboBox<PollState> stateCbo;
     private Button openBtn, closeBtn, resultsBtn;
     private Accordion questionsAccordion;
-    private Button questionsAddBtn;
+    private Button questionsAddBtn, questionsRemoveBtn;
+
+    private Hashtable<TitledPane, Question> titledPanes = new Hashtable<>();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -67,49 +64,9 @@ public class Client extends Application {
         primaryStage.getIcons().add(new Image(Client.class.getResource("/icon.png").toString()));
 
         // Start DB
-        Database db = Database.getInstance();
-        this.pollDao = db.getDaoForClass(Poll.class.getName());
-        this.questionDao = db.getDaoForClass(Question.class.getName());
-        this.answerDao = db.getDaoForClass(Answer.class.getName());
-        this.voteDao = db.getDaoForClass(Vote.class.getName());
+        this.db = Database.getInstance();
 
-        Poll bundestagswahl = new Poll("Bundestagswahl", "Kurze Beschreibung", PollState.NEW);
-        this.polls.addAll(this.pollDao.queryForAll());
-        boolean addDefaultPoll = this.polls.isEmpty();
-
-        if (addDefaultPoll) {
-            for (Poll p : this.polls) {
-                if (p.getTitle().equals(bundestagswahl.getTitle()))
-                    addDefaultPoll = false;
-            }
-
-            if (addDefaultPoll) {
-                this.pollDao.create(bundestagswahl);
-
-                Question kanzlerkandidat = new Question("Wer ist ihr Kanzlerkandidat?", true, QuestionType.SINGLE, bundestagswahl);
-                this.questionDao.create(kanzlerkandidat);
-
-                Answer merkel = new Answer("Merkel", -100, kanzlerkandidat);
-                this.answerDao.create(merkel);
-                Answer trump = new Answer("Trump", -666, kanzlerkandidat);
-                this.answerDao.create(trump);
-                Answer haustier = new Answer("Mein Haustier", 1000, kanzlerkandidat);
-                this.answerDao.create(haustier);
-                Answer nachbar = new Answer("Mein Nachbar", 10, kanzlerkandidat);
-                this.answerDao.create(nachbar);
-                Vote vote1 = new Vote("DefaultVoter1", kanzlerkandidat, haustier, "");
-                this.voteDao.create(vote1);
-                Vote vote2 = new Vote("DefaultVoter2", kanzlerkandidat, haustier, "");
-                this.voteDao.create(vote2);
-                Vote vote3 = new Vote("DefaultVoter3", kanzlerkandidat, nachbar, "");
-                this.voteDao.create(vote3);
-
-                bundestagswahl = (Poll) pollDao.queryForId(bundestagswahl.getId());
-
-                this.polls.add(bundestagswahl);
-            }
-        }
-
+        this.polls.addAll(this.db.getPollDao().queryForAll());
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
                 Client.activePoll = p;
@@ -135,21 +92,41 @@ public class Client extends Application {
         this.pollList.getItems().addAll(this.polls);
         this.pollList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Poll> observable, Poll oldValue, Poll newValue) ->
         {
-            if (newValue != null)
-                Client.this.setPoll(newValue);
+            Client.this.setPoll(newValue);
         });
 
         this.pollAddBtn = (Button) pollListView.lookup("#pollAddBtn");
         this.pollAddBtn.setOnAction((ActionEvent ev) ->
         {
-            Poll newPoll = new Poll("<Neue Umfrage>", "", PollState.NEW);
-            this.polls.add(newPoll);
+            Poll newPoll = new Poll("", "", PollState.NEW);
             try {
-                this.pollDao.create(newPoll);
+                this.db.getPollDao().create(newPoll);
+                Client.poll = newPoll;
+                this.polls.add(Client.poll);
+                this.pollList.getItems().addAll(Client.poll);
+                this.pollList.getSelectionModel().select(Client.poll);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            this.pollList.getItems().addAll(newPoll);
+        });
+        this.pollRemoveBtn = (Button) pollListView.lookup("#pollRemoveBtn");
+        this.pollRemoveBtn.setOnAction((ActionEvent ev) ->
+        {
+            ConfirmDialog.show("Umfrage wirklich entfernen?", (boolean confirmed) ->
+            {
+                if (confirmed) {
+                    if (this.db.deletePoll(Client.poll)) {
+                        this.polls.remove(Client.poll);
+                        int index = this.pollList.getItems().indexOf(Client.poll);
+                        this.pollList.getItems().remove(Client.poll);
+                        if (index > 0)
+                            this.pollList.getSelectionModel().select(--index);
+                        else
+                            this.pollList.getSelectionModel().selectFirst();
+                        this.setPoll(this.pollList.getSelectionModel().getSelectedItem());
+                    }
+                }
+            }, primaryStage);
         });
 
         rootSplit.getItems().add(pollListView);
@@ -182,37 +159,8 @@ public class Client extends Application {
             if (Client.poll != null
                     && !Client.poll.getTitle().equals(newValue)) {
                 Client.poll.setTitle(newValue);
-                //Client.this.pollList.refresh();
+                Client.this.pollList.refresh();
             }
-        });
-
-        this.pollRemoveBtn = (Button) pollListView.lookup("#pollRemoveBtn");
-        this.pollRemoveBtn.setOnAction((ActionEvent ev) ->
-        {
-            ConfirmDialog.show("Umfrage wirklich entfernen?", (boolean confirmed) ->
-            {
-                if (confirmed) {
-                    try {
-                        this.pollDao.delete(Client.poll);
-                        this.polls.remove(Client.poll);
-                        int index = this.pollList.getItems().indexOf(Client.poll);
-                        this.pollList.getItems().remove(Client.poll);
-                        if (index > 0)
-                            this.pollList.getSelectionModel().select(--index);
-                        else
-                            this.pollList.getSelectionModel().selectFirst();
-                        Client.poll = null;
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
-        });
-
-        this.pollSaveBtn = (Button) pollDetail.lookup("#pollSaveBtn");
-        this.pollSaveBtn.setOnAction((ActionEvent ev) ->
-        {
-            // TODO: Add code to save poll do DB here
         });
 
         this.descTxF = (TextArea) pollDetail.lookup("#descTxF");
@@ -224,6 +172,42 @@ public class Client extends Application {
         });
         this.createdDateTxF = (TextField) pollDetail.lookup("#createdDateTxF");
         this.createdTimeTxF = (TextField) pollDetail.lookup("#createdTimeTxF");
+
+        this.questionsAccordion = (Accordion) pollDetail.lookup("#questionsAccordion");
+        this.questionsAddBtn = (Button) pollDetail.lookup("#questionsAddBtn");
+        this.questionsAddBtn.setOnAction((ActionEvent event) ->
+        {
+            Question newQuestion = new Question("", true, QuestionType.SINGLE, Client.poll);
+            Client.poll.getQuestions().add(newQuestion);
+            TitledPane tp = QuestionView.setQuestionView(this.questionsAccordion, newQuestion, Client.activePoll != null && Client.activePoll == Client.poll);
+            titledPanes.put(tp, newQuestion);
+        });
+        this.questionsRemoveBtn = (Button) pollDetail.lookup("#questionsRemoveBtn");
+        this.questionsRemoveBtn.setOnAction((ActionEvent ev) ->
+        {
+            ConfirmDialog.show("Frage wirklich entfernen?", (boolean confirmed) ->
+            {
+                if (confirmed) {
+                    Question toRemove = titledPanes.get(this.questionsAccordion.getExpandedPane());
+                    try {
+                        this.db.getQuestionDao().delete(toRemove);
+                        for (Answer answer : toRemove.getAnswers()) {
+                            this.db.getAnswerDao().delete(answer);
+                        }
+                        Client.poll.getQuestions().remove(toRemove);
+                        titledPanes.remove(this.questionsAccordion.getExpandedPane());
+                        this.questionsAccordion.getPanes().remove(this.questionsAccordion.getExpandedPane());
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }, primaryStage);
+        });
+        this.questionsAccordion.expandedPaneProperty().addListener((observable, oldValue, newValue) ->
+        {
+            this.questionsRemoveBtn.setDisable(newValue == null);
+        });
+
         this.stateCbo = (ComboBox<PollState>) pollDetail.lookup("#stateCbo");
         this.stateCbo.getItems().addAll(PollState.NEW, PollState.OPEN, PollState.CLOSED);
         this.stateCbo.setCellFactory((ListView<PollState> param) ->
@@ -240,8 +224,9 @@ public class Client extends Application {
             this.closeBtn.setVisible(true);
             this.stateCbo.setValue(Client.poll.getState());
             this.enableControls();
-            //this.pollList.refresh();
+            this.pollList.refresh();
             try {
+                this.db.getPollDao().update(Client.poll);
                 spawnWebServer(Client.activePoll);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -256,7 +241,7 @@ public class Client extends Application {
             this.openBtn.setVisible(true);
             this.stateCbo.setValue(Client.poll.getState());
             this.enableControls();
-            //this.pollList.refresh();
+            this.pollList.refresh();
             try {
                 spawnWebServer(Client.activePoll);
             } catch (Exception e) {
@@ -269,47 +254,42 @@ public class Client extends Application {
             EvaluationDialog.show(Client.poll);
         });
 
-        this.questionsAccordion = (Accordion) pollDetail.lookup("#questionsAccordion");
-
-        this.questionsAddBtn = (Button) pollDetail.lookup("#questionsAddBtn");
-        this.questionsAddBtn.setOnAction((ActionEvent event) ->
-        {
-            Question newQuestion = new Question("", true, QuestionType.SINGLE, Client.poll);
-            Client.poll.getQuestions().add(newQuestion);
-            QuestionView.setQuestionView(this.questionsAccordion, newQuestion, Client.activePoll != null && Client.activePoll == Client.poll);
-        });
-
         pollDetailScroller.setContent(pollDetail);
         rootSplit.getItems().add(pollDetailScroller);
 
         // Stage size and finally show
-        this.pollList.getSelectionModel().selectFirst();
-
+        if (this.pollList.getItems().isEmpty())
+            this.setPoll(null);
+        else
+            this.pollList.getSelectionModel().selectFirst();
         primaryStage.setScene(new Scene(rootGrid));
-        primaryStage.sizeToScene();
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
 
     public void setPoll(Poll newPoll) {
         Client.poll = newPoll;
 
-        this.titleTxF.setText(Client.poll.getTitle());
-        this.descTxF.setText(Client.poll.getDescription());
+        this.titleTxF.setText(Client.poll == null ? "" : Client.poll.getTitle());
+        this.descTxF.setText(Client.poll == null ? "" : Client.poll.getDescription());
 
         SimpleDateFormat outputFormatDate = new SimpleDateFormat("dd.MM.yyyy");
         SimpleDateFormat outputFormatTime = new SimpleDateFormat("HH:mm:ss");
-        this.createdDateTxF.setText(outputFormatDate.format(Client.poll.getCreated()));
-        this.createdTimeTxF.setText(outputFormatTime.format(Client.poll.getCreated()));
-        this.stateCbo.setValue(Client.poll.getState());
-        this.openBtn.setVisible(Client.poll.getState() == PollState.NEW || Client.poll.getState() == PollState.CLOSED);
-        this.closeBtn.setVisible(Client.poll.getState() == PollState.OPEN);
+        this.createdDateTxF.setText(Client.poll == null ? "" : outputFormatDate.format(Client.poll.getCreated()));
+        this.createdTimeTxF.setText(Client.poll == null ? "" : outputFormatTime.format(Client.poll.getCreated()));
+        this.stateCbo.setValue(Client.poll == null ? PollState.NEW : Client.poll.getState());
+        this.openBtn.setVisible(Client.poll == null ? true : Client.poll.getState() == PollState.NEW || Client.poll.getState() == PollState.CLOSED);
+        this.closeBtn.setVisible(Client.poll == null ? false : Client.poll.getState() == PollState.OPEN);
         this.enableControls();
 
-        boolean disabled = Client.activePoll != null && Client.activePoll == Client.poll;
+        boolean disabled = Client.poll == null || (Client.activePoll != null && Client.activePoll == Client.poll);
 
         this.questionsAccordion.getPanes().clear();
-        for (Question item : Client.poll.getQuestions())
-            QuestionView.setQuestionView(this.questionsAccordion, item, disabled);
+        if (Client.poll != null)
+            for (Question question : Client.poll.getQuestions()) {
+                TitledPane tp = QuestionView.setQuestionView(this.questionsAccordion, question, disabled);
+                this.titledPanes.put(tp, question);
+            }
     }
 
     public static Poll getActivePoll() {
@@ -317,22 +297,25 @@ public class Client extends Application {
     }
 
     public void enableControls() {
-        boolean disable = Client.activePoll != null && Client.activePoll == Client.poll;
+        boolean disable = Client.poll == null || (Client.activePoll != null && Client.activePoll == Client.poll);
         this.titleTxF.setDisable(disable);
         this.pollRemoveBtn.setDisable(disable);
-        this.pollAddBtn.setDisable(disable);
-        this.pollSaveBtn.setDisable(disable);
         this.descTxF.setDisable(disable);
         this.createdDateTxF.setDisable(disable);
         this.createdTimeTxF.setDisable(disable);
-        this.openBtn.setDisable(Client.activePoll != null);
-        this.closeBtn.setDisable(!disable);
-
         this.questionsAccordion.getPanes().clear();
-        for (Question item : Client.poll.getQuestions())
-            QuestionView.setQuestionView(this.questionsAccordion, item, disable);
+        if (Client.poll != null)
+            for (Question question : Client.poll.getQuestions()) {
+                TitledPane tp = QuestionView.setQuestionView(this.questionsAccordion, question, disable);
+                this.titledPanes.put(tp, question);
+            }
 
         this.questionsAddBtn.setDisable(disable);
+        this.questionsRemoveBtn.setDisable(disable);
+
+        this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
+        this.closeBtn.setDisable(!disable);
+        this.resultsBtn.setDisable(Client.poll == null);
     }
 
     private void spawnWebServer(Poll poll) throws Exception {
