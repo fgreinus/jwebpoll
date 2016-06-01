@@ -38,6 +38,7 @@ public class EvaluationQuestionView {
                     break;
                 case FREE:
                     fillForFree(question, answerTable);
+                    rootGrid.setColumnSpan(answerTable,2);
                     break;
             }
         } catch (IOException e) {
@@ -89,7 +90,6 @@ public class EvaluationQuestionView {
 
 
         final PieChart chart = new PieChart(pieChartData);
-        //chart.setTitle("Imported Fruits");
         rootgrid.add(chart,1,0);
     }
 
@@ -102,5 +102,6 @@ public class EvaluationQuestionView {
         if (question.getAnswers() != null) {
             answerTable.getItems().addAll(question.getAnswers());
         }
+
     }
 }

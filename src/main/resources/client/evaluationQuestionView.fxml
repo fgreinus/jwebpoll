@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.layout.GridPane?>
-
-<?import javafx.scene.text.Text?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.geometry.Insets?>
-
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -23,11 +11,11 @@
           style="-fx-border-color: lightgray;">
 
     <columnConstraints>
-        <ColumnConstraints hgrow="ALWAYS" percentWidth="50" />
-        <ColumnConstraints hgrow="ALWAYS" percentWidth="50" />
+        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints />
+        <RowConstraints/>
     </rowConstraints>
 
     <TableView id="answerTable"
@@ -37,7 +25,7 @@
                maxHeight="Infinity"
                prefWidth="-Infinity">
         <columns>
-            <TableColumn id="#answerColumn" text="Antworten" resizable="true" />
+            <TableColumn id="#answerColumn" text="Antworten" resizable="true"/>
         </columns>
     </TableView>
 
