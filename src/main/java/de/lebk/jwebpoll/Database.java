@@ -127,6 +127,11 @@ public class Database {
             if (localPoll.getId() != 0)
                 dbPoll = (Poll) this.getPollDao().queryForId(localPoll.getId());
 
+            if (dbPoll != null)
+                this.getPollDao().update(localPoll);
+            else
+                this.getPollDao().create(localPoll);
+
             Hashtable<Integer, Question> dbQuestionsToDelete = new Hashtable<>();
             Hashtable<Integer, Answer> dbAnswersToDelete = new Hashtable<>();
             Hashtable<Integer, Question> dbQuestionsToUpdate = new Hashtable<>();
@@ -136,8 +141,12 @@ public class Database {
 
             for (Question localQ : localPoll.getQuestions()) {
                 dbQuestionsToCreate.put(localQ.getId(), localQ);
+                if(localQ.getId() != 0)
+                    dbQuestionsToUpdate.put(localQ.getId(), localQ);
                 for (Answer localA : localQ.getAnswers()) {
                     dbAnswersToCreate.put(localA.getId(), localA);
+                    if(localA.getId() != 0)
+                        dbAnswersToUpdate.put(localA.getId(), localA);
                 }
             }
 
@@ -145,11 +154,9 @@ public class Database {
 
                 for (Question dbQ : dbPoll.getQuestions()) {
                     dbQuestionsToDelete.put(dbQ.getId(), dbQ);
-                    dbQuestionsToUpdate.put(dbQ.getId(), dbQ);
                     dbQuestionsToCreate.remove(dbQ.getId());
                     for (Answer dbA : dbQ.getAnswers()) {
                         dbAnswersToDelete.put(dbA.getId(), dbA);
-                        dbAnswersToUpdate.put(dbA.getId(), dbA);
                         dbAnswersToCreate.remove(dbA.getId());
                     }
                 }
@@ -162,7 +169,6 @@ public class Database {
                 }
 
                 for (Answer toDelete : dbAnswersToDelete.values()) {
-                    dbQuestionsToUpdate.remove(toDelete.getId());
                     this.getAnswerDao().delete(toDelete);
                 }
                 for (Question toDelete : dbQuestionsToDelete.values()) {
@@ -184,12 +190,6 @@ public class Database {
                 this.getQuestionDao().create(toCreate);
             }
 
-            // Finally save / update the poll
-            if (dbPoll != null)
-                this.getPollDao().update(localPoll);
-            else
-                this.getPollDao().create(localPoll);
-
             return true;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -203,13 +203,10 @@ public class Database {
         try {
             Poll dbPoll = (Poll) this.getPollDao().queryForId(localPoll.getId());
 
-            if(dbPoll != null)
-            {
-                for(Question dbQ : dbPoll.getQuestions())
-                {
-                    for(Answer dbA : dbQ.getAnswers())
-                    {
-                        for(Vote dbV : dbA.getVotes())
+            if (dbPoll != null) {
+                for (Question dbQ : dbPoll.getQuestions()) {
+                    for (Answer dbA : dbQ.getAnswers()) {
+                        for (Vote dbV : dbA.getVotes())
                             this.getVoteDao().delete(dbV);
                         this.getAnswerDao().delete(dbA);
                     }

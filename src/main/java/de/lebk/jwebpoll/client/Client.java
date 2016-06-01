@@ -64,8 +64,9 @@ public class Client extends Application {
         primaryStage.getIcons().add(new Image(Client.class.getResource("/icon.png").toString()));
 
         // Start DB
-        Database db = Database.getInstance();
+        this.db = Database.getInstance();
 
+        this.polls.addAll(this.db.getPollDao().queryForAll());
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
                 Client.activePoll = p;
@@ -89,8 +90,7 @@ public class Client extends Application {
         this.pollList.getItems().addAll(this.polls);
         this.pollList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Poll> observable, Poll oldValue, Poll newValue) ->
         {
-            if (newValue != null)
-                Client.this.setPoll(newValue);
+            Client.this.setPoll(newValue);
         });
 
         this.pollAddBtn = (Button) pollListView.lookup("#pollAddBtn");
@@ -148,7 +148,7 @@ public class Client extends Application {
                             this.pollList.getSelectionModel().select(--index);
                         else
                             this.pollList.getSelectionModel().selectFirst();
-                        Client.poll = null;
+                        this.setPoll(null);
                     }
                 }
             });
@@ -256,6 +256,7 @@ public class Client extends Application {
         {
             Question newQuestion = new Question("", true, QuestionType.SINGLE, Client.poll);
             Client.poll.getQuestions().add(newQuestion);
+            newQuestion.setId(0);
             TitledPane tp = QuestionView.setQuestionView(this.questionsAccordion, newQuestion, Client.activePoll != null && Client.activePoll == Client.poll);
 
             this.questionsRemoveBtn.setOnAction((ActionEvent ev) ->
@@ -274,7 +275,10 @@ public class Client extends Application {
         rootSplit.getItems().add(pollDetailScroller);
 
         // Stage size and finally show
-        this.pollList.getSelectionModel().selectFirst();
+        if(this.pollList.getItems().isEmpty())
+            this.setPoll(null);
+        else
+            this.pollList.getSelectionModel().selectFirst();
         primaryStage.setScene(new Scene(rootSplit));
         primaryStage.setMaximized(true);
         primaryStage.show();
@@ -283,23 +287,24 @@ public class Client extends Application {
     public void setPoll(Poll newPoll) {
         Client.poll = newPoll;
 
-        this.titleTxF.setText(Client.poll.getTitle());
-        this.descTxF.setText(Client.poll.getDescription());
+        this.titleTxF.setText(Client.poll == null ? "" : Client.poll.getTitle());
+        this.descTxF.setText(Client.poll == null ? "" : Client.poll.getDescription());
 
         SimpleDateFormat outputFormatDate = new SimpleDateFormat("dd.MM.yyyy");
         SimpleDateFormat outputFormatTime = new SimpleDateFormat("HH:mm:ss");
-        this.createdDateTxF.setText(outputFormatDate.format(Client.poll.getCreated()));
-        this.createdTimeTxF.setText(outputFormatTime.format(Client.poll.getCreated()));
-        this.stateCbo.setValue(Client.poll.getState());
-        this.openBtn.setVisible(Client.poll.getState() == PollState.NEW || Client.poll.getState() == PollState.CLOSED);
-        this.closeBtn.setVisible(Client.poll.getState() == PollState.OPEN);
+        this.createdDateTxF.setText(Client.poll == null ? "" : outputFormatDate.format(Client.poll.getCreated()));
+        this.createdTimeTxF.setText(Client.poll == null ? "" : outputFormatTime.format(Client.poll.getCreated()));
+        this.stateCbo.setValue(Client.poll == null ? PollState.NEW : Client.poll.getState());
+        this.openBtn.setVisible(Client.poll == null ? true : Client.poll.getState() == PollState.NEW || Client.poll.getState() == PollState.CLOSED);
+        this.closeBtn.setVisible(Client.poll == null ? false : Client.poll.getState() == PollState.OPEN);
         this.enableControls();
 
-        boolean disabled = Client.activePoll != null && Client.activePoll == Client.poll;
+        boolean disabled = Client.poll == null || (Client.activePoll != null && Client.activePoll == Client.poll);
 
         this.questionsAccordion.getPanes().clear();
-        for (Question item : Client.poll.getQuestions())
-            QuestionView.setQuestionView(this.questionsAccordion, item, disabled);
+        if(Client.poll != null)
+            for (Question item : Client.poll.getQuestions())
+                QuestionView.setQuestionView(this.questionsAccordion, item, disabled);
     }
 
     public static Poll getActivePoll() {
@@ -307,23 +312,25 @@ public class Client extends Application {
     }
 
     public void enableControls() {
-        boolean disable = Client.activePoll != null && Client.activePoll == Client.poll;
+        boolean disable = Client.poll == null || (Client.activePoll != null && Client.activePoll == Client.poll);
         this.titleTxF.setDisable(disable);
         this.pollRemoveBtn.setDisable(disable);
-        this.pollAddBtn.setDisable(disable);
         this.pollSaveBtn.setDisable(disable);
+        this.pollCancelBtn.setDisable(disable);
         this.descTxF.setDisable(disable);
         this.createdDateTxF.setDisable(disable);
         this.createdTimeTxF.setDisable(disable);
-        this.openBtn.setDisable(Client.activePoll != null);
-        this.closeBtn.setDisable(!disable);
-
         this.questionsAccordion.getPanes().clear();
-        for (Question item : Client.poll.getQuestions())
-            QuestionView.setQuestionView(this.questionsAccordion, item, disable);
+        if(Client.poll != null)
+            for (Question item : Client.poll.getQuestions())
+                QuestionView.setQuestionView(this.questionsAccordion, item, disable);
 
         this.questionsAddBtn.setDisable(disable);
         this.questionsRemoveBtn.setDisable(disable);
+
+        this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
+        this.closeBtn.setDisable(!disable);
+        this.resultsBtn.setDisable(Client.poll == null);
     }
 
     private void spawnWebServer(Poll poll) throws Exception {
