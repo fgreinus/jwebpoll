@@ -165,7 +165,7 @@ public class Client extends Application {
             if (Client.poll != null
                     && !Client.poll.getTitle().equals(newValue)) {
                 Client.poll.setTitle(newValue);
-                Client.this.pollList.refresh();
+                //Client.this.pollList.refresh();
             }
         });
 
@@ -217,7 +217,7 @@ public class Client extends Application {
             this.closeBtn.setVisible(true);
             this.stateCbo.setValue(Client.poll.getState());
             this.enableControls();
-            this.pollList.refresh();
+            //this.pollList.refresh();
             try {
                 spawnWebServer(Client.activePoll);
             } catch (Exception e) {
@@ -233,7 +233,7 @@ public class Client extends Application {
             this.openBtn.setVisible(true);
             this.stateCbo.setValue(Client.poll.getState());
             this.enableControls();
-            this.pollList.refresh();
+            //this.pollList.refresh();
             try {
                 spawnWebServer(Client.activePoll);
             } catch (Exception e) {

@@ -23,9 +23,9 @@
                     <#if question.getTypeString() = 'SINGLE'>
                     <input type="radio" name="${question.getId()}" id="${question.getId()}" value="${answers.getId()}" <#if question.isRequired()>required</#if>>${answers.getText()}
                     <#else>
-                        <input type="checkbox" name="${question.getId()}[]" id="${question.getId()}[${answers.getId()}]" value="${answers.getId()}">${answers.getText()}
+                        <input type="checkbox" class="checkbox_${question.getId()}" name="${question.getId()}_${answers.getId()}" id="${question.getId()}[${answers.getId()}]" value="${answers.getId()}">${answers.getText()}
                     </#if>
-                        </label>
+                    </label>
                 </div>
                 </#list>
             </#if>
@@ -40,6 +40,7 @@
     <script type="text/javascript">
         jQuery.extend(jQuery.validator.messages, {
             required: "Diese Frage muss beantwortet werden!",
+            require_from_group: 'Wählen Sie mindestens eine Antwort aus!'
         });
         $(document).ready(function () {
     <#if success>
@@ -54,11 +55,13 @@
                         swal("Fehler!", "Bitte füllen Sie alle Pflichtfelder aus.", "error");
                     }
                 },
-                rules: {
+               rules: {
                 <#list poll.getQuestions() as question>
                     <#if question.getTypeString() = 'MULTIPLE'>
                         <#if question.isRequired()>
-                            '${question.getId()}[]': {required: true, minlength: 1},
+                        <#list question.getAnswers() as answers>
+                            '${question.getId()}_${answers.getId()}': {require_from_group: [1, '.checkbox_${question.getId()}']},
+                            </#list>
                         </#if>
                     </#if>
                 </#list>},
