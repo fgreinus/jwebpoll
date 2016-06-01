@@ -72,9 +72,9 @@
                     element.parents(".input-field").addClass("has-feedback");
 
                     if (element.prop("type") === "radio" || element.prop("type") === "checkbox") {
-                        error.insertBefore(element.parent("label"));
+                       // error.insertBefore(element.parent("label"));
                     } else {
-                        error.insertBefore(element);
+                       // error.insertBefore(element);
                     }
 
                     if (!element.next("span")[0]) {
