@@ -159,6 +159,8 @@ public class Client extends Application {
         {
             if(this.db.savePoll(Client.poll))
                 MsgBox.show("Bestätigung", "Die Umfrage wurde gespeichert!", null);
+            else
+                MsgBox.show("Fehlgeschlagen!", "Die Umfrage konnte nicht gespeichert werden!", null);
         });
         this.pollCancelBtn = (Button) pollDetail.lookup("#pollCancelBtn");
         this.pollCancelBtn.setOnAction((ActionEvent ev) ->
