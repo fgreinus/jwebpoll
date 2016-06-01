@@ -17,8 +17,8 @@
 <?import javafx.scene.control.TableColumn?>
 <GridPane xmlns="http://javafx.com/javafx/8"
           id="rootGrid"
-          hgap="50"
-          vgap="50"
+          hgap="25"
+          vgap="25"
           style="-fx-border-color: lightgray;">
 
     <padding>
@@ -126,7 +126,7 @@
                    GridPane.vgrow="SOMETIMES"
                    minHeight="150"
                    prefWidth="-Infinity"
-                   maxHeight="Infinity">
+                   maxHeight="250">
             <columns>
                 <TableColumn id="#controlColumn"/>
                 <TableColumn id="#textColumn" text="Text"/>

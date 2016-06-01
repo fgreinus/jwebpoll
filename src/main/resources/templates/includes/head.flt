@@ -3,7 +3,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="/css/bootstrap.min.css" rel="stylesheet">
 <link href="/css/style.css" rel="stylesheet">
+<link href="/css/sweetalert.css" rel="stylesheet">
 <script type="text/javascript" src="/js/jquery-1.12.1.min.js"></script>
 <script type="text/javascript" src="/js/jquery.validate.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/sweetalert.min.js"></script>
 <title>jWebPoll - ${poll.getTitle()}</title>

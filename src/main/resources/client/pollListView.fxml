@@ -12,6 +12,7 @@
 
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS"/>
+		<ColumnConstraints hgrow="ALWAYS"/>
     </columnConstraints>
 
     <rowConstraints>
@@ -21,12 +22,20 @@
 
     <ListView id="pollList"
               maxWidth="Infinity"
+			  GridPane.columnSpan="2"
               GridPane.rowIndex="0"/>
 
     <Button id="pollAddBtn"
-            text="Neue Umfrage"
+            text="Neu"
             textFill="green"
             maxWidth="Infinity"
+			GridPane.columnIndex="0"
             GridPane.rowIndex="1"/>
-
+	
+	<Button	id="pollRemoveBtn"
+			text="Entfernen"
+			textFill="red"
+			maxWidth="Infinity"
+			GridPane.columnIndex="1"
+			GridPane.rowIndex="1"/>
 </GridPane>
