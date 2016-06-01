@@ -7,6 +7,7 @@ import de.lebk.jwebpoll.data.*;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -19,7 +20,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Client extends Application {
     //- Main -
@@ -121,8 +121,10 @@ public class Client extends Application {
             }
         }
 
+
         // ListView (Left side)
-        SplitPane rootSplit = FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
+        GridPane rootGrid = FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
+        SplitPane rootSplit = (SplitPane) rootGrid.lookup("#rootSplit");
         GridPane pollListView = FXMLLoader.load(this.getClass().getResource("/client/pollListView.fxml"));
         this.pollList = (ListView<Poll>) pollListView.lookup("#pollList");
         this.pollList.setCellFactory((ListView<Poll> param) ->
@@ -151,6 +153,20 @@ public class Client extends Application {
 
         rootSplit.getItems().add(pollListView);
         rootSplit.setDividerPositions(1d / 5d);
+
+        //Menubar
+        MenuBar menuBar = (MenuBar) rootGrid.lookup("#menuBar");
+        // --- Menu Hilfe
+        Menu menuHelp = new Menu("Hilfe");
+        MenuItem help = new MenuItem("Hilfe");
+        help.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                HelpSite.show();
+            }
+        });
+        menuHelp.getItems().add(0, help);
+        menuBar.getMenus().addAll(menuHelp);
 
         // PollView (Right side)
         ScrollPane pollDetailScroller = new ScrollPane();
@@ -243,7 +259,6 @@ public class Client extends Application {
         this.resultsBtn = (Button) pollDetail.lookup("#resultsBtn");
         this.resultsBtn.setOnAction((ActionEvent event) ->
         {
-            //TODO View Results
             EvaluationDialog.show(Client.poll);
         });
 
@@ -256,12 +271,14 @@ public class Client extends Application {
             Client.poll.getQuestions().add(newQuestion);
             QuestionView.setQuestionView(this.questionsAccordion, newQuestion, Client.activePoll != null && Client.activePoll == Client.poll);
         });
+
         pollDetailScroller.setContent(pollDetail);
         rootSplit.getItems().add(pollDetailScroller);
 
         // Stage size and finally show
         this.pollList.getSelectionModel().selectFirst();
-        primaryStage.setScene(new Scene(rootSplit));
+
+        primaryStage.setScene(new Scene(rootGrid));
         primaryStage.sizeToScene();
         primaryStage.show();
     }
