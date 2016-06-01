@@ -128,6 +128,7 @@
               GridPane.rowIndex="0"/>
 
         <GridPane id="questionsBtns"
+                  prefWidth="Infinity"
                   maxWidth="225"
                   GridPane.columnIndex="2"
                   GridPane.rowIndex="0"

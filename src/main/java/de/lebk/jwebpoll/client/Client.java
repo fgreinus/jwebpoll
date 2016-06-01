@@ -316,7 +316,7 @@ public class Client extends Application {
             }
 
         this.questionsAddBtn.setDisable(disable);
-        this.questionsRemoveBtn.setDisable(disable);
+        this.questionsRemoveBtn.setDisable(disable || Client.poll.getQuestions().isEmpty());
 
         this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
         this.closeBtn.setDisable(!disable);
