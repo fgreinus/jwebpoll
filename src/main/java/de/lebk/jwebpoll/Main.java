@@ -1,6 +1,7 @@
 package de.lebk.jwebpoll;
 
 import com.j256.ormlite.dao.Dao;
+import de.lebk.jwebpoll.client.HelpSite;
 import de.lebk.jwebpoll.data.*;
 
 import java.sql.SQLException;

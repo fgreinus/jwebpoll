@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns="http://javafx.com/javafx/8"
+          id="rootGrid"
+          style="-fx-border-color: lightgray;">
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS"/>
+    </columnConstraints>
 
-<SplitPane xmlns="http://javafx.com/javafx/8"
-           id="rootSplit"
-           orientation="HORIZONTAL"/>
+    <rowConstraints>
+        <RowConstraints vgrow="ALWAYS"/>
+        <RowConstraints vgrow="ALWAYS"/>
+    </rowConstraints>
+
+    <MenuBar id="menuBar" prefHeight="-Infinity"
+             GridPane.rowIndex="0"/>
+
+    <SplitPane xmlns="http://javafx.com/javafx/8"
+               id="rootSplit"
+               orientation="HORIZONTAL"
+               GridPane.rowIndex="1"
+               maxHeight="Infinity"/>
+
+</GridPane>

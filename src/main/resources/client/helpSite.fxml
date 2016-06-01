@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.web.WebView?>
+<GridPane xmlns="http://javafx.com/javafx/8"
+          id="rootGrid"
+          hgap="50"
+          vgap="50"
+          style="-fx-border-color: lightgray;">
+
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+    </rowConstraints>
+
+   <WebView  id="webview">
+   </WebView>
+
+</GridPane>
