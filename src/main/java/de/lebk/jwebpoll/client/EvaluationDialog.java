@@ -20,16 +20,13 @@ public class EvaluationDialog {
 
         Stage evaluationStage = new Stage(StageStyle.UTILITY);
         evaluationStage.setTitle("Auswertung: " + poll.getTitle());
-
         GridPane evaluationGrid;
         try {
             evaluationGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/evaluationDialog.fxml"));
             Accordion questionsAccordion = (Accordion) evaluationGrid.lookup("#questionsAccordion");
             for (Question question : poll.questions) {
                 EvaluationQuestionView.setQuestionView(questionsAccordion, question, false);
-                for (Answer answer : question.getAnswers()) {
-                    System.out.println("  " + answer.getText() + ": " + answer.getVotes().size());
-                }
+
             }
             evaluationGrid.setVisible(true);
             questionsAccordion.setVisible(true);

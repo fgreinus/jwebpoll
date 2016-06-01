@@ -36,8 +36,7 @@
                maxHeight="Infinity"
                prefWidth="-Infinity">
         <columns>
-            <TableColumn id="#answerColumn" text="Antwort" resizable="true" />
-            <TableColumn id="#answerCountColumn" text="Häufigkeit" resizable="true" />
+            <TableColumn id="#answerColumn" text="Antworten" resizable="true" />
         </columns>
     </TableView>
 

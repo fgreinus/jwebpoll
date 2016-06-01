@@ -32,13 +32,16 @@ public class EvaluationQuestionView {
                     fillForSingleAndMultipleChoice(question, answerTable);
                     break;
                 case FREE:
-                    fillForFree();
+                    fillForFree(question,answerTable);
                     break;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+
+
+        accordion.setExpandedPane(tp);
         rootGrid.setVisible(true);
         tp.setVisible(true);
         answerTable.setVisible(true);
@@ -51,7 +54,8 @@ public class EvaluationQuestionView {
         typeColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
         typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.75));
 
-        TableColumn<Answer, String> countColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(1);
+
+        TableColumn<Answer, String> countColumn = new TableColumn<>("Häufigkeit");
         countColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Answer, String>, ObservableValue<String>>() {
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Answer, String> cellData) {
                 return new SimpleStringProperty(String.valueOf(cellData.getValue().getVotes().size()));
@@ -62,9 +66,18 @@ public class EvaluationQuestionView {
         if (question.getAnswers() != null) {
             answerTable.getItems().addAll(question.getAnswers());
         }
+
+        answerTable.getColumns().add(countColumn);
     }
 
-    private static void fillForFree() {
+    private static void fillForFree(Question question, TableView<Answer> answerTable) {
+        TableColumn<Answer, String> typeColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(0);
+        typeColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
+        typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(1));
 
+
+        if (question.getAnswers() != null) {
+            answerTable.getItems().addAll(question.getAnswers());
+        }
     }
 }
