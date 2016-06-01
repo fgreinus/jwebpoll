@@ -15,6 +15,8 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ public class Client extends Application {
     private TextField titleTxF;
     private Button pollRemoveBtn;
     private Button pollSaveBtn;
+    private TextField linkTxF;
     private TextArea descTxF;
     private TextField createdDateTxF, createdTimeTxF;
     private ComboBox<PollState> stateCbo;
@@ -134,7 +137,11 @@ public class Client extends Application {
         this.pollList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Poll> observable, Poll oldValue, Poll newValue) ->
         {
             if (newValue != null)
-                Client.this.setPoll(newValue);
+                try {
+                    Client.this.setPoll(newValue);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
         });
 
         this.pollAddBtn = (Button) pollListView.lookup("#pollAddBtn");
@@ -223,7 +230,11 @@ public class Client extends Application {
             this.openBtn.setVisible(false);
             this.closeBtn.setVisible(true);
             this.stateCbo.setValue(Client.poll.getState());
-            this.enableControls();
+            try {
+                this.enableControls();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
             this.pollList.refresh();
             try {
                 spawnWebServer(Client.activePoll);
@@ -239,7 +250,11 @@ public class Client extends Application {
             this.closeBtn.setVisible(false);
             this.openBtn.setVisible(true);
             this.stateCbo.setValue(Client.poll.getState());
-            this.enableControls();
+            try {
+                this.enableControls();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
             this.pollList.refresh();
             try {
                 spawnWebServer(Client.activePoll);
@@ -254,6 +269,7 @@ public class Client extends Application {
             EvaluationDialog.show(Client.poll);
         });
 
+        this.linkTxF = (TextField) pollDetail.lookup("#linkTxt");
         this.questionsAccordion = (Accordion) pollDetail.lookup("#questionsAccordion");
 
         this.questionsAddBtn = (Button) pollDetail.lookup("#questionsAddBtn");
@@ -273,7 +289,7 @@ public class Client extends Application {
         primaryStage.show();
     }
 
-    public void setPoll(Poll newPoll) {
+    public void setPoll(Poll newPoll) throws UnknownHostException {
         Client.poll = newPoll;
 
         this.titleTxF.setText(Client.poll.getTitle());
@@ -299,23 +315,33 @@ public class Client extends Application {
         return Client.activePoll;
     }
 
-    public void enableControls() {
-        boolean disable = Client.activePoll != null && Client.activePoll == Client.poll;
-        this.titleTxF.setDisable(disable);
-        this.pollRemoveBtn.setDisable(disable);
-        this.pollAddBtn.setDisable(disable);
-        this.pollSaveBtn.setDisable(disable);
-        this.descTxF.setDisable(disable);
-        this.createdDateTxF.setDisable(disable);
-        this.createdTimeTxF.setDisable(disable);
+    public void enableControls() throws UnknownHostException {
+        boolean isEnabled = Client.activePoll != null && Client.activePoll == Client.poll;
+        this.titleTxF.setDisable(isEnabled);
+        this.pollRemoveBtn.setDisable(isEnabled);
+        this.pollAddBtn.setDisable(isEnabled);
+        this.pollSaveBtn.setDisable(isEnabled);
+        this.descTxF.setDisable(isEnabled);
+        this.createdDateTxF.setDisable(isEnabled);
+        this.createdTimeTxF.setDisable(isEnabled);
         this.openBtn.setDisable(Client.activePoll != null);
-        this.closeBtn.setDisable(!disable);
+        this.closeBtn.setDisable(!isEnabled);
+
+        this.setLinkTxt(isEnabled);
 
         this.questionsAccordion.getPanes().clear();
         for (Question item : Client.poll.getQuestions())
-            QuestionView.setQuestionView(this.questionsAccordion, item, disable);
+            QuestionView.setQuestionView(this.questionsAccordion, item, isEnabled);
 
-        this.questionsAddBtn.setDisable(disable);
+        this.questionsAddBtn.setDisable(isEnabled);
+    }
+
+    public void setLinkTxt(boolean isVisible) throws UnknownHostException {
+        InetAddress host = InetAddress.getLocalHost();
+        String hostAddress = host.getHostAddress();
+        System.out.println(hostAddress+":4567");
+        this.linkTxF.setText(hostAddress+":4567");
+        this.linkTxF.setVisible(isVisible);
     }
 
     private void spawnWebServer(Poll poll) throws Exception {
