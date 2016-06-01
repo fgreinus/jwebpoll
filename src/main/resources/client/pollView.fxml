@@ -223,7 +223,7 @@
         </GridPane>
 
         <Button id="openBtn"
-                text="Öffnen"
+                text="Freigeben"
                 textFill="green"
                 maxWidth="Infinity"
                 GridPane.columnIndex="2"
