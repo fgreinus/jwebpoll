@@ -88,113 +88,20 @@ public class Database {
         }
     }
 
-    public Dao getPollDao() {
-        return this.getDaoForClass(Poll.class.getName());
+    public Dao<Poll, Integer> getPollDao() {
+        return (Dao<Poll, Integer>) this.getDaoForClass(Poll.class.getName());
     }
 
-    public Dao getQuestionDao() {
-        return this.getDaoForClass(Question.class.getName());
+    public Dao<Question, Integer> getQuestionDao() {
+        return (Dao<Question, Integer>) this.getDaoForClass(Question.class.getName());
     }
 
-    public Dao getAnswerDao() {
-        return this.getDaoForClass(Answer.class.getName());
+    public Dao<Answer, Integer> getAnswerDao() {
+        return (Dao<Answer, Integer>) this.getDaoForClass(Answer.class.getName());
     }
 
-    public Dao getVoteDao() {
-        return this.getDaoForClass(Vote.class.getName());
-    }
-
-    public Object getLastObjectOfTable(String className) {
-        Dao dao = getDaoForClass(className);
-
-        Object result = null;
-
-        try {
-            result = dao.queryBuilder().orderBy("id", false).queryForFirst();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
-    public boolean savePoll(Poll localPoll) {
-        if (localPoll == null)
-            return false;
-
-        try {
-            Poll dbPoll = null;
-            if (localPoll.getId() != 0)
-                dbPoll = (Poll) this.getPollDao().queryForId(localPoll.getId());
-
-            if (dbPoll != null)
-                this.getPollDao().update(localPoll);
-            else
-                this.getPollDao().create(localPoll);
-
-            Hashtable<Integer, Question> dbQuestionsToDelete = new Hashtable<>();
-            Hashtable<Integer, Answer> dbAnswersToDelete = new Hashtable<>();
-            Hashtable<Integer, Question> dbQuestionsToUpdate = new Hashtable<>();
-            Hashtable<Integer, Answer> dbAnswersToUpdate = new Hashtable<>();
-            Hashtable<Integer, Question> dbQuestionsToCreate = new Hashtable<>();
-            Hashtable<Integer, Answer> dbAnswersToCreate = new Hashtable<>();
-
-            for (Question localQ : localPoll.getQuestions()) {
-                dbQuestionsToCreate.put(localQ.getId(), localQ);
-                if(localQ.getId() != 0)
-                    dbQuestionsToUpdate.put(localQ.getId(), localQ);
-                for (Answer localA : localQ.getAnswers()) {
-                    dbAnswersToCreate.put(localA.getId(), localA);
-                    if(localA.getId() != 0)
-                        dbAnswersToUpdate.put(localA.getId(), localA);
-                }
-            }
-
-            if (dbPoll != null) {
-
-                for (Question dbQ : dbPoll.getQuestions()) {
-                    dbQuestionsToDelete.put(dbQ.getId(), dbQ);
-                    dbQuestionsToCreate.remove(dbQ.getId());
-                    for (Answer dbA : dbQ.getAnswers()) {
-                        dbAnswersToDelete.put(dbA.getId(), dbA);
-                        dbAnswersToCreate.remove(dbA.getId());
-                    }
-                }
-
-                for (Question localQ : localPoll.getQuestions()) {
-                    dbQuestionsToDelete.remove(localQ.getId());
-                    for (Answer localA : localQ.getAnswers()) {
-                        dbAnswersToDelete.remove(localA.getId());
-                    }
-                }
-
-                for (Answer toDelete : dbAnswersToDelete.values()) {
-                    this.getAnswerDao().delete(toDelete);
-                }
-                for (Question toDelete : dbQuestionsToDelete.values()) {
-                    this.getQuestionDao().delete(toDelete);
-                }
-
-                for (Answer toUpdate : dbAnswersToUpdate.values()) {
-                    this.getAnswerDao().update(toUpdate);
-                }
-                for (Question toUpdate : dbQuestionsToUpdate.values()) {
-                    this.getQuestionDao().update(toUpdate);
-                }
-            }
-
-            for (Answer toCreate : dbAnswersToCreate.values()) {
-                this.getAnswerDao().create(toCreate);
-            }
-            for (Question toCreate : dbQuestionsToCreate.values()) {
-                this.getQuestionDao().create(toCreate);
-            }
-
-            return true;
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        return false;
+    public Dao<Vote, Integer> getVoteDao() {
+        return (Dao<Vote, Integer>) this.getDaoForClass(Vote.class.getName());
     }
 
     public boolean deletePoll(Poll localPoll) {

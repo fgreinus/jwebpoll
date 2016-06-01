@@ -55,34 +55,6 @@
               GridPane.columnIndex="0"
               GridPane.rowIndex="0"/>
 
-        <GridPane id="pollBtns"
-                  maxWidth="225"
-                  GridPane.columnIndex="1"
-                  GridPane.rowIndex="0"
-                  GridPane.columnSpan="2"
-                  GridPane.halignment="RIGHT"
-                  hgap="10"
-                  vgap="10">
-
-            <columnConstraints>
-                <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
-                <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
-            </columnConstraints>
-
-            <Button id="pollSaveBtn"
-                    text="Speichern"
-                    textFill="green"
-                    maxWidth="Infinity"
-                    GridPane.columnIndex="0"/>
-
-            <Button id="pollCancelBtn"
-                    text="Abbrechen"
-                    textFill="red"
-                    maxWidth="Infinity"
-                    GridPane.columnIndex="1"/>
-
-        </GridPane>
-
         <Separator id="pollSep"
                    orientation="HORIZONTAL"
                    GridPane.columnIndex="0"

@@ -1,5 +1,6 @@
 package de.lebk.jwebpoll.client;
 
+import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.QuestionType;
@@ -11,10 +12,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
-import javafx.stage.Window;
 import javafx.util.Callback;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class QuestionView {
     public static TitledPane setQuestionView(Accordion accordion, Question question, boolean disabled) {
@@ -156,7 +157,6 @@ public class QuestionView {
                         else {
                             Answer answer = new Answer(answerAddTextTxF.getText(), value, question);
                             question.getAnswers().add(answer);
-                            answer.setId(0);
                             answerTable.getItems().add(answer);
                             answerAddTextTxF.clear();
                             QuestionView.updateAddValueTxF(question, answerAddValueTxF);
@@ -175,9 +175,14 @@ public class QuestionView {
                     {
                         if (confirmed) {
                             Answer toRemove = answerTable.getSelectionModel().getSelectedItem();
-                            question.getAnswers().remove(toRemove);
-                            answerTable.getItems().remove(toRemove);
-                            QuestionView.updateAddValueTxF(question, answerAddValueTxF);
+                            try {
+                                Database.getInstance().getAnswerDao().delete(toRemove);
+                                question.getAnswers().remove(toRemove);
+                                answerTable.getItems().remove(toRemove);
+                                QuestionView.updateAddValueTxF(question, answerAddValueTxF);
+                            } catch (SQLException ex) {
+                                ex.printStackTrace();
+                            }
                         }
                     }, accordion.getScene().getWindow());
             });

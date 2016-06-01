@@ -73,23 +73,26 @@ public class Poll {
         return questions;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
     public void setTitle(String title) {
         this.title = title;
+        this.update();
     }
 
     public void setDescription(String description) {
         this.description = description;
+        this.update();
     }
 
     public void setState(PollState state) {
         this.state = state;
+        this.update();
+    }
+
+    private void update() {
+        try {
+            Database.getInstance().getPollDao().update(this);
+        } catch (SQLException e) {
+            this.questions = null;
+        }
     }
 }

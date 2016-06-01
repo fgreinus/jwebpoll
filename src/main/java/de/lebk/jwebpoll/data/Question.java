@@ -62,6 +62,7 @@ public class Question {
 
     public void setTitle(String title) {
         this.title = title;
+        this.update();
     }
 
     public String getHint() {
@@ -70,6 +71,7 @@ public class Question {
 
     public void setHint(String hint) {
         this.hint = hint;
+        this.update();
     }
 
     public boolean isRequired() {
@@ -78,18 +80,16 @@ public class Question {
 
     public void setRequired(boolean required) {
         this.required = required;
+        this.update();
     }
 
     public QuestionType getType() {
         return type;
     }
 
-    public String getTypeString() {
-        return type.toString();
-    }
-
     public void setType(QuestionType type) {
         this.type = type;
+        this.update();
     }
 
     public Poll getPoll() {
@@ -98,5 +98,13 @@ public class Question {
 
     public ForeignCollection<Answer> getAnswers() {
         return answers;
+    }
+
+    public void update() {
+        try {
+            Database.getInstance().getQuestionDao().update(this);
+        } catch (SQLException e) {
+            this.answers = null;
+        }
     }
 }
