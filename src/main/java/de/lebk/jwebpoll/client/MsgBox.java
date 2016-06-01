@@ -6,16 +6,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
 
 import java.io.IOException;
 
 public class MsgBox {
-    public static void show(String title, String msg, MsgBoxCallback callback) {
-        Stage confirmStage = new Stage(StageStyle.UTILITY);
-        confirmStage.setTitle(title);
+    public static void show(String title, String msg, MsgBoxCallback callback, Window owner) {
+        Stage msgStage = new Stage(StageStyle.UTILITY);
+        msgStage.initModality(Modality.WINDOW_MODAL);
+        msgStage.initOwner(owner);
+        msgStage.setTitle(title);
 
         GridPane confirmGrid;
         try {
@@ -29,7 +29,7 @@ public class MsgBox {
             {
                 if (callback != null)
                     callback.confirm();
-                confirmStage.close();
+                msgStage.close();
             });
         } catch (IOException ex) {
             if (callback != null)
@@ -37,14 +37,14 @@ public class MsgBox {
             return;
         }
 
-        confirmStage.setOnCloseRequest((WindowEvent we) ->
+        msgStage.setOnCloseRequest((WindowEvent we) ->
         {
             if (callback != null)
                 callback.confirm();
         });
 
-        confirmStage.setScene(new Scene(confirmGrid));
-        confirmStage.sizeToScene();
-        confirmStage.show();
+        msgStage.setScene(new Scene(confirmGrid));
+        msgStage.sizeToScene();
+        msgStage.show();
     }
 }

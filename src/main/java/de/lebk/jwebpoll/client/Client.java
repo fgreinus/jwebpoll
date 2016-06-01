@@ -102,7 +102,7 @@ public class Client extends Application {
                         "Möchten Sie die Umfrage jetzt speichern?", confirmed ->
                 {
                     Client.pollHasChanges = !this.db.savePoll(Client.poll);
-                });
+                }, primaryStage);
             }
             if (!pollHasChanges) {
                 Poll newPoll = new Poll("<Neue Umfrage>", "", PollState.NEW);
@@ -151,16 +151,16 @@ public class Client extends Application {
                         this.setPoll(null);
                     }
                 }
-            });
+            }, primaryStage);
         });
 
         this.pollSaveBtn = (Button) pollDetail.lookup("#pollSaveBtn");
         this.pollSaveBtn.setOnAction((ActionEvent ev) ->
         {
             if(this.db.savePoll(Client.poll))
-                MsgBox.show("Bestätigung", "Die Umfrage wurde gespeichert!", null);
+                MsgBox.show("Bestätigung", "Die Umfrage wurde gespeichert!", null, primaryStage);
             else
-                MsgBox.show("Fehlgeschlagen!", "Die Umfrage konnte nicht gespeichert werden!", null);
+                MsgBox.show("Fehlgeschlagen!", "Die Umfrage konnte nicht gespeichert werden!", null, primaryStage);
         });
         this.pollCancelBtn = (Button) pollDetail.lookup("#pollCancelBtn");
         this.pollCancelBtn.setOnAction((ActionEvent ev) ->
@@ -187,7 +187,7 @@ public class Client extends Application {
                         ex.printStackTrace();
                     }
                 }
-            });
+            }, primaryStage);
         });
 
         this.descTxF = (TextArea) pollDetail.lookup("#descTxF");
@@ -226,7 +226,7 @@ public class Client extends Application {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            });
+            }, primaryStage);
         });
         this.closeBtn = (Button) pollDetail.lookup("#closeBtn");
         this.closeBtn.setOnAction((ActionEvent event) ->
@@ -269,7 +269,7 @@ public class Client extends Application {
                         this.poll.getQuestions().remove(newQuestion);
                         this.questionsAccordion.getPanes().remove(tp);
                     }
-                });
+                }, primaryStage);
             });
         });
 

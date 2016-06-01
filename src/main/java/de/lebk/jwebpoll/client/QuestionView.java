@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.stage.Window;
 import javafx.util.Callback;
 
 import java.io.IOException;
@@ -178,7 +179,7 @@ public class QuestionView {
                             answerTable.getItems().remove(toRemove);
                             QuestionView.updateAddValueTxF(question, answerAddValueTxF);
                         }
-                    });
+                    }, accordion.getScene().getWindow());
             });
             answerRemoveBtn.setDisable(disabled);
 

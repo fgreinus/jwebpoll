@@ -6,6 +6,7 @@ import de.lebk.jwebpoll.data.Question;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -18,7 +19,8 @@ import java.io.IOException;
 public class EvaluationDialog {
     public static void show(Poll poll) {
 
-        Stage evaluationStage = new Stage(StageStyle.UTILITY);
+        Stage evaluationStage = new Stage();
+        evaluationStage.getIcons().add(new Image(EvaluationDialog.class.getResource("/icon.png").toString()));
         evaluationStage.setTitle("Auswertung: " + poll.getTitle());
 
         GridPane evaluationGrid;
