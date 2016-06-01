@@ -237,7 +237,7 @@ public class Client extends Application {
             this.openBtn.setVisible(true);
             this.stateCbo.setValue(Client.poll.getState());
             this.enableControls();
-            this.pollList.refresh();
+            //this.pollList.refresh();
             try {
                 spawnWebServer(Client.activePoll);
             } catch (Exception e) {
