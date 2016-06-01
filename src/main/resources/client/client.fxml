@@ -6,22 +6,23 @@
 <GridPane xmlns="http://javafx.com/javafx/8"
           id="rootGrid"
           style="-fx-border-color: lightgray;">
+
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS"/>
     </columnConstraints>
 
     <rowConstraints>
-        <RowConstraints vgrow="ALWAYS"/>
+        <RowConstraints vgrow="NEVER"/>
         <RowConstraints vgrow="ALWAYS"/>
     </rowConstraints>
 
-    <MenuBar id="menuBar" prefHeight="-Infinity"
+    <MenuBar id="menuBar"
+             prefHeight="-Infinity"
              GridPane.rowIndex="0"/>
 
-    <SplitPane xmlns="http://javafx.com/javafx/8"
-               id="rootSplit"
+    <SplitPane id="rootSplit"
                orientation="HORIZONTAL"
-               GridPane.rowIndex="1"
-               maxHeight="Infinity"/>
+               maxHeight="Infinity"
+               GridPane.rowIndex="1"/>
 
 </GridPane>
