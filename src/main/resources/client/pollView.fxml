@@ -191,6 +191,7 @@
               GridPane.rowIndex="0"/>
         <ComboBox id="stateCbo"
                   disable="true"
+                  style="-fx-opacity: 1"
                   prefWidth="225"
                   GridPane.columnIndex="1"
                   GridPane.rowIndex="0"
