@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -34,8 +35,7 @@ public class HelpSite {
         String line;
         StringBuilder sb = new StringBuilder();
         try {
-
-            fileReader = new FileReader("/client/help.html");
+            fileReader = new FileReader("src"+File.separator+"main"+File.separator+"resources"+File.separator+"help.html");
             bufferedReader = new BufferedReader(fileReader);
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line).append("\n");

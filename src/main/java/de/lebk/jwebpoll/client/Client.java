@@ -157,7 +157,7 @@ public class Client extends Application {
         //Menubar
         MenuBar menuBar = (MenuBar) rootGrid.lookup("#menuBar");
         // --- Menu Hilfe
-        Menu menuHelp = new Menu("Hilfe");
+        Menu menuHelp = new Menu("Über");
         MenuItem help = new MenuItem("Hilfe");
         help.setOnAction(new EventHandler<ActionEvent>() {
             @Override
