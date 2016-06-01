@@ -1,5 +1,6 @@
 package de.lebk.jwebpoll.client;
 
+import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Poll;
 import de.lebk.jwebpoll.data.Question;
 import javafx.fxml.FXMLLoader;
@@ -11,9 +12,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * Created by lostincoding on 18.05.16.
- */
 public class EvaluationDialog {
     public static void show(Poll poll) {
 
@@ -29,9 +27,29 @@ public class EvaluationDialog {
         try {
             evaluationGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/evaluationDialog.fxml"));
             Accordion questionsAccordion = (Accordion) evaluationGrid.lookup("#questionsAccordion");
+
+            int voteCountTotal = 0;
             for (Question question : poll.questions) {
                 EvaluationQuestionView.setQuestionView(questionsAccordion, question, false);
 
+                for (Answer answer : question.getAnswers()) {
+                    voteCountTotal += answer.getVotes().size();
+                }
+
+                int weightedPollTotal = 0;
+                int weightedPollCount = 0;
+                for (Answer answer : question.getAnswers()) {
+                    weightedPollTotal += answer.getVotes().size() * answer.getValue();
+                    if (weightedPollTotal != 0) {
+                        weightedPollCount += answer.getVotes().size();
+                    }
+                }
+                double arithmeticAverage = (double) weightedPollTotal / (double) weightedPollCount;
+                System.out.println("Arithmetic average: " + arithmeticAverage);
+                double variance = Statistics.getVariance(question.getAnswers(), arithmeticAverage);
+                System.out.println("Variance: " + variance);
+                double standardDeviation = Statistics.getStandardDeviation(question.getAnswers(), arithmeticAverage);
+                System.out.println("Standard deviation: " + standardDeviation);
             }
             evaluationGrid.setVisible(true);
             questionsAccordion.setVisible(true);

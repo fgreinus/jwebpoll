@@ -201,26 +201,44 @@
                    GridPane.rowIndex="1"
                    GridPane.columnSpan="4"/>
 
+        <GridPane GridPane.columnIndex="0"
+                  GridPane.rowIndex="2"
+                  GridPane.columnSpan="2"
+                  hgap="10">
+
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <Text id="linkTxt"
+                  text="Webadresse:"
+                  GridPane.columnIndex="0"/>
+            <TextField id="linkTxF"
+                       text=""
+                       editable="false"
+                       visible="true"
+                       GridPane.columnIndex="1"/>
+
+        </GridPane>
+
         <Button id="openBtn"
                 text="Öffnen"
                 textFill="green"
                 maxWidth="Infinity"
-                GridPane.columnIndex="0"
-                GridPane.rowIndex="2"
-                GridPane.columnSpan="2"/>
+                GridPane.columnIndex="2"
+                GridPane.rowIndex="2"/>
         <Button id="closeBtn"
                 text="Schliessen"
                 textFill="red"
                 maxWidth="Infinity"
-                GridPane.columnIndex="0"
-                GridPane.rowIndex="2"
-                GridPane.columnSpan="2"/>
+                GridPane.columnIndex="2"
+                GridPane.rowIndex="2"/>
         <Button id="resultsBtn"
                 text="Ergebnisse"
                 maxWidth="Infinity"
-                GridPane.columnIndex="2"
-                GridPane.rowIndex="2"
-                GridPane.columnSpan="2"/>
+                GridPane.columnIndex="3"
+                GridPane.rowIndex="2"/>
 
     </GridPane>
 

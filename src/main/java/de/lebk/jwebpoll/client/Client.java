@@ -15,6 +15,8 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ public class Client extends Application {
     private ListView<Poll> pollList;
     private Button pollAddBtn, pollRemoveBtn;
     private TextField titleTxF;
+    private TextField linkTxF;
     private TextArea descTxF;
     private TextField createdDateTxF, createdTimeTxF;
     private ComboBox<PollState> stateCbo;
@@ -254,6 +257,8 @@ public class Client extends Application {
             EvaluationDialog.show(Client.poll);
         });
 
+        this.linkTxF = (TextField) pollDetail.lookup("#linkTxF");
+
         pollDetailScroller.setContent(pollDetail);
         rootSplit.getItems().add(pollDetailScroller);
 
@@ -316,6 +321,18 @@ public class Client extends Application {
         this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
         this.closeBtn.setDisable(!disable);
         this.resultsBtn.setDisable(Client.poll == null);
+
+        this.setLinkTxt(!disable);
+    }
+
+    public void setLinkTxt(boolean isVisible) {
+        try {
+            InetAddress host = InetAddress.getLocalHost();
+            this.linkTxF.setText(host.getHostAddress() + ":4567");
+        } catch (UnknownHostException ex) {
+            this.linkTxF.setText(ex.getMessage());
+        }
+        this.linkTxF.setVisible(isVisible);
     }
 
     private void spawnWebServer(Poll poll) throws Exception {
