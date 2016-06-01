@@ -32,7 +32,7 @@ public class EvaluationQuestionView {
                     fillForSingleAndMultipleChoice(question, answerTable);
                     break;
                 case FREE:
-                    fillForFree(question,answerTable);
+                    fillForFree(question, answerTable);
                     break;
             }
         } catch (IOException e) {
@@ -40,8 +40,10 @@ public class EvaluationQuestionView {
         }
 
 
+        if (accordion.getPanes().size() == 0) {
+            accordion.setExpandedPane(tp);
+        }
 
-        accordion.setExpandedPane(tp);
         rootGrid.setVisible(true);
         tp.setVisible(true);
         answerTable.setVisible(true);
