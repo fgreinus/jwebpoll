@@ -227,6 +227,7 @@ public class Client extends Application {
             this.closeBtn.setVisible(true);
             this.stateCbo.setValue(Client.poll.getState());
             this.enableControls();
+            this.setLinkTxt();
             this.pollList.refresh();
             try {
                 this.db.getPollDao().update(Client.poll);
@@ -321,18 +322,15 @@ public class Client extends Application {
         this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
         this.closeBtn.setDisable(!disable);
         this.resultsBtn.setDisable(Client.poll == null);
-
-        this.setLinkTxt(!disable);
     }
 
-    public void setLinkTxt(boolean isVisible) {
+    public void setLinkTxt() {
         try {
             InetAddress host = InetAddress.getLocalHost();
             this.linkTxF.setText(host.getHostAddress() + ":4567");
         } catch (UnknownHostException ex) {
             this.linkTxF.setText(ex.getMessage());
         }
-        this.linkTxF.setVisible(isVisible);
     }
 
     private void spawnWebServer(Poll poll) throws Exception {

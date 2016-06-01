@@ -5,19 +5,15 @@ import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-/**
- * Created by Felix on 01.06.2016.
- */
 public class HelpSite {
     public static void show() {
-        Stage evaluationStage = new Stage(StageStyle.UTILITY);
+        Stage evaluationStage = new Stage();
         evaluationStage.setTitle("Hilfe");
         WebView webview;
         GridPane helpGrid;

@@ -3,9 +3,6 @@ package de.lebk.jwebpoll.client;
 import com.j256.ormlite.dao.ForeignCollection;
 import de.lebk.jwebpoll.data.Answer;
 
-/**
- * Created by Samson on 01.06.2016.
- */
 public class Statistics {
 
     public static double getAverage(int voteCount, int voteCountTotal) {
