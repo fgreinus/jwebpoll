@@ -4,7 +4,10 @@ import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
@@ -27,9 +30,11 @@ public class EvaluationQuestionView {
             switch (question.getType()) {
                 case SINGLE:
                     fillForSingleAndMultipleChoice(question, answerTable);
+                    addChart(rootGrid,question);
                     break;
                 case MULTIPLE:
                     fillForSingleAndMultipleChoice(question, answerTable);
+                    addChart(rootGrid,question);
                     break;
                 case FREE:
                     fillForFree(question, answerTable);
@@ -70,6 +75,22 @@ public class EvaluationQuestionView {
         }
 
         answerTable.getColumns().add(countColumn);
+
+
+
+    }
+
+    private static  void addChart(GridPane rootgrid,Question item) {
+        ObservableList<PieChart.Data> pieChartData =
+                FXCollections.observableArrayList();
+        for(Answer answer:item.getAnswers()){
+            pieChartData.add(new PieChart.Data(answer.getText(),answer.getVotes().size()));
+        }
+
+
+        final PieChart chart = new PieChart(pieChartData);
+        //chart.setTitle("Imported Fruits");
+        rootgrid.add(chart,1,0);
     }
 
     private static void fillForFree(Question question, TableView<Answer> answerTable) {

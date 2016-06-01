@@ -23,7 +23,8 @@
           style="-fx-border-color: lightgray;">
 
     <columnConstraints>
-        <ColumnConstraints hgrow="ALWAYS" />
+        <ColumnConstraints hgrow="ALWAYS" percentWidth="50" />
+        <ColumnConstraints hgrow="ALWAYS" percentWidth="50" />
     </columnConstraints>
     <rowConstraints>
         <RowConstraints />
