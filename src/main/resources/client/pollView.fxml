@@ -128,4 +128,11 @@
             maxWidth="Infinity"
             GridPane.columnIndex="3"
             GridPane.rowIndex="6"/>
+
+    <Text id="linkTxt"
+          text="link"
+          GridPane.columnIndex="0"
+          GridPane.columnSpan="4"
+          GridPane.rowIndex="7"
+          visible="true"/>
 </GridPane>
