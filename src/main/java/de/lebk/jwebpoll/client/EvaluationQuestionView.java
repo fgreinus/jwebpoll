@@ -2,6 +2,7 @@ package de.lebk.jwebpoll.client;
 
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
+import de.lebk.jwebpoll.data.Vote;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -18,43 +19,41 @@ import java.io.IOException;
 public class EvaluationQuestionView {
 
     public static void setQuestionView(Accordion accordion, Question question, boolean disabled) {
+        if (accordion == null)
+            throw new IllegalArgumentException("Accordion cannot be null!");
+        if (question == null)
+            throw new IllegalArgumentException("Question cannot be null!");
+
         TitledPane tp = new TitledPane();
+        tp.setText(question.getTitle());
+
         GridPane rootGrid = null;
-        TableView<Answer> answerTable = null;
         try {
             rootGrid = FXMLLoader.load(QuestionView.class.getResource("/client/evaluationQuestionView.fxml"));
-            answerTable = (TableView<Answer>) rootGrid.lookup("#answerTable");
-            TextField titleTxF = (TextField) rootGrid.lookup("#titleTxF");
-            tp.setText(question.getTitle());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        if (rootGrid == null)
+            return;
 
-            switch (question.getType()) {
-                case SINGLE:
-                    fillForSingleAndMultipleChoice(question, answerTable);
-                    addChart(rootGrid,question);
-                    break;
-                case MULTIPLE:
-                    fillForSingleAndMultipleChoice(question, answerTable);
-                    addChart(rootGrid,question);
-                    break;
-                case FREE:
-                    fillForFree(question, answerTable);
-                    rootGrid.setColumnSpan(answerTable,2);
-                    break;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        switch (question.getType()) {
+            case SINGLE:
+            case MULTIPLE:
+                TableView<Answer> answerTable = (TableView<Answer>) rootGrid.lookup("#voteTable");
+                fillForSingleAndMultipleChoice(question, answerTable);
+                addChart(rootGrid, question);
+                break;
+            case FREE:
+                TableView<Vote> voteTable = (TableView<Vote>) rootGrid.lookup("#voteTable");
+                fillForFree(question, voteTable);
+                rootGrid.setColumnSpan(voteTable, 2);
+                break;
         }
 
-
-        if (accordion.getPanes().size() == 0) {
-            accordion.setExpandedPane(tp);
-        }
-
-        rootGrid.setVisible(true);
-        tp.setVisible(true);
-        answerTable.setVisible(true);
         tp.setContent(rootGrid);
         accordion.getPanes().add(tp);
+        if (accordion.getPanes().size() == 0)
+            accordion.setExpandedPane(tp);
     }
 
     private static void fillForSingleAndMultipleChoice(Question question, TableView<Answer> answerTable) {
@@ -76,32 +75,25 @@ public class EvaluationQuestionView {
         }
 
         answerTable.getColumns().add(countColumn);
-
-
-
     }
 
-    private static  void addChart(GridPane rootgrid,Question item) {
+    private static void addChart(GridPane rootgrid, Question question) {
         ObservableList<PieChart.Data> pieChartData =
                 FXCollections.observableArrayList();
-        for(Answer answer:item.getAnswers()){
-            pieChartData.add(new PieChart.Data(answer.getText(),answer.getVotes().size()));
+        for (Answer answer : question.getAnswers()) {
+            pieChartData.add(new PieChart.Data(answer.getText(), answer.getVotes().size()));
         }
-
 
         final PieChart chart = new PieChart(pieChartData);
-        rootgrid.add(chart,1,0);
+        rootgrid.add(chart, 1, 0);
     }
 
-    private static void fillForFree(Question question, TableView<Answer> answerTable) {
-        TableColumn<Answer, String> typeColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(0);
-        typeColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
-        typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(1));
+    private static void fillForFree(Question question, TableView<Vote> voteTable) {
+        TableColumn<Vote, String> typeColumn = (TableColumn<Vote, String>) voteTable.getColumns().get(0);
+        typeColumn.setCellValueFactory(new PropertyValueFactory<Vote, String>("userText"));
+        typeColumn.prefWidthProperty().bind(voteTable.widthProperty().multiply(1));
 
-
-        if (question.getAnswers() != null) {
-            answerTable.getItems().addAll(question.getAnswers());
-        }
-
+        for (Answer answer : question.getAnswers())
+            voteTable.getItems().addAll(answer.getVotes());
     }
 }

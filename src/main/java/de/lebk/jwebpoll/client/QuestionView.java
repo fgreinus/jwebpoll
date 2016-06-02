@@ -67,73 +67,87 @@ public class QuestionView {
             typeCbo.setButtonCell(new QuestionTypeListCell());
             typeCbo.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends QuestionType> observable, QuestionType oldValue, QuestionType newValue) ->
             {
-                question.setType(newValue);
-                switch (newValue) {
-                    case SINGLE:
-                        answerAddTextTxt.setVisible(true);
-                        answerAddTextTxF.setVisible(true);
-                        answerAddValueTxt.setVisible(true);
-                        answerAddValueTxF.setVisible(true);
-                        answerAddBtn.setVisible(true);
-                        answerTable.setVisible(true);
-                        answerRemoveBtn.setVisible(true);
-                        answerFreetext.setVisible(false);
-                        break;
-                    case MULTIPLE:
-                        answerAddTextTxt.setVisible(true);
-                        answerAddTextTxF.setVisible(true);
-                        answerAddValueTxt.setVisible(true);
-                        answerAddValueTxF.setVisible(true);
-                        answerAddBtn.setVisible(true);
-                        answerTable.setVisible(true);
-                        answerRemoveBtn.setVisible(true);
-                        answerFreetext.setVisible(false);
-                        break;
-                    case FREE:
-                        answerAddTextTxt.setVisible(false);
-                        answerAddTextTxF.setVisible(false);
-                        answerAddValueTxt.setVisible(false);
-                        answerAddValueTxF.setVisible(false);
-                        answerAddBtn.setVisible(false);
-                        answerTable.setVisible(false);
-                        answerRemoveBtn.setVisible(false);
-                        answerFreetext.setVisible(true);
-                        break;
-                }
+                if (newValue != question.getType()) {
+                    question.setType(newValue);
+                    switch (newValue) {
+                        case SINGLE:
+                        case MULTIPLE:
+                            answerAddTextTxt.setVisible(true);
+                            answerAddTextTxF.setVisible(true);
+                            answerAddValueTxt.setVisible(true);
+                            answerAddValueTxF.setVisible(true);
+                            answerAddBtn.setVisible(true);
+                            answerTable.setVisible(true);
+                            answerRemoveBtn.setVisible(true);
+                            answerFreetext.setVisible(false);
 
-                TableColumn<Answer, QuestionType> typeColumn = (TableColumn<Answer, QuestionType>) answerTable.getColumns().get(0);
-                typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.1));
-                typeColumn.setCellValueFactory(new QuestionTypeTableCell(question.getType()));
-                typeColumn.setCellFactory(new Callback<TableColumn<Answer, QuestionType>, TableCell<Answer, QuestionType>>() {
-                    @Override
-                    public TableCell<Answer, QuestionType> call(TableColumn<Answer, QuestionType> btnCol) {
-                        return new TableCell<Answer, QuestionType>() {
-                            @Override
-                            public void updateItem(QuestionType type, boolean empty) {
-                                super.updateItem(type, empty);
-
-                                Node graphic = null;
-                                if (type != null && !empty) {
-                                    try {
-                                        switch (type) {
-                                            case SINGLE:
-                                                graphic = FXMLLoader.load(QuestionView.class.getResource("/client/answer_single.fxml"));
-                                                break;
-                                            case MULTIPLE:
-                                                graphic = FXMLLoader.load(QuestionView.class.getResource("/client/answer_multiple.fxml"));
-                                                break;
-                                        }
-                                    } catch (IOException ex) {
-
+                            if (oldValue == QuestionType.FREE) {
+                                try {
+                                    for (Answer answer : question.getAnswers()) {
+                                        Database.getInstance().getAnswerDao().delete(answer);
                                     }
-                                } else {
-                                    setText(null);
+                                    question.getAnswers().clear();
+                                } catch (SQLException ex) {
+                                    ex.printStackTrace();
                                 }
-                                setGraphic(graphic);
                             }
-                        };
+                            break;
+                        case FREE:
+                            answerAddTextTxt.setVisible(false);
+                            answerAddTextTxF.setVisible(false);
+                            answerAddValueTxt.setVisible(false);
+                            answerAddValueTxF.setVisible(false);
+                            answerAddBtn.setVisible(false);
+                            answerTable.setVisible(false);
+                            answerRemoveBtn.setVisible(false);
+                            answerFreetext.setVisible(true);
+
+                            try {
+                                for (Answer answer : question.getAnswers()) {
+                                    Database.getInstance().getAnswerDao().delete(answer);
+                                }
+                                question.getAnswers().clear();
+                                question.getAnswers().add(new Answer("Freetext", 1, question));
+                            } catch (SQLException ex) {
+                                ex.printStackTrace();
+                            }
+                            break;
                     }
-                });
+
+                    TableColumn<Answer, QuestionType> typeColumn = (TableColumn<Answer, QuestionType>) answerTable.getColumns().get(0);
+                    typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.1));
+                    typeColumn.setCellValueFactory(new QuestionTypeTableCell(question.getType()));
+                    typeColumn.setCellFactory(new Callback<TableColumn<Answer, QuestionType>, TableCell<Answer, QuestionType>>() {
+                        @Override
+                        public TableCell<Answer, QuestionType> call(TableColumn<Answer, QuestionType> btnCol) {
+                            return new TableCell<Answer, QuestionType>() {
+                                @Override
+                                public void updateItem(QuestionType type, boolean empty) {
+                                    super.updateItem(type, empty);
+
+                                    Node graphic = null;
+                                    if (type != null && !empty) {
+                                        try {
+                                            switch (type) {
+                                                case SINGLE:
+                                                    graphic = FXMLLoader.load(QuestionView.class.getResource("/client/answer_single.fxml"));
+                                                    break;
+                                                case MULTIPLE:
+                                                    graphic = FXMLLoader.load(QuestionView.class.getResource("/client/answer_multiple.fxml"));
+                                                    break;
+                                            }
+                                        } catch (IOException ex) {
+                                            ex.printStackTrace();
+                                        }
+                                    } else {
+                                        setText(null);
+                                    }
+                                    setGraphic(graphic);
+                                }
+                            };
+                        }
+                    });
+                }
             });
             typeCbo.setValue(question.getType());
             typeCbo.setDisable(disabled);

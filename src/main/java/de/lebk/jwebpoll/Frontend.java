@@ -32,8 +32,7 @@ public class Frontend {
     public static Frontend getInstance(Poll activePoll, String networkAddress) {
         if (Frontend.instance == null || !Frontend.instance.networkAddress.equals(networkAddress))
         {
-            if(Frontend.instance != null)
-                Frontend.kill();
+            Frontend.kill();
             Frontend.instance = new Frontend(activePoll, networkAddress);
         }
         Frontend.instance.activePoll = activePoll;
