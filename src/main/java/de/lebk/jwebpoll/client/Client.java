@@ -14,7 +14,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
@@ -139,14 +138,21 @@ public class Client extends Application {
         MenuBar menuBar = (MenuBar) rootGrid.lookup("#menuBar");
         // --- Menu Hilfe
         Menu menuHelp = new Menu("Über");
+        MenuItem about=new MenuItem("Über");
+        about.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                InfoSiteHelper.show("about");
+            }
+        });
         MenuItem help = new MenuItem("Hilfe");
         help.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                HelpSite.show();
+                InfoSiteHelper.show("help");
             }
         });
-        menuHelp.getItems().add(0, help);
+        menuHelp.getItems().addAll(about, help);
         menuBar.getMenus().addAll(menuHelp);
 
         // PollView (Right side)

@@ -11,8 +11,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class HelpSite {
-    public static void show() {
+public class InfoSiteHelper {
+    public static void show(String resource) {
         Stage evaluationStage = new Stage();
         evaluationStage.setTitle("Hilfe");
         WebView webview;
@@ -30,8 +30,9 @@ public class HelpSite {
         BufferedReader bufferedReader = null;
         String line;
         StringBuilder sb = new StringBuilder();
+String path="src"+File.separator+"main"+File.separator+"resources"+File.separator+ "about"+File.separator;
         try {
-            fileReader = new FileReader("src"+File.separator+"main"+File.separator+"resources"+File.separator+"help.html");
+            fileReader = new FileReader(path+resource+".html");
             bufferedReader = new BufferedReader(fileReader);
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line).append("\n");
