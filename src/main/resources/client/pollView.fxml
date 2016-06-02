@@ -216,12 +216,9 @@
             <Text id="linkTxt"
                   text="Webadresse:"
                   GridPane.columnIndex="0"/>
-            <TextField id="linkTxF"
-                       text=""
-                       editable="false"
-                       visible="true"
-                       GridPane.columnIndex="1"/>
-
+            <ComboBox id="linkCbo"
+                      GridPane.columnIndex="1"/>
+            
         </GridPane>
 
         <Button id="openBtn"

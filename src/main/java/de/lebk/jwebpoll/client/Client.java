@@ -16,10 +16,12 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -43,7 +45,7 @@ public class Client extends Application {
     private ListView<Poll> pollList;
     private Button pollAddBtn, pollRemoveBtn;
     private TextField titleTxF;
-    private TextField linkTxF;
+    private ComboBox<String> linkCbo;
     private TextArea descTxF;
     private TextField createdDateTxF, createdTimeTxF;
     private ComboBox<PollState> stateCbo;
@@ -73,15 +75,9 @@ public class Client extends Application {
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
                 Client.activePoll = p;
-                try {
-                    spawnWebServer(Client.activePoll);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
                 break;
             }
         }
-
 
         // ListView (Left side)
         GridPane rootGrid = FXMLLoader.load(this.getClass().getResource("/client/client.fxml"));
@@ -218,6 +214,25 @@ public class Client extends Application {
             return new PollStateListCell();
         });
         this.stateCbo.setButtonCell(new PollStateListCell());
+
+        this.linkCbo = (ComboBox<String>) pollDetail.lookup("#linkCbo");
+        try {
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            Enumeration<InetAddress> addresses;
+            while (networkInterfaces.hasMoreElements()) {
+                addresses = networkInterfaces.nextElement().getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    this.linkCbo.getItems().add(addresses.nextElement().getHostAddress());
+                }
+            }
+        } catch (SocketException ex) {
+            ex.printStackTrace();
+        }
+        this.linkCbo.getSelectionModel().selectFirst();
+        if(Client.activePoll != null)
+        {
+            this.spawnWebServer(Client.activePoll, this.linkCbo.getSelectionModel().getSelectedItem());
+        }
         this.openBtn = (Button) pollDetail.lookup("#openBtn");
         this.openBtn.setOnAction((ActionEvent event) ->
         {
@@ -227,14 +242,14 @@ public class Client extends Application {
             this.closeBtn.setVisible(true);
             this.stateCbo.setValue(Client.poll.getState());
             this.enableControls();
-            this.setLinkTxt();
             this.pollList.refresh();
+
             try {
                 this.db.getPollDao().update(Client.poll);
-                spawnWebServer(Client.activePoll);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
             }
+            this.spawnWebServer(Client.activePoll, this.linkCbo.getSelectionModel().getSelectedItem());
         });
         this.closeBtn = (Button) pollDetail.lookup("#closeBtn");
         this.closeBtn.setOnAction((ActionEvent event) ->
@@ -246,19 +261,13 @@ public class Client extends Application {
             this.stateCbo.setValue(Client.poll.getState());
             this.enableControls();
             this.pollList.refresh();
-            try {
-                spawnWebServer(Client.activePoll);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            Frontend.kill();
         });
         this.resultsBtn = (Button) pollDetail.lookup("#resultsBtn");
         this.resultsBtn.setOnAction((ActionEvent event) ->
         {
             EvaluationDialog.show(Client.poll);
         });
-
-        this.linkTxF = (TextField) pollDetail.lookup("#linkTxF");
 
         pollDetailScroller.setContent(pollDetail);
         rootSplit.getItems().add(pollDetailScroller);
@@ -319,21 +328,13 @@ public class Client extends Application {
         this.questionsAddBtn.setDisable(disable);
         this.questionsRemoveBtn.setDisable(disable || Client.poll.getQuestions().isEmpty());
 
+        this.linkCbo.setDisable(disable);
         this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
         this.closeBtn.setDisable(!disable);
         this.resultsBtn.setDisable(Client.poll == null);
     }
 
-    public void setLinkTxt() {
-        try {
-            InetAddress host = InetAddress.getLocalHost();
-            this.linkTxF.setText(host.getHostAddress() + ":4567");
-        } catch (UnknownHostException ex) {
-            this.linkTxF.setText(ex.getMessage());
-        }
-    }
-
-    private void spawnWebServer(Poll poll) throws Exception {
-        Frontend.getInstance(poll);
+    private void spawnWebServer(Poll poll, String networkAddress) {
+        Frontend.getInstance(poll, networkAddress);
     }
 }
