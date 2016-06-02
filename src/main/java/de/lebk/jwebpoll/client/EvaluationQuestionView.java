@@ -51,9 +51,9 @@ public class EvaluationQuestionView {
         }
 
         tp.setContent(rootGrid);
-        accordion.getPanes().add(tp);
         if (accordion.getPanes().size() == 0)
             accordion.setExpandedPane(tp);
+        accordion.getPanes().add(tp);
     }
 
     private static void fillForSingleAndMultipleChoice(Question question, TableView<Answer> answerTable) {
@@ -94,6 +94,8 @@ public class EvaluationQuestionView {
         typeColumn.prefWidthProperty().bind(voteTable.widthProperty().multiply(1));
 
         for (Answer answer : question.getAnswers())
-            voteTable.getItems().addAll(answer.getVotes());
+            for (Vote vote : answer.getVotes())
+                if (vote.getUserText() != null && !vote.getUserText().isEmpty())
+                    voteTable.getItems().add(vote);
     }
 }
