@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -134,19 +135,15 @@ public class Client extends Application {
         MenuBar menuBar = (MenuBar) rootGrid.lookup("#menuBar");
         // --- Menu Hilfe
         Menu menuHelp = new Menu("Über");
-        MenuItem about=new MenuItem("Über");
-        about.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                InfoSiteHelper.show("about");
-            }
+        MenuItem about = new MenuItem("Über");
+        about.setOnAction((ActionEvent event) ->
+        {
+            InfoSiteHelper.show("about");
         });
         MenuItem help = new MenuItem("Hilfe");
-        help.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                InfoSiteHelper.show("help");
-            }
+        help.setOnAction((ActionEvent event) ->
+        {
+            InfoSiteHelper.show("help");
         });
         menuHelp.getItems().addAll(about, help);
         menuBar.getMenus().addAll(menuHelp);
@@ -235,9 +232,8 @@ public class Client extends Application {
             ex.printStackTrace();
         }
         this.linkCbo.getSelectionModel().selectFirst();
-        if(Client.activePoll != null)
-        {
-            this.spawnWebServer(Client.activePoll, this.linkCbo.getSelectionModel().getSelectedItem());
+        if (Client.activePoll != null) {
+            new Frontend(Client.activePoll, this.linkCbo.getSelectionModel().getSelectedItem());
         }
         this.openBtn = (Button) pollDetail.lookup("#openBtn");
         this.openBtn.setOnAction((ActionEvent event) ->
@@ -255,7 +251,7 @@ public class Client extends Application {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            this.spawnWebServer(Client.activePoll, this.linkCbo.getSelectionModel().getSelectedItem());
+            new Frontend(Client.activePoll, this.linkCbo.getSelectionModel().getSelectedItem());
         });
         this.closeBtn = (Button) pollDetail.lookup("#closeBtn");
         this.closeBtn.setOnAction((ActionEvent event) ->
@@ -338,9 +334,5 @@ public class Client extends Application {
         this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
         this.closeBtn.setDisable(!disable);
         this.resultsBtn.setDisable(Client.poll == null);
-    }
-
-    private void spawnWebServer(Poll poll, String networkAddress) {
-        Frontend.getInstance(poll, networkAddress);
     }
 }

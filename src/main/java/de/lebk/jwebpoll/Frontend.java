@@ -27,17 +27,6 @@ public class Frontend {
     private FreeMarkerEngine fmEngine;
     protected static Database db = Database.getInstance();
     protected Poll activePoll;
-    private String networkAddress;
-
-    public static Frontend getInstance(Poll activePoll, String networkAddress) {
-        if (Frontend.instance == null || !Frontend.instance.networkAddress.equals(networkAddress))
-        {
-            Frontend.kill();
-            Frontend.instance = new Frontend(activePoll, networkAddress);
-        }
-        Frontend.instance.activePoll = activePoll;
-        return Frontend.instance;
-    }
 
     public static void kill() {
         stop();
@@ -135,10 +124,10 @@ public class Frontend {
         }, fmEngine);
     }
 
-    private Frontend(Poll activePoll, String networkAddress) {
+    public Frontend(Poll activePoll, String networkAddress) {
+        Frontend.kill();
         this.initializeSparkConfiguration(networkAddress);
         this.bindSparkRoutes();
         this.activePoll = activePoll;
-        this.networkAddress = networkAddress;
     }
 }
