@@ -4,20 +4,20 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.web.WebView?>
+
 <GridPane xmlns="http://javafx.com/javafx/8"
-          id="rootGrid"
+          id="helpGrid"
           hgap="50"
           vgap="50"
           style="-fx-border-color: lightgray;">
 
     <columnConstraints>
-        <ColumnConstraints hgrow="ALWAYS" />
+        <ColumnConstraints hgrow="ALWAYS"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints />
+        <RowConstraints vgrow="ALWAYS"/>
     </rowConstraints>
 
-   <WebView  id="webview">
-   </WebView>
+    <WebView id="webview"/>
 
 </GridPane>
