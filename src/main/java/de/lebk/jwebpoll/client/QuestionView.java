@@ -67,7 +67,7 @@ public class QuestionView {
             typeCbo.setButtonCell(new QuestionTypeListCell());
             typeCbo.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends QuestionType> observable, QuestionType oldValue, QuestionType newValue) ->
             {
-                if (newValue != question.getType()) {
+                if (newValue != oldValue) {
                     question.setType(newValue);
                     switch (newValue) {
                         case SINGLE:
@@ -80,17 +80,6 @@ public class QuestionView {
                             answerTable.setVisible(true);
                             answerRemoveBtn.setVisible(true);
                             answerFreetext.setVisible(false);
-
-                            if (oldValue == QuestionType.FREE) {
-                                try {
-                                    for (Answer answer : question.getAnswers()) {
-                                        Database.getInstance().getAnswerDao().delete(answer);
-                                    }
-                                    question.getAnswers().clear();
-                                } catch (SQLException ex) {
-                                    ex.printStackTrace();
-                                }
-                            }
                             break;
                         case FREE:
                             answerAddTextTxt.setVisible(false);
@@ -101,16 +90,6 @@ public class QuestionView {
                             answerTable.setVisible(false);
                             answerRemoveBtn.setVisible(false);
                             answerFreetext.setVisible(true);
-
-                            try {
-                                for (Answer answer : question.getAnswers()) {
-                                    Database.getInstance().getAnswerDao().delete(answer);
-                                }
-                                question.getAnswers().clear();
-                                question.getAnswers().add(new Answer("Freetext", 1, question));
-                            } catch (SQLException ex) {
-                                ex.printStackTrace();
-                            }
                             break;
                     }
 

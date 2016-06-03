@@ -14,45 +14,25 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class EvaluationDialog {
-    public static void show(Poll poll) {
-
+    public static void show(int pollId) {
         Stage evaluationStage = new Stage();
         evaluationStage.getIcons().add(new Image(EvaluationDialog.class.getResource("/icon.png").toString()));
+
+        Poll poll = null;
+        try {
+            poll = Database.getInstance().getPollDao().queryForId(pollId);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        if(poll == null)
+            return;
+
         evaluationStage.setTitle("Auswertung: " + poll.getTitle());
-//        ScrollPane scroller = new ScrollPane();
-//        scroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-//        scroller.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-//        scroller.setFitToWidth(true);
-//        scroller.setFitToHeight(true);
         GridPane evaluationGrid;
         try {
             evaluationGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/evaluationDialog.fxml"));
             Accordion questionsAccordion = (Accordion) evaluationGrid.lookup("#questionsAccordion");
-
-            for (Question question : poll.questions) {
-
-                if (question.getType() == QuestionType.FREE) {
-                    try {
-                        Answer freeAnswer = Database.getInstance().getAnswerDao().queryBuilder().where().eq("question_id", question.getId()).queryForFirst();
-                        List<Vote> voteList = Database.getInstance().getVoteDao().queryBuilder().where().eq("question_id", question.getId()).and().isNull("answer_id").query();
-                        for (Vote vote : voteList) {
-                            vote.setAnswer(freeAnswer);
-                            Database.getInstance().getVoteDao().update(vote);
-                        }
-                    } catch (SQLException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-
-            try {
-                poll = Database.getInstance().getPollDao().queryForId(poll.getId());
-            }
-            catch (SQLException ex)
-            {
-                ex.printStackTrace();
-            }
-
             for (Question question : poll.questions) {
                 EvaluationQuestionView.setQuestionView(questionsAccordion, question, false);
 
@@ -71,9 +51,6 @@ public class EvaluationDialog {
                 double standardDeviation = Statistics.getStandardDeviation(question.getAnswers(), arithmeticAverage);
                 System.out.println("Standard deviation: " + standardDeviation);
             }
-            evaluationGrid.setVisible(true);
-            questionsAccordion.setVisible(true);
-//            scroller.setContent(questionsAccordion);
         } catch (IOException ex) {
             ex.printStackTrace();
             return;

@@ -93,9 +93,8 @@ public class EvaluationQuestionView {
         typeColumn.setCellValueFactory(new PropertyValueFactory<Vote, String>("userText"));
         typeColumn.prefWidthProperty().bind(voteTable.widthProperty().multiply(1));
 
-        for (Answer answer : question.getAnswers())
-            for (Vote vote : answer.getVotes())
-                if (vote.getUserText() != null && !vote.getUserText().isEmpty())
-                    voteTable.getItems().add(vote);
+        for (Vote vote : question.getFreetextVotes())
+            if (vote.getUserText() != null && !vote.getUserText().isEmpty())
+                voteTable.getItems().add(vote);
     }
 }
