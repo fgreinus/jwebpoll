@@ -7,16 +7,10 @@ import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.Vote;
 import freemarker.template.Configuration;
 import spark.ModelAndView;
-import spark.QueryParamsMap;
-import spark.Request;
-import spark.Response;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,17 +25,17 @@ public class Frontend {
     private final String assetDir = "/assets";
 
     private FreeMarkerEngine fmEngine;
-    protected static Database db;
+    protected static Database db = Database.getInstance();
     protected Poll activePoll;
+    private String networkAddress;
 
-
-    public static Frontend getInstance(Poll activePoll) throws Exception {
-        if (Frontend.instance == null) {
-            Frontend.instance = new Frontend(activePoll);
-        } else {
-            Frontend.instance.activePoll = activePoll;
+    public static Frontend getInstance(Poll activePoll, String networkAddress) {
+        if (Frontend.instance == null || !Frontend.instance.networkAddress.equals(networkAddress))
+        {
+            Frontend.kill();
+            Frontend.instance = new Frontend(activePoll, networkAddress);
         }
-
+        Frontend.instance.activePoll = activePoll;
         return Frontend.instance;
     }
 
@@ -49,15 +43,8 @@ public class Frontend {
         stop();
     }
 
-    private void initializeSparkConfiguration() {
-        InetAddress host = null;
-        try {
-            host = InetAddress.getLocalHost();
-            String hostAddress = host.getHostAddress();
-            ipAddress(hostAddress);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+    private void initializeSparkConfiguration(String networkAddress) {
+        ipAddress(networkAddress);
         // so that all static files will be served directly by spark and we don't have to care any longer about them :)
         staticFileLocation(assetDir);
 
@@ -98,10 +85,9 @@ public class Frontend {
                 givenAnswersMap.get(realInputKey).add(inputValue);
             }
 
-            Database db = Database.getInstance();
-            Dao voteDao = db.getVoteDao();
-            Dao questionDao = db.getQuestionDao();
-            Dao answerDao = db.getAnswerDao();
+            Dao voteDao = Frontend.db.getVoteDao();
+            Dao questionDao = Frontend.db.getQuestionDao();
+            Dao answerDao = Frontend.db.getAnswerDao();
 
             for (String questionKeyString : givenAnswersMap.keySet()) {
 
@@ -149,10 +135,10 @@ public class Frontend {
         }, fmEngine);
     }
 
-    private Frontend(Poll activePoll) throws Exception {
-        initializeSparkConfiguration();
-        bindSparkRoutes();
-        db = Database.getInstance();
+    private Frontend(Poll activePoll, String networkAddress) {
+        this.initializeSparkConfiguration(networkAddress);
+        this.bindSparkRoutes();
         this.activePoll = activePoll;
+        this.networkAddress = networkAddress;
     }
 }

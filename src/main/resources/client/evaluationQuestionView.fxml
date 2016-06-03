@@ -4,6 +4,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.layout.RowConstraints?>
+
 <GridPane xmlns="http://javafx.com/javafx/8"
           id="rootGrid"
           hgap="50"
@@ -18,14 +19,16 @@
         <RowConstraints/>
     </rowConstraints>
 
-    <TableView id="answerTable"
+    <TableView id="voteTable"
                GridPane.columnIndex="0"
                GridPane.rowIndex="0"
                GridPane.vgrow="ALWAYS"
                maxHeight="Infinity"
                prefWidth="-Infinity">
         <columns>
-            <TableColumn id="#answerColumn" text="Antworten" resizable="true"/>
+            <TableColumn id="answerColumn"
+                         text="Antworten"
+                         resizable="true"/>
         </columns>
     </TableView>
 

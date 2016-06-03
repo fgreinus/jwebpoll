@@ -31,9 +31,13 @@ public class Question {
     @ForeignCollectionField(eager = true)
     private ForeignCollection<Answer> answers;
 
+    @ForeignCollectionField(eager = true)
+    private ForeignCollection<Vote> freetextVotes;
+
     public Question() {
         try {
             this.answers = Database.getInstance().getQuestionDao().getEmptyForeignCollection("answers");
+            this.freetextVotes = Database.getInstance().getQuestionDao().getEmptyForeignCollection("freetextVotes");
         } catch (SQLException e) {
             this.answers = null;
         }
@@ -102,6 +106,10 @@ public class Question {
 
     public ForeignCollection<Answer> getAnswers() {
         return answers;
+    }
+
+    public ForeignCollection<Vote> getFreetextVotes() {
+        return freetextVotes;
     }
 
     public void update() {
