@@ -235,7 +235,8 @@ public class Client extends Application {
             while (networkInterfaces.hasMoreElements()) {
                 addresses = networkInterfaces.nextElement().getInetAddresses();
                 while (addresses.hasMoreElements()) {
-                    this.linkCbo.getItems().add(addresses.nextElement().getHostAddress());
+                    //add port to adress
+                    this.linkCbo.getItems().add(addresses.nextElement().getHostAddress()+":4567");
                 }
             }
         } catch (SocketException ex) {
@@ -244,7 +245,9 @@ public class Client extends Application {
         this.linkCbo.getSelectionModel().selectFirst();
         if(Client.activePoll != null)
         {
-            this.spawnWebServer(Client.activePoll, this.linkCbo.getSelectionModel().getSelectedItem());
+            String address=this.linkCbo.getSelectionModel().getSelectedItem();
+            address=address.substring(0,address.lastIndexOf(':'));
+            this.spawnWebServer(Client.activePoll, address);
         }
         this.openBtn = (Button) pollDetail.lookup("#openBtn");
         this.openBtn.setOnAction((ActionEvent event) ->
@@ -262,7 +265,10 @@ public class Client extends Application {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            this.spawnWebServer(Client.activePoll, this.linkCbo.getSelectionModel().getSelectedItem());
+            //remove port from address
+            String address=this.linkCbo.getSelectionModel().getSelectedItem();
+            address=address.substring(0,address.lastIndexOf(':'));
+            this.spawnWebServer(Client.activePoll,address);
         });
         this.closeBtn = (Button) pollDetail.lookup("#closeBtn");
         this.closeBtn.setOnAction((ActionEvent event) ->
