@@ -18,11 +18,10 @@ import java.util.Map;
 import static spark.Spark.*;
 
 public class Frontend {
-
-    private static Frontend instance;
-
     private final String templateDir = "src/main/resources/templates";
     private final String assetDir = "/assets";
+
+    public static final int PORT = 4567;
 
     private FreeMarkerEngine fmEngine;
     protected static Database db = Database.getInstance();

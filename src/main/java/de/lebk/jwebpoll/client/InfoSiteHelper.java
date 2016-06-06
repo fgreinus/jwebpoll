@@ -14,7 +14,7 @@ import java.io.IOException;
 public class InfoSiteHelper {
     public static void show(String resource) {
         Stage evaluationStage = new Stage();
-        evaluationStage.setTitle("Hilfe");
+        evaluationStage.setTitle(resource);
         WebView webview;
         GridPane helpGrid;
         try {
@@ -30,16 +30,16 @@ public class InfoSiteHelper {
         BufferedReader bufferedReader = null;
         String line;
         StringBuilder sb = new StringBuilder();
-String path="src"+File.separator+"main"+File.separator+"resources"+File.separator+ "about"+File.separator;
+        String path = "src" + File.separator + "main" + File.separator + "resources" + File.separator + "about" + File.separator;
         try {
-            fileReader = new FileReader(path+resource+".html");
+            fileReader = new FileReader(path + resource + ".html");
             bufferedReader = new BufferedReader(fileReader);
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line).append("\n");
             }
         } catch (IOException e) {
             sb.append("<html> <body> <h2> FEHLER </h2> Bedauerlicher Weise konnte die Hilfeseite nicht geladen werden. <br> "
-                    +"Noch bedauerlicher ist es, dass es keine Hilfeseite gibt wenn man Wissen will warum die Hilfeseite nicht lädt.</body> </html>");
+                    + "Noch bedauerlicher ist es, dass es keine Hilfeseite gibt wenn man Wissen will warum die Hilfeseite nicht lädt.</body> </html>");
             e.printStackTrace();
         }
 

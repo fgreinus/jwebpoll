@@ -145,7 +145,14 @@ public class Client extends Application {
         {
             InfoSiteHelper.show("help");
         });
-        menuHelp.getItems().addAll(about, help);
+        MenuItem license = new MenuItem("Lizenzen");
+        license.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                InfoSiteHelper.show("license");
+            }
+        });
+        menuHelp.getItems().addAll(about, help, license);
         menuBar.getMenus().addAll(menuHelp);
 
         // PollView (Right side)
@@ -225,7 +232,7 @@ public class Client extends Application {
             while (networkInterfaces.hasMoreElements()) {
                 addresses = networkInterfaces.nextElement().getInetAddresses();
                 while (addresses.hasMoreElements()) {
-                    this.linkCbo.getItems().add(addresses.nextElement().getHostAddress());
+                    this.linkCbo.getItems().add(addresses.nextElement().getHostAddress() + ":" + Frontend.PORT);
                 }
             }
         } catch (SocketException ex) {
@@ -233,7 +240,7 @@ public class Client extends Application {
         }
         this.linkCbo.getSelectionModel().selectFirst();
         if (Client.activePoll != null) {
-            new Frontend(Client.activePoll, this.linkCbo.getSelectionModel().getSelectedItem());
+            new Frontend(Client.activePoll, this.getSelectedAddress());
         }
         this.openBtn = (Button) pollDetail.lookup("#openBtn");
         this.openBtn.setOnAction((ActionEvent event) ->
@@ -251,7 +258,7 @@ public class Client extends Application {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-            new Frontend(Client.activePoll, this.linkCbo.getSelectionModel().getSelectedItem());
+            new Frontend(Client.activePoll, this.getSelectedAddress());
         });
         this.closeBtn = (Button) pollDetail.lookup("#closeBtn");
         this.closeBtn.setOnAction((ActionEvent event) ->
@@ -334,5 +341,10 @@ public class Client extends Application {
         this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
         this.closeBtn.setDisable(!disable);
         this.resultsBtn.setDisable(Client.poll == null);
+    }
+
+    private String getSelectedAddress()
+    {
+        return this.linkCbo.getSelectionModel().getSelectedItem().substring(0, this.linkCbo.getSelectionModel().getSelectedItem().lastIndexOf(':'));
     }
 }
