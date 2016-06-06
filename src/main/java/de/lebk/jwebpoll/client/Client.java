@@ -148,7 +148,14 @@ public class Client extends Application {
                 InfoSiteHelper.show("help");
             }
         });
-        menuHelp.getItems().addAll(about, help);
+        MenuItem license = new MenuItem("Lizenzen");
+        license.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                InfoSiteHelper.show("license");
+            }
+        });
+        menuHelp.getItems().addAll(about, help,license);
         menuBar.getMenus().addAll(menuHelp);
 
         // PollView (Right side)
