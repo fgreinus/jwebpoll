@@ -93,6 +93,7 @@ public class QuestionView {
                             break;
                     }
 
+
                     TableColumn<Answer, QuestionType> typeColumn = (TableColumn<Answer, QuestionType>) answerTable.getColumns().get(0);
                     typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.1));
                     typeColumn.setCellValueFactory(new QuestionTypeTableCell(question.getType()));

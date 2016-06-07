@@ -59,7 +59,7 @@ public class EvaluationQuestionView {
     private static void fillForSingleAndMultipleChoice(Question question, TableView<Answer> answerTable) {
         TableColumn<Answer, String> typeColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(0);
         typeColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
-        typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.75));
+        typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.5));
 
 
         TableColumn<Answer, String> countColumn = new TableColumn<>("Häufigkeit");
@@ -70,11 +70,21 @@ public class EvaluationQuestionView {
         });
         countColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.25));
 
+        TableColumn<Answer, String> weightedColumn = new TableColumn<>("Gewichtet");
+        weightedColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Answer, String>, ObservableValue<String>>() {
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<Answer, String> cellData) {
+                return new SimpleStringProperty(String.valueOf(cellData.getValue().getVotes().size()*cellData.getValue().getValue()));
+            }
+        });
+        weightedColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.25));
+
         if (question.getAnswers() != null) {
             answerTable.getItems().addAll(question.getAnswers());
         }
 
         answerTable.getColumns().add(countColumn);
+        answerTable.getColumns().add(weightedColumn);
+
     }
 
     private static void addChart(GridPane rootgrid, Question question) {
