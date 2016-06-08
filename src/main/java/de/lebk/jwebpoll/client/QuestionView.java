@@ -6,12 +6,10 @@ import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.QuestionType;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
@@ -182,7 +180,7 @@ public class QuestionView {
                         if (confirmed) {
                             Answer toRemove = answerTable.getSelectionModel().getSelectedItem();
                             try {
-                                Database.getInstance().getAnswerDao().delete(toRemove);
+                                Database.getDB().getAnswerDao().delete(toRemove);
                                 question.getAnswers().remove(toRemove);
                                 answerTable.getItems().remove(toRemove);
                                 QuestionView.updateAddValueTxF(question, answerAddValueTxF);

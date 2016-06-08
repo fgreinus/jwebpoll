@@ -1,6 +1,5 @@
 package de.lebk.jwebpoll.data;
 
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
@@ -10,9 +9,7 @@ import de.lebk.jwebpoll.Database;
 import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @DatabaseTable(tableName = "polls")
 public class Poll {
@@ -37,7 +34,7 @@ public class Poll {
 
     public Poll() {
         try {
-            this.questions = Database.getInstance().getPollDao().getEmptyForeignCollection("questions");
+            this.questions = Database.getDB().getPollDao().getEmptyForeignCollection("questions");
         } catch (SQLException e) {
             this.questions = null;
             if (logger.isDebugEnabled()) {
@@ -95,7 +92,7 @@ public class Poll {
 
     private void update() {
         try {
-            Database.getInstance().getPollDao().update(this);
+            Database.getDB().getPollDao().update(this);
         } catch (SQLException e) {
             this.questions = null;
             if (logger.isDebugEnabled()) {

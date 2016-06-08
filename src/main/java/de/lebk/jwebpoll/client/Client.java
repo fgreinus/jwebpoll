@@ -32,16 +32,11 @@ public class Client extends Application {
         Client.launch(args);
     }
 
-    final static Logger logger = Logger.getLogger(Client.class);
     //- Data -
+    private static final Logger LOGGER = Logger.getLogger(Client.class);
     private List<Poll> polls = new ArrayList<>();
-    //poll selected in client window
-    private static Poll poll;
-    //poll running on server
-    private static Poll activePoll;
-
-    //- DB -
-    private Database db;
+    private static Poll poll; // Poll selected in client
+    private static Poll activePoll; // Poll running on server
 
     //- View -
     private ListView<Poll> pollList;
@@ -54,7 +49,6 @@ public class Client extends Application {
     private Button openBtn, closeBtn, resultsBtn;
     private Accordion questionsAccordion;
     private Button questionsAddBtn, questionsRemoveBtn;
-
     private Hashtable<TitledPane, Question> titledPanes = new Hashtable<>();
 
     @Override
@@ -65,18 +59,15 @@ public class Client extends Application {
             try {
                 Frontend.kill();
             } catch (Exception e) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Front end kill failed: ", e);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Front end kill failed: ", e);
                 }
                 e.printStackTrace();
             }
         });
         primaryStage.getIcons().add(new Image(Client.class.getResource("/icon.png").toString()));
 
-        // Start DB
-        this.db = Database.getInstance();
-
-        this.polls.addAll(this.db.getPollDao().queryForAll());
+        this.polls.addAll(Database.getDB().getPollDao().queryForAll());
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
                 Client.activePoll = p;
@@ -104,14 +95,14 @@ public class Client extends Application {
         {
             Poll newPoll = new Poll("", "", PollState.NEW);
             try {
-                this.db.getPollDao().create(newPoll);
+                Database.getDB().getPollDao().create(newPoll);
                 Client.poll = newPoll;
                 this.polls.add(Client.poll);
                 this.pollList.getItems().addAll(Client.poll);
                 this.pollList.getSelectionModel().select(Client.poll);
             } catch (SQLException ex) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Adding poll failed: ", ex);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Adding poll failed: ", ex);
                 }
                 ex.printStackTrace();
             }
@@ -122,7 +113,7 @@ public class Client extends Application {
             ConfirmDialog.show("Umfrage wirklich entfernen?", (boolean confirmed) ->
             {
                 if (confirmed) {
-                    if (this.db.deletePoll(Client.poll)) {
+                    if (Database.getDB().deletePoll(Client.poll)) {
                         this.polls.remove(Client.poll);
                         int index = this.pollList.getItems().indexOf(Client.poll);
                         this.pollList.getItems().remove(Client.poll);
@@ -209,16 +200,16 @@ public class Client extends Application {
                 if (confirmed) {
                     Question toRemove = this.titledPanes.get(this.questionsAccordion.getExpandedPane());
                     try {
-                        this.db.getQuestionDao().delete(toRemove);
+                        Database.getDB().getQuestionDao().delete(toRemove);
                         for (Answer answer : toRemove.getAnswers()) {
-                            this.db.getAnswerDao().delete(answer);
+                            Database.getDB().getAnswerDao().delete(answer);
                         }
                         Client.poll.getQuestions().remove(toRemove);
                         this.titledPanes.remove(this.questionsAccordion.getExpandedPane());
                         this.questionsAccordion.getPanes().remove(this.questionsAccordion.getExpandedPane());
                     } catch (SQLException ex) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("Removing question failed: ", ex);
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("Removing question failed: ", ex);
                         }
                         ex.printStackTrace();
                     }
@@ -249,8 +240,8 @@ public class Client extends Application {
                 }
             }
         } catch (SocketException ex) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Getting network addresses failed: ", ex);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Getting network addresses failed: ", ex);
             }
             ex.printStackTrace();
         }
@@ -279,10 +270,10 @@ public class Client extends Application {
             this.pollList.refresh();
 
             try {
-                this.db.getPollDao().update(Client.poll);
+                Database.getDB().getPollDao().update(Client.poll);
             } catch (SQLException ex) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Opening poll failed: ", ex);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Opening poll failed: ", ex);
                 }
                 ex.printStackTrace();
             }
@@ -363,7 +354,7 @@ public class Client extends Application {
             }
 
         this.questionsAddBtn.setDisable(disable);
-        this.questionsRemoveBtn.setDisable(disable || Client.poll.getQuestions().isEmpty());
+        this.questionsRemoveBtn.setDisable(disable || Client.poll.getQuestions().isEmpty() || this.questionsAccordion.getExpandedPane() == null);
 
         if(disable)
         {

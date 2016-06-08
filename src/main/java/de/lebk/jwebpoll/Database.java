@@ -48,11 +48,9 @@ public class Database {
         initializeModelDataAccessObjects();
     }
 
-    public static Database getInstance() {
-        if (instance == null) {
+    public static Database getDB() {
+        if (instance == null)
             instance = new Database();
-        }
-
         return instance;
     }
 
