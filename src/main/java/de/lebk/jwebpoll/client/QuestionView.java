@@ -209,7 +209,6 @@ public class QuestionView {
 
             tp.setContent(rootGird);
             accordion.getPanes().add(tp);
-            accordion.setExpandedPane(tp);
 
             return tp;
         } catch (IOException ex) {

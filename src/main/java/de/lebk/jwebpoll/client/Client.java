@@ -197,7 +197,8 @@ public class Client extends Application {
             Question newQuestion = new Question("", true, QuestionType.SINGLE, Client.poll);
             Client.poll.getQuestions().add(newQuestion);
             TitledPane tp = QuestionView.setQuestionView(this.questionsAccordion, newQuestion, Client.activePoll != null && Client.activePoll == Client.poll);
-            titledPanes.put(tp, newQuestion);
+            this.titledPanes.put(tp, newQuestion);
+            this.questionsAccordion.setExpandedPane(tp);
         });
 
         this.questionsRemoveBtn = (Button) pollDetail.lookup("#questionsRemoveBtn");
@@ -206,14 +207,14 @@ public class Client extends Application {
             ConfirmDialog.show("Frage wirklich entfernen?", (boolean confirmed) ->
             {
                 if (confirmed) {
-                    Question toRemove = titledPanes.get(this.questionsAccordion.getExpandedPane());
+                    Question toRemove = this.titledPanes.get(this.questionsAccordion.getExpandedPane());
                     try {
                         this.db.getQuestionDao().delete(toRemove);
                         for (Answer answer : toRemove.getAnswers()) {
                             this.db.getAnswerDao().delete(answer);
                         }
                         Client.poll.getQuestions().remove(toRemove);
-                        titledPanes.remove(this.questionsAccordion.getExpandedPane());
+                        this.titledPanes.remove(this.questionsAccordion.getExpandedPane());
                         this.questionsAccordion.getPanes().remove(this.questionsAccordion.getExpandedPane());
                     } catch (SQLException ex) {
                         if (logger.isDebugEnabled()) {
@@ -364,7 +365,16 @@ public class Client extends Application {
         this.questionsAddBtn.setDisable(disable);
         this.questionsRemoveBtn.setDisable(disable || Client.poll.getQuestions().isEmpty());
 
-        this.linkCbo.setDisable(disable);
+        if(disable)
+        {
+            int selectedIndex = this.linkCbo.getSelectionModel().getSelectedIndex();
+            this.linkCbo.setOnAction((ActionEvent ev) ->
+            {
+                this.linkCbo.getSelectionModel().select(selectedIndex);
+            });
+        }
+        else
+            this.linkCbo.setOnAction(null);
         this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
         this.closeBtn.setDisable(!disable);
         this.resultsBtn.setDisable(Client.poll == null);
