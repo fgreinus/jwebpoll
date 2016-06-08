@@ -17,15 +17,13 @@ import java.util.Map;
 import static spark.Spark.*;
 
 public class Frontend {
-    private final String templateDir = "/templates";
-    private final String assetDir = "/assets";
-
-    final static Logger logger = Logger.getLogger(Frontend.class);
-
     public static final int PORT = 80;
+    protected static final Database db = Database.getInstance();
+    private static final String TEMPLATE_DIR = "/templates";
+    private static final String ASSET_DIR = "/assets";
+    private final static Logger LOGGER = Logger.getLogger(Frontend.class);
 
     private FreeMarkerEngine fmEngine;
-    protected static Database db = Database.getInstance();
     protected Poll activePoll;
 
     public static void kill() {
@@ -36,10 +34,10 @@ public class Frontend {
         ipAddress(networkAddress);
         port(Frontend.PORT);
         // so that all static files will be served directly by spark and we don't have to care any longer about them :)
-        staticFileLocation(assetDir);
+        staticFileLocation(ASSET_DIR);
 
         Configuration fmConfig = new Configuration();
-        fmConfig.setClassForTemplateLoading(Frontend.class, templateDir);
+        fmConfig.setClassForTemplateLoading(Frontend.class, TEMPLATE_DIR);
         fmEngine = new FreeMarkerEngine(fmConfig);
     }
 
@@ -81,8 +79,8 @@ public class Frontend {
                 try {
                     questionId = Integer.parseInt(questionKeyString);
                 } catch (Exception ex) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("", ex);
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("", ex);
                     }
                     continue;
                 }
@@ -101,8 +99,8 @@ public class Frontend {
                     try {
                         answerId = Integer.parseInt(answer);
                     } catch (Exception ex) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("", ex);
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("", ex);
                         }
                     }
 
