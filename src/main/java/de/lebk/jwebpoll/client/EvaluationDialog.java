@@ -21,6 +21,12 @@ public class EvaluationDialog {
         Stage evaluationStage = new Stage();
         evaluationStage.getIcons().add(new Image(EvaluationDialog.class.getResource("/icon.png").toString()));
 
+        try {
+            throw new Exception("test");
+        } catch (Exception ex) {
+            logger.debug("", ex);
+        }
+
         Poll poll = null;
         try {
             poll = Database.getInstance().getPollDao().queryForId(pollId);
