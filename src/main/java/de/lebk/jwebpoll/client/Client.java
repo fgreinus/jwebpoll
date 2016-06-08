@@ -199,6 +199,7 @@ public class Client extends Application {
             TitledPane tp = QuestionView.setQuestionView(this.questionsAccordion, newQuestion, Client.activePoll != null && Client.activePoll == Client.poll);
             titledPanes.put(tp, newQuestion);
         });
+
         this.questionsRemoveBtn = (Button) pollDetail.lookup("#questionsRemoveBtn");
         this.questionsRemoveBtn.setOnAction((ActionEvent ev) ->
         {

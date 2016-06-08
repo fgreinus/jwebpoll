@@ -36,6 +36,7 @@ public class Frontend {
 
     private void initializeSparkConfiguration(String networkAddress) {
         ipAddress(networkAddress);
+        port(Frontend.PORT);
         // so that all static files will be served directly by spark and we don't have to care any longer about them :)
         staticFileLocation(assetDir);
 

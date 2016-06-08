@@ -6,10 +6,12 @@ import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.QuestionType;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
@@ -170,6 +172,7 @@ public class QuestionView {
                 }
 
             });
+            answerAddBtn.defaultButtonProperty().bind(answerAddBtn.focusedProperty());
             answerAddBtn.setDisable(disabled);
             answerRemoveBtn.setOnAction((ActionEvent event) ->
             {
