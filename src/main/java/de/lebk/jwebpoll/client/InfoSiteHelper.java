@@ -32,16 +32,15 @@ public class InfoSiteHelper {
         BufferedReader bufferedReader = null;
         String line;
         StringBuilder sb = new StringBuilder();
-        String path = "src" + File.separator + "main" + File.separator + "resources" + File.separator + "about" + File.separator;
         try {
-            fileReader = new FileReader(path + resource + ".html");
+            fileReader = new FileReader(InfoSiteHelper.class.getResource(resource + ".html").getPath());
             bufferedReader = new BufferedReader(fileReader);
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line).append("\n");
             }
         } catch (IOException ex) {
-            sb.append("<html> <body> <h2> FEHLER </h2> Bedauerlicher Weise konnte die Hilfeseite nicht geladen werden. <br> "
-                    + "Noch bedauerlicher ist es, dass es keine Hilfeseite gibt wenn man Wissen will warum die Hilfeseite nicht lädt.</body> </html>");
+            sb.append("<html><body><h2>Fehler (404 - Not Found)</h2> Bedauerlicher Weise konnte die Hilfeseite nicht geladen werden.<br>"
+                    + "Noch bedauerlicher ist es, dass es keine Hilfeseite gibt wenn man wissen will, warum die Hilfeseite nicht lädt.</body> </html>");
             ex.printStackTrace();
             if (logger.isDebugEnabled()) {
                 logger.debug("", ex);
