@@ -13,3 +13,4 @@ jwebpoll_Wed_Jun_01_21-19-34_CEST_2016.xml
 module_jwebpoll.xml
 module_jwebpoll_Wed_Jun_01_21-19-34_CEST_2016.xml
 /classes
+src/main/resources/log4j.properties
