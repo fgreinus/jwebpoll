@@ -20,7 +20,6 @@ public class Frontend {
     public static final String LOCALHOST_V4 = "127.0.0.1";
     public static final String LOCALHOST_V6 = "0:0:0:0:0:0:0:1";
     public static final int PORT = 80;
-    protected static final Database db = Database.getDB();
     private static final String TEMPLATE_DIR = "/templates";
     private static final String ASSET_DIR = "/assets";
     private final static Logger LOGGER = Logger.getLogger(Frontend.class);
@@ -71,9 +70,9 @@ public class Frontend {
                 givenAnswersMap.get(realInputKey).add(inputValue);
             }
 
-            Dao voteDao = Frontend.db.getVoteDao();
-            Dao questionDao = Frontend.db.getQuestionDao();
-            Dao answerDao = Frontend.db.getAnswerDao();
+            Dao voteDao = Database.DB.getVoteDao();
+            Dao questionDao = Database.DB.getQuestionDao();
+            Dao answerDao = Database.DB.getAnswerDao();
 
             for (String questionKeyString : givenAnswersMap.keySet()) {
 

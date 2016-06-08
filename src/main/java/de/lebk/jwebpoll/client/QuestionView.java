@@ -42,7 +42,6 @@ public class QuestionView {
             titleTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
             {
                 question.setTitle(titleTxF.getText());
-
                 if (question.getTitle() == null || question.getTitle().isEmpty())
                     tp.setText("<Neue Frage>");
                 else
@@ -51,22 +50,13 @@ public class QuestionView {
             titleTxF.setText(question.getTitle());
             titleTxF.setDisable(disabled);
             requiredCkB.setSelected(question.isRequired());
-            requiredCkB.setOnAction((ActionEvent event) ->
-            {
-                question.setRequired(requiredCkB.isSelected());
-            });
+            requiredCkB.setOnAction((ActionEvent event) -> question.setRequired(requiredCkB.isSelected()));
             requiredCkB.setDisable(disabled);
             hintTxF.setText(question.getHint());
-            hintTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
-            {
-                question.setHint(hintTxF.getText());
-            });
+            hintTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> question.setHint(hintTxF.getText()));
             hintTxF.setDisable(disabled);
             typeCbo.getItems().addAll(QuestionType.SINGLE, QuestionType.MULTIPLE, QuestionType.FREE);
-            typeCbo.setCellFactory((ListView<QuestionType> param) ->
-            {
-                return new QuestionTypeListCell();
-            });
+            typeCbo.setCellFactory((ListView<QuestionType> param) -> new QuestionTypeListCell());
             typeCbo.setButtonCell(new QuestionTypeListCell());
             typeCbo.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends QuestionType> observable, QuestionType oldValue, QuestionType newValue) ->
             {
@@ -95,7 +85,6 @@ public class QuestionView {
                             answerFreetext.setVisible(true);
                             break;
                     }
-
 
                     TableColumn<Answer, QuestionType> typeColumn = (TableColumn<Answer, QuestionType>) answerTable.getColumns().get(0);
                     typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.1));
@@ -180,7 +169,7 @@ public class QuestionView {
                         if (confirmed) {
                             Answer toRemove = answerTable.getSelectionModel().getSelectedItem();
                             try {
-                                Database.getDB().getAnswerDao().delete(toRemove);
+                                Database.DB.getAnswerDao().delete(toRemove);
                                 question.getAnswers().remove(toRemove);
                                 answerTable.getItems().remove(toRemove);
                                 QuestionView.updateAddValueTxF(question, answerAddValueTxF);

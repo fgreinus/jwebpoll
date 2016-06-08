@@ -16,12 +16,13 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 
 public class Database {
-
     private static final Logger LOGGER = Logger.getLogger(Database.class);
 
-    private static Database instance;
+    //- DB -
+    public static final Database DB = new Database();
     private ConnectionSource dbConn;
 
+    //- Dao -
     private Hashtable<String, Dao> daoList;
 
     private Database() {
@@ -44,25 +45,11 @@ public class Database {
             System.exit(0);
         }
 
-        initializeDatabaseTables();
-        initializeModelDataAccessObjects();
+        initTables();
+        initDAOs();
     }
 
-    public static Database getDB() {
-        if (instance == null)
-            instance = new Database();
-        return instance;
-    }
-
-    public ConnectionSource getConnection() {
-        if (dbConn.isOpen()) {
-            return dbConn;
-        } else {
-            return null;
-        }
-    }
-
-    private void initializeDatabaseTables() {
+    private void initTables() {
         try {
             TableUtils.createTableIfNotExists(dbConn, Answer.class);
             TableUtils.createTableIfNotExists(dbConn, Poll.class);
@@ -76,14 +63,13 @@ public class Database {
         }
     }
 
-    private void initializeModelDataAccessObjects() {
-        daoList = new Hashtable<>();
-
+    private void initDAOs() {
+        this.daoList = new Hashtable<>();
         try {
-            daoList.put(Poll.class.getName(), DaoManager.createDao(dbConn, Poll.class));
-            daoList.put(Answer.class.getName(), DaoManager.createDao(dbConn, Answer.class));
-            daoList.put(Question.class.getName(), DaoManager.createDao(dbConn, Question.class));
-            daoList.put(Vote.class.getName(), DaoManager.createDao(dbConn, Vote.class));
+            this.daoList.put(Poll.class.getName(), DaoManager.createDao(dbConn, Poll.class));
+            this.daoList.put(Answer.class.getName(), DaoManager.createDao(dbConn, Answer.class));
+            this.daoList.put(Question.class.getName(), DaoManager.createDao(dbConn, Question.class));
+            this.daoList.put(Vote.class.getName(), DaoManager.createDao(dbConn, Vote.class));
         } catch (SQLException ex) {
             ex.printStackTrace();
             if (LOGGER.isDebugEnabled()) {

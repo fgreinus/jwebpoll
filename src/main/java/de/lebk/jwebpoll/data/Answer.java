@@ -30,7 +30,7 @@ public class Answer {
 
     public Answer() {
         try {
-            this.votes = Database.getDB().getAnswerDao().getEmptyForeignCollection("votes");
+            this.votes = Database.DB.getAnswerDao().getEmptyForeignCollection("votes");
         } catch (SQLException e) {
             this.votes = null;
             if (LOGGER.isDebugEnabled()) {

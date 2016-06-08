@@ -39,8 +39,8 @@ public class Question {
 
     public Question() {
         try {
-            this.answers = Database.getDB().getQuestionDao().getEmptyForeignCollection("answers");
-            this.freetextVotes = Database.getDB().getQuestionDao().getEmptyForeignCollection("freetextVotes");
+            this.answers = Database.DB.getQuestionDao().getEmptyForeignCollection("answers");
+            this.freetextVotes = Database.DB.getQuestionDao().getEmptyForeignCollection("freetextVotes");
         } catch (SQLException e) {
             this.answers = null;
             if (LOGGER.isDebugEnabled()) {
@@ -120,7 +120,7 @@ public class Question {
 
     public void update() {
         try {
-            Database.getDB().getQuestionDao().update(this);
+            Database.DB.getQuestionDao().update(this);
         } catch (SQLException e) {
             this.answers = null;
             if (LOGGER.isDebugEnabled()) {

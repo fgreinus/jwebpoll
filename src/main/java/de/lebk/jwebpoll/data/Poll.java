@@ -34,7 +34,7 @@ public class Poll {
 
     public Poll() {
         try {
-            this.questions = Database.getDB().getPollDao().getEmptyForeignCollection("questions");
+            this.questions = Database.DB.getPollDao().getEmptyForeignCollection("questions");
         } catch (SQLException e) {
             this.questions = null;
             if (LOGGER.isDebugEnabled()) {
@@ -92,7 +92,7 @@ public class Poll {
 
     private void update() {
         try {
-            Database.getDB().getPollDao().update(this);
+            Database.DB.getPollDao().update(this);
         } catch (SQLException e) {
             this.questions = null;
             if (LOGGER.isDebugEnabled()) {

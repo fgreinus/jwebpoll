@@ -110,7 +110,7 @@ public class EvaluationDialog {
     private void loadPollFromDB() {
         Poll poll = null;
         try {
-            poll = Database.getDB().getPollDao().queryForId(pollid);
+            poll = Database.DB.getPollDao().queryForId(pollid);
         } catch (SQLException ex) {
             ex.printStackTrace();
             if (LOGGER.isDebugEnabled()) {

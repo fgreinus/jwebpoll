@@ -67,7 +67,7 @@ public class Client extends Application {
         });
         primaryStage.getIcons().add(new Image(Client.class.getResource("/icon.png").toString()));
 
-        this.polls.addAll(Database.getDB().getPollDao().queryForAll());
+        this.polls.addAll(Database.DB.getPollDao().queryForAll());
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
                 Client.activePoll = p;
@@ -95,7 +95,7 @@ public class Client extends Application {
         {
             Poll newPoll = new Poll("", "", PollState.NEW);
             try {
-                Database.getDB().getPollDao().create(newPoll);
+                Database.DB.getPollDao().create(newPoll);
                 Client.poll = newPoll;
                 this.polls.add(Client.poll);
                 this.pollList.getItems().addAll(Client.poll);
@@ -113,7 +113,7 @@ public class Client extends Application {
             ConfirmDialog.show("Umfrage wirklich entfernen?", (boolean confirmed) ->
             {
                 if (confirmed) {
-                    if (Database.getDB().deletePoll(Client.poll)) {
+                    if (Database.DB.deletePoll(Client.poll)) {
                         this.polls.remove(Client.poll);
                         int index = this.pollList.getItems().indexOf(Client.poll);
                         this.pollList.getItems().remove(Client.poll);
@@ -200,9 +200,9 @@ public class Client extends Application {
                 if (confirmed) {
                     Question toRemove = this.titledPanes.get(this.questionsAccordion.getExpandedPane());
                     try {
-                        Database.getDB().getQuestionDao().delete(toRemove);
+                        Database.DB.getQuestionDao().delete(toRemove);
                         for (Answer answer : toRemove.getAnswers()) {
-                            Database.getDB().getAnswerDao().delete(answer);
+                            Database.DB.getAnswerDao().delete(answer);
                         }
                         Client.poll.getQuestions().remove(toRemove);
                         this.titledPanes.remove(this.questionsAccordion.getExpandedPane());
@@ -270,7 +270,7 @@ public class Client extends Application {
             this.pollList.refresh();
 
             try {
-                Database.getDB().getPollDao().update(Client.poll);
+                Database.DB.getPollDao().update(Client.poll);
             } catch (SQLException ex) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Opening poll failed: ", ex);
