@@ -9,6 +9,7 @@ import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Poll;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.Vote;
+import org.apache.log4j.Logger;
 import org.sqlite.SQLiteConfig;
 
 import java.sql.SQLException;
@@ -19,20 +20,27 @@ public class Database {
     private static Database instance;
 
     private ConnectionSource dbConn;
+    final static Logger logger = Logger.getLogger(Database.class);
 
     private Hashtable<String, Dao> daoList;
 
     private Database() {
         try {
             Class.forName("org.sqlite.JDBC");
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
             System.exit(0);
         }
         SQLiteConfig sqliteConfig = new SQLiteConfig();
         String databaseUrl = "jdbc:sqlite:jwebpoll.sqlite";
         try {
             dbConn = new JdbcConnectionSource(databaseUrl);
-        } catch (SQLException e) {
+        } catch (SQLException ex) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
             System.exit(0);
         }
 
@@ -62,8 +70,11 @@ public class Database {
             TableUtils.createTableIfNotExists(dbConn, Poll.class);
             TableUtils.createTableIfNotExists(dbConn, Question.class);
             TableUtils.createTableIfNotExists(dbConn, Vote.class);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
         }
     }
 
@@ -77,6 +88,9 @@ public class Database {
             daoList.put(Vote.class.getName(), DaoManager.createDao(dbConn, Vote.class));
         } catch (SQLException ex) {
             ex.printStackTrace();
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
         }
     }
 
@@ -125,6 +139,9 @@ public class Database {
             return true;
         } catch (SQLException ex) {
             ex.printStackTrace();
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
         }
         return false;
     }

@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -31,6 +32,7 @@ public class Client extends Application {
         Client.launch(args);
     }
 
+    final static Logger logger = Logger.getLogger(Client.class);
     //- Data -
     private List<Poll> polls = new ArrayList<>();
     //poll selected in client window
@@ -63,6 +65,9 @@ public class Client extends Application {
             try {
                 Frontend.kill();
             } catch (Exception e) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Front end kill failed: ", e);
+                }
                 e.printStackTrace();
             }
         });
@@ -105,6 +110,9 @@ public class Client extends Application {
                 this.pollList.getItems().addAll(Client.poll);
                 this.pollList.getSelectionModel().select(Client.poll);
             } catch (SQLException ex) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Adding poll failed: ", ex);
+                }
                 ex.printStackTrace();
             }
         });
@@ -191,6 +199,7 @@ public class Client extends Application {
             TitledPane tp = QuestionView.setQuestionView(this.questionsAccordion, newQuestion, Client.activePoll != null && Client.activePoll == Client.poll);
             titledPanes.put(tp, newQuestion);
         });
+
         this.questionsRemoveBtn = (Button) pollDetail.lookup("#questionsRemoveBtn");
         this.questionsRemoveBtn.setOnAction((ActionEvent ev) ->
         {
@@ -207,6 +216,9 @@ public class Client extends Application {
                         titledPanes.remove(this.questionsAccordion.getExpandedPane());
                         this.questionsAccordion.getPanes().remove(this.questionsAccordion.getExpandedPane());
                     } catch (SQLException ex) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Removing question failed: ", ex);
+                        }
                         ex.printStackTrace();
                     }
                 }
@@ -236,6 +248,9 @@ public class Client extends Application {
                 }
             }
         } catch (SocketException ex) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("Getting network addresses failed: ", ex);
+            }
             ex.printStackTrace();
         }
         this.linkCbo.getSelectionModel().selectFirst();
@@ -256,6 +271,9 @@ public class Client extends Application {
             try {
                 this.db.getPollDao().update(Client.poll);
             } catch (SQLException ex) {
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Opening poll failed: ", ex);
+                }
                 ex.printStackTrace();
             }
             new Frontend(Client.activePoll, this.getSelectedAddress());

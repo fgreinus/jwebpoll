@@ -13,10 +13,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class EvaluationQuestionView {
+    final static Logger logger = Logger.getLogger(EvaluationQuestionView.class);
 
     public static void setQuestionView(Accordion accordion, Question question, boolean disabled) {
         if (accordion == null)
@@ -32,6 +34,9 @@ public class EvaluationQuestionView {
             rootGrid = FXMLLoader.load(QuestionView.class.getResource("/client/evaluationQuestionView.fxml"));
         } catch (IOException ex) {
             ex.printStackTrace();
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
         }
         if (rootGrid == null)
             return;

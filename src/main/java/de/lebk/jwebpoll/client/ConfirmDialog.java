@@ -7,10 +7,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.*;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class ConfirmDialog {
+    final static Logger logger = Logger.getLogger(ConfirmDialog.class);
+
     public static void show(String msg, ConfirmCallback callback, Window owner) {
         if (callback == null)
             throw new IllegalArgumentException("Callback cannot be null.");
@@ -44,6 +47,9 @@ public class ConfirmDialog {
 
         } catch (IOException ex) {
             callback.confirm(false);
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
             return;
         }
 

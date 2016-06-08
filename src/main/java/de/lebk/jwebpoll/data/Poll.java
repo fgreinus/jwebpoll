@@ -7,6 +7,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 import de.lebk.jwebpoll.Database;
+import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @DatabaseTable(tableName = "polls")
 public class Poll {
+    final static Logger logger = Logger.getLogger(Poll.class);
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     public int id;
 
@@ -38,6 +40,9 @@ public class Poll {
             this.questions = Database.getInstance().getPollDao().getEmptyForeignCollection("questions");
         } catch (SQLException e) {
             this.questions = null;
+            if (logger.isDebugEnabled()) {
+                logger.debug("", e);
+            }
         }
     }
 
@@ -93,6 +98,9 @@ public class Poll {
             Database.getInstance().getPollDao().update(this);
         } catch (SQLException e) {
             this.questions = null;
+            if (logger.isDebugEnabled()) {
+                logger.debug("", e);
+            }
         }
     }
 }

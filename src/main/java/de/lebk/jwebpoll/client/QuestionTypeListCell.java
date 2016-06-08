@@ -4,10 +4,13 @@ import de.lebk.jwebpoll.data.QuestionType;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
 import javafx.scene.text.Text;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class QuestionTypeListCell extends ListCell<QuestionType> {
+    final static Logger logger = Logger.getLogger(QuestionTypeListCell.class);
+
     @Override
     protected void updateItem(QuestionType item, boolean empty) {
         super.updateItem(item, empty);
@@ -32,6 +35,9 @@ public class QuestionTypeListCell extends ListCell<QuestionType> {
                 this.setGraphic(pollStateTxt);
             } catch (IOException ex) {
                 ex.printStackTrace();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("", ex);
+                }
             }
         }
     }

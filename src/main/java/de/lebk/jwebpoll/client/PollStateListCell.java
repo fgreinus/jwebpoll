@@ -4,10 +4,12 @@ import de.lebk.jwebpoll.data.PollState;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListCell;
 import javafx.scene.text.Text;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class PollStateListCell extends ListCell<PollState> {
+    final static Logger logger = Logger.getLogger(PollStateListCell.class);
     @Override
     protected void updateItem(PollState item, boolean empty) {
         super.updateItem(item, empty);
@@ -32,6 +34,9 @@ public class PollStateListCell extends ListCell<PollState> {
                 this.setGraphic(pollStateTxt);
             } catch (IOException ex) {
                 ex.printStackTrace();
+                if (logger.isDebugEnabled()) {
+                    logger.debug("", ex);
+                }
             }
         }
     }

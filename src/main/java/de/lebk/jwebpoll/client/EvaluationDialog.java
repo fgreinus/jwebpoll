@@ -8,12 +8,15 @@ import javafx.scene.control.Accordion;
 import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
 public class EvaluationDialog {
+    final static Logger logger = Logger.getLogger(EvaluationDialog.class);
+
     public static void show(int pollId) {
         Stage evaluationStage = new Stage();
         evaluationStage.getIcons().add(new Image(EvaluationDialog.class.getResource("/icon.png").toString()));
@@ -23,6 +26,9 @@ public class EvaluationDialog {
             poll = Database.getInstance().getPollDao().queryForId(pollId);
         } catch (SQLException ex) {
             ex.printStackTrace();
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
         }
 
         if(poll == null)
@@ -53,6 +59,9 @@ public class EvaluationDialog {
             }
         } catch (IOException ex) {
             ex.printStackTrace();
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
             return;
         }
 
