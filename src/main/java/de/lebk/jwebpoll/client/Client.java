@@ -232,7 +232,7 @@ public class Client extends Application {
             while (networkInterfaces.hasMoreElements()) {
                 addresses = networkInterfaces.nextElement().getInetAddresses();
                 while (addresses.hasMoreElements()) {
-                    this.linkCbo.getItems().add(addresses.nextElement().getHostAddress() + ":" + Frontend.PORT);
+                    this.linkCbo.getItems().add(addresses.nextElement().getHostAddress() + (Frontend.PORT != 80 ? ":" + Frontend.PORT : ""));
                 }
             }
         } catch (SocketException ex) {
@@ -345,6 +345,6 @@ public class Client extends Application {
 
     private String getSelectedAddress()
     {
-        return this.linkCbo.getSelectionModel().getSelectedItem().substring(0, this.linkCbo.getSelectionModel().getSelectedItem().lastIndexOf(':'));
+        return this.linkCbo.getSelectionModel().getSelectedItem().endsWith(":" + Frontend.PORT) ? this.linkCbo.getSelectionModel().getSelectedItem().substring(0, this.linkCbo.getSelectionModel().getSelectedItem().lastIndexOf(':')) : this.linkCbo.getSelectionModel().getSelectedItem();
     }
 }
