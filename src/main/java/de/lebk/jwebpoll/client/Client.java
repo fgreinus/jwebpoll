@@ -2,6 +2,7 @@ package de.lebk.jwebpoll.client;
 
 import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.Frontend;
+import de.lebk.jwebpoll.client.Evaluation.EvaluationDialog;
 import de.lebk.jwebpoll.data.*;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;

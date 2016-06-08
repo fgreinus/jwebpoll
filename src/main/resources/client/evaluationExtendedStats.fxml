@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns="http://javafx.com/javafx/8"
+          id="extendedstatsgrid"
+          vgap="10">
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS"/>
+    </columnConstraints>
+
+
+    <Accordion id="statAccordion"
+               GridPane.columnIndex="0"/>
+
+</GridPane>

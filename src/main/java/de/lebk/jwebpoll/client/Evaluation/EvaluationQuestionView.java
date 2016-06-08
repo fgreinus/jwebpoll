@@ -1,5 +1,6 @@
-package de.lebk.jwebpoll.client;
+package de.lebk.jwebpoll.client.Evaluation;
 
+import de.lebk.jwebpoll.client.QuestionView;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.Vote;

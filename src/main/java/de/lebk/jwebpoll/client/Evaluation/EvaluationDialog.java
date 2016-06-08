@@ -1,6 +1,7 @@
-package de.lebk.jwebpoll.client;
+package de.lebk.jwebpoll.client.Evaluation;
 
 import de.lebk.jwebpoll.Database;
+import de.lebk.jwebpoll.client.ConfirmDialog;
 import de.lebk.jwebpoll.data.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -62,6 +63,12 @@ public class EvaluationDialog {
     private void initalizeMenuBar(MenuBar menuBar) {
         Menu erweitert = new Menu("Erweitert");
         MenuItem erweiterteStats = new MenuItem("Erweiterte Statistiken");
+        erweiterteStats.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                EvaluationExtendedStats.show(poll);
+            }
+        });
         MenuItem refresh = new MenuItem("Neu Laden");
         refresh.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -78,30 +85,13 @@ public class EvaluationDialog {
 
         for (Question question : poll.questions) {
             EvaluationQuestionView.setQuestionView(questionsAccordion, question, false);
-            calculateBetterStatistics(question);
         }
-        //questionsAccordion.setExpandedPane(questionsAccordion.getPanes().get(0));
+
     }
 
-    private void calculateBetterStatistics(Question question) {
-        int weightedPollTotal = 0;
-        int weightedPollCount = 0;
-        for (Answer answer : question.getAnswers()) {
-            weightedPollTotal += answer.getVotes().size() * answer.getValue();
-            if (weightedPollTotal != 0) {
-                weightedPollCount += answer.getVotes().size();
-            }
-        }
-        double arithmeticAverage = (double) weightedPollTotal / (double) weightedPollCount;
-        System.out.println("Arithmetic average: " + arithmeticAverage);
-        double variance = Statistics.getVariance(question.getAnswers(), arithmeticAverage);
-        System.out.println("Variance: " + variance);
-        double standardDeviation = Statistics.getStandardDeviation(question.getAnswers(), arithmeticAverage);
-        System.out.println("Standard deviation: " + standardDeviation);
-    }
 
     private void refresh() {
-        questionsAccordion.getPanes().remove(0, questionsAccordion.getPanes().size() );
+        questionsAccordion.getPanes().remove(0, questionsAccordion.getPanes().size());
         loadPollFromDB();
         initalizeAccordion();
 
@@ -119,5 +109,6 @@ public class EvaluationDialog {
         }
         this.poll = poll;
     }
+
 
 }
