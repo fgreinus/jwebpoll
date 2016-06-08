@@ -8,11 +8,11 @@ import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class InfoSiteHelper {
+    private static final String RESOURCE_DIR = "/about/";
     final static Logger logger = Logger.getLogger(InfoSiteHelper.class);
     public static void show(String resource) {
         Stage evaluationStage = new Stage();
@@ -33,7 +33,7 @@ public class InfoSiteHelper {
         String line;
         StringBuilder sb = new StringBuilder();
         try {
-            fileReader = new FileReader(InfoSiteHelper.class.getResource(resource + ".html").getPath());
+            fileReader = new FileReader(InfoSiteHelper.class.getResource(RESOURCE_DIR + resource + ".html").getPath());
             bufferedReader = new BufferedReader(fileReader);
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line).append("\n");
