@@ -1,6 +1,5 @@
 package de.lebk.jwebpoll.data;
 
-import com.sun.xml.internal.bind.api.impl.NameConverter;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -10,11 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by Samson on 06.04.2016.
- */
 public class Serializer {
-    final static Logger logger = Logger.getLogger(Serializer.class);
+    private static final Logger LOGGER = Logger.getLogger(Serializer.class);
 
     public static void write(String fullyNamedPath, String... lines) {
         Path file = Paths.get(fullyNamedPath);
@@ -23,8 +19,8 @@ public class Serializer {
         }
         catch (IOException ioEx) {
             // TODO: Report to front-end
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ioEx);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ioEx);
             }
         }
     }
@@ -73,8 +69,8 @@ public class Serializer {
         }
         catch (IOException ioEx) {
             // TODO: Report to front-end
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ioEx);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ioEx);
             }
             System.out.println(ioEx.getMessage());
         }

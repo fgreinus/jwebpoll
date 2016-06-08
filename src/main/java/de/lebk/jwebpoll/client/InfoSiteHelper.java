@@ -12,8 +12,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class InfoSiteHelper {
+    private static final Logger LOGGER = Logger.getLogger(InfoSiteHelper.class);
     private static final String RESOURCE_DIR = "/about/";
-    final static Logger logger = Logger.getLogger(InfoSiteHelper.class);
     public static void show(String resource) {
         Stage evaluationStage = new Stage();
         evaluationStage.setTitle(resource);
@@ -23,8 +23,8 @@ public class InfoSiteHelper {
             helpGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/helpSite.fxml"));
         } catch (IOException ex) {
             ex.printStackTrace();
-            if (logger.isDebugEnabled())
-                logger.debug("", ex);
+            if (LOGGER.isDebugEnabled())
+                LOGGER.debug("", ex);
             return;
         }
 
@@ -42,8 +42,8 @@ public class InfoSiteHelper {
             sb.append("<html><body><h2>Fehler (404 - Not Found)</h2> Bedauerlicher Weise konnte die Hilfeseite nicht geladen werden.<br>"
                     + "Noch bedauerlicher ist es, dass es keine Hilfeseite gibt wenn man wissen will, warum die Hilfeseite nicht lädt.</body> </html>");
             ex.printStackTrace();
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ex);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ex);
             }
         }
 

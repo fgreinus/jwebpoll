@@ -13,7 +13,7 @@ import java.util.Date;
 
 @DatabaseTable(tableName = "polls")
 public class Poll {
-    final static Logger logger = Logger.getLogger(Poll.class);
+    private static final Logger LOGGER = Logger.getLogger(Poll.class);
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     public int id;
 
@@ -37,8 +37,8 @@ public class Poll {
             this.questions = Database.getDB().getPollDao().getEmptyForeignCollection("questions");
         } catch (SQLException e) {
             this.questions = null;
-            if (logger.isDebugEnabled()) {
-                logger.debug("", e);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", e);
             }
         }
     }
@@ -95,8 +95,8 @@ public class Poll {
             Database.getDB().getPollDao().update(this);
         } catch (SQLException e) {
             this.questions = null;
-            if (logger.isDebugEnabled()) {
-                logger.debug("", e);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", e);
             }
         }
     }

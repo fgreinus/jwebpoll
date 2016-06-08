@@ -2,7 +2,6 @@ package de.lebk.jwebpoll.client;
 
 import de.lebk.jwebpoll.data.Poll;
 import javafx.scene.control.ListCell;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;

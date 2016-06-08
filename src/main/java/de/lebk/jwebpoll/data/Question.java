@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 @DatabaseTable(tableName = "questions")
 public class Question {
-    final static Logger logger = Logger.getLogger(Question.class);
+    private static final Logger LOGGER = Logger.getLogger(Question.class);
 
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     private int id;
@@ -43,8 +43,8 @@ public class Question {
             this.freetextVotes = Database.getDB().getQuestionDao().getEmptyForeignCollection("freetextVotes");
         } catch (SQLException e) {
             this.answers = null;
-            if (logger.isDebugEnabled()) {
-                logger.debug("", e);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", e);
             }
         }
     }
@@ -123,8 +123,8 @@ public class Question {
             Database.getDB().getQuestionDao().update(this);
         } catch (SQLException e) {
             this.answers = null;
-            if (logger.isDebugEnabled()) {
-                logger.debug("", e);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", e);
             }
         }
     }

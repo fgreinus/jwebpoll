@@ -3,10 +3,8 @@ package de.lebk.jwebpoll.client;
 import de.lebk.jwebpoll.data.QuestionType;
 import javafx.scene.control.ListCell;
 import javafx.scene.text.Text;
-import org.apache.log4j.Logger;
 
 public class QuestionTypeListCell extends ListCell<QuestionType> {
-    private static final Logger LOGGER = Logger.getLogger(QuestionTypeListCell.class);
     @Override
     protected void updateItem(QuestionType item, boolean empty) {
         super.updateItem(item, empty);

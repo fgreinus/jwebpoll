@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 public class MsgBox {
-    final static Logger logger = Logger.getLogger(MsgBox.class);
+    private static final Logger LOGGER = Logger.getLogger(MsgBox.class);
 
     public static void show(String title, String msg, MsgBoxCallback callback, Window owner) {
         Stage msgStage = new Stage(StageStyle.UTILITY);
@@ -35,8 +35,8 @@ public class MsgBox {
                 msgStage.close();
             });
         } catch (IOException ex) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ex);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ex);
             }
             if (callback != null)
                 callback.confirm();

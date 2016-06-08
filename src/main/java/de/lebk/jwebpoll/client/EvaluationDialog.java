@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class EvaluationDialog {
-    final static Logger logger = Logger.getLogger(EvaluationDialog.class);
+    private static final Logger LOGGER = Logger.getLogger(EvaluationDialog.class);
 
     private int pollid;
     private Accordion questionsAccordion;
@@ -48,8 +48,8 @@ public class EvaluationDialog {
 
         } catch (IOException ex) {
             ex.printStackTrace();
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ex);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ex);
             }
             return;
         }
@@ -113,8 +113,8 @@ public class EvaluationDialog {
             poll = Database.getDB().getPollDao().queryForId(pollid);
         } catch (SQLException ex) {
             ex.printStackTrace();
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ex);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ex);
             }
         }
         this.poll = poll;

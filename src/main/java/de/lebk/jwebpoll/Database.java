@@ -17,10 +17,10 @@ import java.util.Hashtable;
 
 public class Database {
 
-    private static Database instance;
+    private static final Logger LOGGER = Logger.getLogger(Database.class);
 
+    private static Database instance;
     private ConnectionSource dbConn;
-    final static Logger logger = Logger.getLogger(Database.class);
 
     private Hashtable<String, Dao> daoList;
 
@@ -28,8 +28,8 @@ public class Database {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (Exception ex) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ex);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ex);
             }
             System.exit(0);
         }
@@ -38,8 +38,8 @@ public class Database {
         try {
             dbConn = new JdbcConnectionSource(databaseUrl);
         } catch (SQLException ex) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ex);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ex);
             }
             System.exit(0);
         }
@@ -70,8 +70,8 @@ public class Database {
             TableUtils.createTableIfNotExists(dbConn, Vote.class);
         } catch (SQLException ex) {
             ex.printStackTrace();
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ex);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ex);
             }
         }
     }
@@ -86,8 +86,8 @@ public class Database {
             daoList.put(Vote.class.getName(), DaoManager.createDao(dbConn, Vote.class));
         } catch (SQLException ex) {
             ex.printStackTrace();
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ex);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ex);
             }
         }
     }
@@ -137,8 +137,8 @@ public class Database {
             return true;
         } catch (SQLException ex) {
             ex.printStackTrace();
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ex);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ex);
             }
         }
         return false;

@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class QuestionView {
-    final static Logger logger = Logger.getLogger(QuestionView.class);
+    private static final Logger LOGGER = Logger.getLogger(QuestionView.class);
 
     public static TitledPane setQuestionView(Accordion accordion, Question question, boolean disabled) {
         try {
@@ -121,8 +121,8 @@ public class QuestionView {
                                             }
                                         } catch (IOException ex) {
                                             ex.printStackTrace();
-                                            if (logger.isDebugEnabled()) {
-                                                logger.debug("", ex);
+                                            if (LOGGER.isDebugEnabled()) {
+                                                LOGGER.debug("", ex);
                                             }
                                         }
                                     } else {
@@ -163,8 +163,8 @@ public class QuestionView {
                         }
                     } catch (NumberFormatException e) {
                         answerAddValueTxF.setText("Ungültiger Wert");
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("", e);
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("", e);
                         }
                     }
                 }
@@ -186,8 +186,8 @@ public class QuestionView {
                                 QuestionView.updateAddValueTxF(question, answerAddValueTxF);
                             } catch (SQLException ex) {
                                 ex.printStackTrace();
-                                if (logger.isDebugEnabled()) {
-                                    logger.debug("", ex);
+                                if (LOGGER.isDebugEnabled()) {
+                                    LOGGER.debug("", ex);
                                 }
                             }
                         }
@@ -211,8 +211,8 @@ public class QuestionView {
             return tp;
         } catch (IOException ex) {
             ex.printStackTrace();
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ex);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ex);
             }
         }
         return null;
