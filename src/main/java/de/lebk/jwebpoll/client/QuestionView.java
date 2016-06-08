@@ -163,6 +163,7 @@ public class QuestionView {
                 }
 
             });
+            answerAddBtn.defaultButtonProperty().bind(answerAddBtn.focusedProperty());
             answerAddBtn.setDisable(disabled);
             answerRemoveBtn.setOnAction((ActionEvent event) ->
             {

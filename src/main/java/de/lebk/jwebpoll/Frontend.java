@@ -21,7 +21,7 @@ public class Frontend {
     private final String templateDir = "src/main/resources/templates";
     private final String assetDir = "/assets";
 
-    public static final int PORT = 80;
+    public static final int PORT = 4567;
 
     private FreeMarkerEngine fmEngine;
     protected static Database db = Database.getInstance();
