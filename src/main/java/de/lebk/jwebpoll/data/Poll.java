@@ -94,7 +94,6 @@ public class Poll {
         try {
             Database.DB.getPollDao().update(this);
         } catch (SQLException e) {
-            this.questions = null;
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("", e);
             }

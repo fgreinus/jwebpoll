@@ -51,10 +51,6 @@ public class Answer {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getText() {
         return text;
     }
@@ -73,5 +69,25 @@ public class Answer {
 
     public ForeignCollection<Vote> getVotes() {
         return votes;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+        this.update();
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+        this.update();
+    }
+
+    private void update() {
+        try {
+            Database.DB.getAnswerDao().update(this);
+        } catch (SQLException e) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", e);
+            }
+        }
     }
 }
