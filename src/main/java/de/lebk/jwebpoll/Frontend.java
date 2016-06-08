@@ -18,7 +18,7 @@ import java.util.Map;
 import static spark.Spark.*;
 
 public class Frontend {
-    private final String templateDir = "src/main/resources/templates";
+    private final String templateDir = "/templates";
     private final String assetDir = "/assets";
 
     public static final int PORT = 80;
@@ -38,11 +38,7 @@ public class Frontend {
         staticFileLocation(assetDir);
 
         Configuration fmConfig = new Configuration();
-        try {
-            fmConfig.setDirectoryForTemplateLoading(new File(templateDir)); // otherwise freemarker would magically determine what directory to use...
-        } catch (IOException ignored) {
-        }
-
+        fmConfig.setClassForTemplateLoading(Frontend.class, templateDir);
         fmEngine = new FreeMarkerEngine(fmConfig);
     }
 
