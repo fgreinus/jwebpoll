@@ -6,6 +6,7 @@ import de.lebk.jwebpoll.data.Poll;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.Vote;
 import freemarker.template.Configuration;
+import org.apache.log4j.Logger;
 import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
 
@@ -20,6 +21,8 @@ import static spark.Spark.*;
 public class Frontend {
     private final String templateDir = "src/main/resources/templates";
     private final String assetDir = "/assets";
+
+    final static Logger logger = Logger.getLogger(Frontend.class);
 
     public static final int PORT = 4567;
 
@@ -39,7 +42,10 @@ public class Frontend {
         Configuration fmConfig = new Configuration();
         try {
             fmConfig.setDirectoryForTemplateLoading(new File(templateDir)); // otherwise freemarker would magically determine what directory to use...
-        } catch (IOException ignored) {
+        } catch (IOException ex) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
         }
 
         fmEngine = new FreeMarkerEngine(fmConfig);
@@ -82,7 +88,10 @@ public class Frontend {
                 int questionId = 0;
                 try {
                     questionId = Integer.parseInt(questionKeyString);
-                } catch (Exception e) {
+                } catch (Exception ex) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("", ex);
+                    }
                     continue;
                 }
 
@@ -99,7 +108,11 @@ public class Frontend {
                     int answerId = 0;
                     try {
                         answerId = Integer.parseInt(answer);
-                    } catch (Exception e) { }
+                    } catch (Exception ex) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("", ex);
+                        }
+                    }
 
                     Object answerResult = answerDao.queryBuilder().where().eq("id", answerId).queryForFirst();
                     if (answerResult == null) {

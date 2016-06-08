@@ -7,10 +7,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.*;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class MsgBox {
+    final static Logger logger = Logger.getLogger(MsgBox.class);
+
     public static void show(String title, String msg, MsgBoxCallback callback, Window owner) {
         Stage msgStage = new Stage(StageStyle.UTILITY);
         msgStage.initModality(Modality.WINDOW_MODAL);
@@ -32,6 +35,9 @@ public class MsgBox {
                 msgStage.close();
             });
         } catch (IOException ex) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
             if (callback != null)
                 callback.confirm();
             return;

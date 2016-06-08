@@ -5,11 +5,14 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 import de.lebk.jwebpoll.Database;
+import org.apache.log4j.Logger;
 
 import java.sql.SQLException;
 
 @DatabaseTable(tableName = "questions")
 public class Question {
+    final static Logger logger = Logger.getLogger(Question.class);
+
     @DatabaseField(generatedId = true, allowGeneratedIdInsert = true)
     private int id;
 
@@ -40,6 +43,9 @@ public class Question {
             this.freetextVotes = Database.getInstance().getQuestionDao().getEmptyForeignCollection("freetextVotes");
         } catch (SQLException e) {
             this.answers = null;
+            if (logger.isDebugEnabled()) {
+                logger.debug("", e);
+            }
         }
     }
 
@@ -117,6 +123,9 @@ public class Question {
             Database.getInstance().getQuestionDao().update(this);
         } catch (SQLException e) {
             this.answers = null;
+            if (logger.isDebugEnabled()) {
+                logger.debug("", e);
+            }
         }
     }
 }

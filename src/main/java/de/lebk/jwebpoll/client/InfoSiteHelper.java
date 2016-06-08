@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,6 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class InfoSiteHelper {
+    final static Logger logger = Logger.getLogger(InfoSiteHelper.class);
     public static void show(String resource) {
         Stage evaluationStage = new Stage();
         evaluationStage.setTitle(resource);
@@ -23,6 +25,9 @@ public class InfoSiteHelper {
 
         } catch (IOException ex) {
             ex.printStackTrace();
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
             return;
         }
 
@@ -37,10 +42,13 @@ public class InfoSiteHelper {
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line).append("\n");
             }
-        } catch (IOException e) {
+        } catch (IOException ex) {
             sb.append("<html> <body> <h2> FEHLER </h2> Bedauerlicher Weise konnte die Hilfeseite nicht geladen werden. <br> "
                     + "Noch bedauerlicher ist es, dass es keine Hilfeseite gibt wenn man Wissen will warum die Hilfeseite nicht lädt.</body> </html>");
-            e.printStackTrace();
+            ex.printStackTrace();
+            if (logger.isDebugEnabled()) {
+                logger.debug("", ex);
+            }
         }
 
         webview = (WebView) helpGrid.lookup("#webview");
