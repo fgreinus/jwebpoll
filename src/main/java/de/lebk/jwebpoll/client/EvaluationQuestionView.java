@@ -78,7 +78,7 @@ public class EvaluationQuestionView {
         TableColumn<Answer, String> weightedColumn = new TableColumn<>("Gewichtet");
         weightedColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Answer, String>, ObservableValue<String>>() {
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Answer, String> cellData) {
-                return new SimpleStringProperty(String.valueOf(cellData.getValue().getVotes().size()*cellData.getValue().getValue()));
+                return new SimpleStringProperty(String.valueOf(cellData.getValue().getVotes().size() * cellData.getValue().getValue()));
             }
         });
         weightedColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.25));

@@ -293,7 +293,7 @@ public class Client extends Application {
         this.resultsBtn = (Button) pollDetail.lookup("#resultsBtn");
         this.resultsBtn.setOnAction((ActionEvent event) ->
         {
-            EvaluationDialog.show(Client.poll.getId());
+            new EvaluationDialog(Client.poll.getId());
         });
 
         pollDetailScroller.setContent(pollDetail);
