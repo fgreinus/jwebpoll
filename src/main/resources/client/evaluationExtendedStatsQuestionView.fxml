@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane xmlns="http://javafx.com/javafx/8"
+          id="rootGrid"
+          hgap="50"
+          vgap="50"
+          style="-fx-border-color: lightgray;">
+
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS"/>
+
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints/>
+    </rowConstraints>
+
+    <TableView id="statTable"
+               GridPane.columnIndex="0"
+               GridPane.rowIndex="0"
+               GridPane.vgrow="ALWAYS"
+               maxHeight="Infinity"
+               prefWidth="Infinity">
+        <columns>
+            <TableColumn id="text"
+                         text="Text"
+                         resizable="true"/>
+            <TableColumn id="values"
+                         resizable="true"
+                         text="Werte"/>
+        </columns>
+    </TableView>
+
+</GridPane>
