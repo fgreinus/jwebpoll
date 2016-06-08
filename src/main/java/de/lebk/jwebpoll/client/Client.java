@@ -253,7 +253,16 @@ public class Client extends Application {
             }
             ex.printStackTrace();
         }
+        this.linkCbo.setEditable(true);
+        this.linkCbo.getEditor().setEditable(false);
         this.linkCbo.getSelectionModel().selectFirst();
+        for(int i = 0; i < this.linkCbo.getItems().size(); i++)
+            if(!this.linkCbo.getItems().get(i).startsWith(Frontend.LOCALHOST_V4) && !this.linkCbo.getItems().get(i).startsWith(Frontend.LOCALHOST_V6))
+            {
+                // Select first non-localhost address
+                this.linkCbo.getSelectionModel().select(i);
+                break;
+            }
         if (Client.activePoll != null) {
             new Frontend(Client.activePoll, this.getSelectedAddress());
         }

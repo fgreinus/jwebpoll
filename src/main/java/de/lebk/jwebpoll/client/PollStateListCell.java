@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 public class PollStateListCell extends ListCell<PollState> {
-    final static Logger logger = Logger.getLogger(PollStateListCell.class);
+    private static final Logger logger = Logger.getLogger(PollStateListCell.class);
     @Override
     protected void updateItem(PollState item, boolean empty) {
         super.updateItem(item, empty);
