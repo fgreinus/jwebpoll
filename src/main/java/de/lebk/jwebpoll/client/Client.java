@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
@@ -59,6 +60,8 @@ public class Client extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+
+
         primaryStage.setTitle("JWebPoll");
         primaryStage.setOnCloseRequest((WindowEvent we) ->
         {
