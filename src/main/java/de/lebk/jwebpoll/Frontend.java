@@ -21,7 +21,7 @@ public class Frontend {
     private final String templateDir = "src/main/resources/templates";
     private final String assetDir = "/assets";
 
-    public static final int PORT = 4567;
+    public static final int PORT = 80;
 
     private FreeMarkerEngine fmEngine;
     protected static Database db = Database.getInstance();
@@ -33,6 +33,7 @@ public class Frontend {
 
     private void initializeSparkConfiguration(String networkAddress) {
         ipAddress(networkAddress);
+        port(Frontend.PORT);
         // so that all static files will be served directly by spark and we don't have to care any longer about them :)
         staticFileLocation(assetDir);
 
