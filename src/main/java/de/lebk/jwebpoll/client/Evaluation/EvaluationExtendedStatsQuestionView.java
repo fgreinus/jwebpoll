@@ -16,6 +16,7 @@ import javafx.scene.layout.GridPane;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class EvaluationExtendedStatsQuestionView {
     private static final Logger LOGGER = Logger.getLogger(EvaluationExtendedStatsQuestionView.class);
@@ -44,6 +45,7 @@ public class EvaluationExtendedStatsQuestionView {
             case SINGLE:
             case MULTIPLE:
                 TableView<ExtendedStatsTableHelperObject> statTable = (TableView<ExtendedStatsTableHelperObject>) rootGrid.lookup("#statTable");
+
                 for (ExtendedStatsTableHelperObject extendedStatsTableHelperObject : calculateBetterStatistics(question)) {
                     statTable.getItems().add(extendedStatsTableHelperObject);
                 }
@@ -60,8 +62,8 @@ public class EvaluationExtendedStatsQuestionView {
     }
 
 
-    private static ObservableList<ExtendedStatsTableHelperObject> calculateBetterStatistics(Question question) {
-        ObservableList<ExtendedStatsTableHelperObject> list = FXCollections.observableArrayList();
+    private static ArrayList<ExtendedStatsTableHelperObject> calculateBetterStatistics(Question question) {
+        ArrayList<ExtendedStatsTableHelperObject> list = new ArrayList<>();
 
         int weightedPollTotal = 0;
         int weightedPollCount = 0;
@@ -84,10 +86,10 @@ public class EvaluationExtendedStatsQuestionView {
     private static void fillTable(TableView<ExtendedStatsTableHelperObject> statTable) {
         TableColumn<ExtendedStatsTableHelperObject, String> textcolumn = (TableColumn<ExtendedStatsTableHelperObject, String>) statTable.getColumns().get(0);
         textcolumn.setCellValueFactory(new PropertyValueFactory<ExtendedStatsTableHelperObject, String>("text"));
-        textcolumn.prefWidthProperty().bind(statTable.widthProperty().multiply(0.5));
+        textcolumn.prefWidthProperty().bind(statTable.widthProperty().multiply(0.75));
 
         TableColumn<ExtendedStatsTableHelperObject, String> valueColumn = (TableColumn<ExtendedStatsTableHelperObject, String>) statTable.getColumns().get(1);
         valueColumn.setCellValueFactory(new PropertyValueFactory<ExtendedStatsTableHelperObject, String>("value"));
-        valueColumn.prefWidthProperty().bind(statTable.widthProperty().multiply(0.5));
+        valueColumn.prefWidthProperty().bind(statTable.widthProperty().multiply(0.25));
     }
 }

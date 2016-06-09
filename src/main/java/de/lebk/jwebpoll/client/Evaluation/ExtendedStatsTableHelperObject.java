@@ -9,11 +9,11 @@ public class ExtendedStatsTableHelperObject {
         this.value = value;
     }
 
-    private String getText() {
+    public String getText() {
         return text;
     }
 
-    private double getValue() {
+    public double getValue() {
         return value;
     }
 }
