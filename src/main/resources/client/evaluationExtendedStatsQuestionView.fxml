@@ -13,18 +13,16 @@
 
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS"/>
-
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints/>
+        <RowConstraints vgrow="ALWAYS"/>
     </rowConstraints>
 
     <TableView id="statTable"
                GridPane.columnIndex="0"
                GridPane.rowIndex="0"
-               GridPane.vgrow="ALWAYS"
-               maxHeight="Infinity"
-               prefWidth="Infinity">
+               maxWidth="Infinity"
+               maxHeight="Infinity">
         <columns>
             <TableColumn id="text"
                          text="Text"

@@ -11,9 +11,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-/**
- * Created by lostincoding on 08.06.16.
- */
 public class EvaluationExtendedStats {
 
     public static void show(Poll poll) {
