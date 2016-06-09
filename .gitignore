@@ -17,3 +17,5 @@ module_jwebpoll_Wed_Jun_01_21-19-34_CEST_2016.xml
 src/main/resources/log4j.properties
 src/main/resources/log4j-application.log
 log4j-application.log
+.gitignore.save
+

@@ -6,8 +6,8 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.control.MenuBar?>
 <GridPane xmlns="http://javafx.com/javafx/8"
-          id="evaluationdialog_grid"
->
+          id="evaluationdialog_grid">
+
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS"/>
     </columnConstraints>

@@ -4,8 +4,6 @@ import de.lebk.jwebpoll.client.QuestionView;
 import de.lebk.jwebpoll.client.Statistics;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -15,18 +13,13 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
-import javafx.util.Callback;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
-/**
- * Created by lostincoding on 08.06.16.
- */
 public class EvaluationExtendedStatsQuestionView {
-    final static Logger logger = Logger.getLogger(EvaluationExtendedStatsQuestionView.class);
+    private static final Logger LOGGER = Logger.getLogger(EvaluationExtendedStatsQuestionView.class);
 
     public static void setQuestionView(Accordion accordion, Question question, boolean disabled) {
         if (accordion == null)
@@ -42,9 +35,8 @@ public class EvaluationExtendedStatsQuestionView {
             rootGrid = FXMLLoader.load(QuestionView.class.getResource("/client/evaluationExtendedStatsQuestionView.fxml"));
         } catch (IOException ex) {
             ex.printStackTrace();
-            if (logger.isDebugEnabled()) {
-                logger.debug("", ex);
-            }
+            if (LOGGER.isDebugEnabled())
+                LOGGER.debug("", ex);
         }
         if (rootGrid == null)
             return;
@@ -53,6 +45,10 @@ public class EvaluationExtendedStatsQuestionView {
             case SINGLE:
             case MULTIPLE:
                 TableView<ExtendedStatsTableHelperObject> statTable = (TableView<ExtendedStatsTableHelperObject>) rootGrid.lookup("#statTable");
+
+                for (ExtendedStatsTableHelperObject extendedStatsTableHelperObject : calculateBetterStatistics(question)) {
+                    statTable.getItems().add(extendedStatsTableHelperObject);
+                }
                 fillTable(statTable);
                 break;
             case FREE:
@@ -66,8 +62,8 @@ public class EvaluationExtendedStatsQuestionView {
     }
 
 
-    private static ObservableList<ExtendedStatsTableHelperObject> calculateBetterStatistics(Question question) {
-        ObservableList<ExtendedStatsTableHelperObject> list = FXCollections.observableArrayList();
+    private static ArrayList<ExtendedStatsTableHelperObject> calculateBetterStatistics(Question question) {
+        ArrayList<ExtendedStatsTableHelperObject> list = new ArrayList<>();
 
         int weightedPollTotal = 0;
         int weightedPollCount = 0;
@@ -79,13 +75,10 @@ public class EvaluationExtendedStatsQuestionView {
         }
         double arithmeticAverage = (double) weightedPollTotal / (double) weightedPollCount;
         list.add(new ExtendedStatsTableHelperObject("Arithmetischer Durchschnitt:", arithmeticAverage));
-        // System.out.println("Arithmetic average: " + arithmeticAverage);
         double variance = Statistics.getVariance(question.getAnswers(), arithmeticAverage);
         list.add(new ExtendedStatsTableHelperObject("Varianz", variance));
-        //  System.out.println("Variance: " + variance);
         double standardDeviation = Statistics.getStandardDeviation(question.getAnswers(), arithmeticAverage);
         list.add(new ExtendedStatsTableHelperObject("Standardabweichung", standardDeviation));
-        //System.out.println("Standard deviation: " + standardDeviation);
 
         return list;
     }
@@ -93,8 +86,10 @@ public class EvaluationExtendedStatsQuestionView {
     private static void fillTable(TableView<ExtendedStatsTableHelperObject> statTable) {
         TableColumn<ExtendedStatsTableHelperObject, String> textcolumn = (TableColumn<ExtendedStatsTableHelperObject, String>) statTable.getColumns().get(0);
         textcolumn.setCellValueFactory(new PropertyValueFactory<ExtendedStatsTableHelperObject, String>("text"));
+        textcolumn.prefWidthProperty().bind(statTable.widthProperty().multiply(0.75));
+
         TableColumn<ExtendedStatsTableHelperObject, String> valueColumn = (TableColumn<ExtendedStatsTableHelperObject, String>) statTable.getColumns().get(1);
         valueColumn.setCellValueFactory(new PropertyValueFactory<ExtendedStatsTableHelperObject, String>("value"));
+        valueColumn.prefWidthProperty().bind(statTable.widthProperty().multiply(0.25));
     }
-
 }

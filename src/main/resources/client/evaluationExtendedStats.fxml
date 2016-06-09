@@ -3,8 +3,8 @@
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.layout.*?>
 <GridPane xmlns="http://javafx.com/javafx/8"
-          id="extendedstatsgrid"
-          vgap="10">
+          id="extendedstatsgrid">
+
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS"/>
     </columnConstraints>
