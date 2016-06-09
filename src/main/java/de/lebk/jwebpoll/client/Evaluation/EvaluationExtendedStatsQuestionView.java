@@ -44,7 +44,9 @@ public class EvaluationExtendedStatsQuestionView {
             case SINGLE:
             case MULTIPLE:
                 TableView<ExtendedStatsTableHelperObject> statTable = (TableView<ExtendedStatsTableHelperObject>) rootGrid.lookup("#statTable");
-                statTable.getItems().addAll(calculateBetterStatistics(question));
+                for (ExtendedStatsTableHelperObject extendedStatsTableHelperObject : calculateBetterStatistics(question)) {
+                    statTable.getItems().add(extendedStatsTableHelperObject);
+                }
                 fillTable(statTable);
                 break;
             case FREE:
@@ -82,7 +84,10 @@ public class EvaluationExtendedStatsQuestionView {
     private static void fillTable(TableView<ExtendedStatsTableHelperObject> statTable) {
         TableColumn<ExtendedStatsTableHelperObject, String> textcolumn = (TableColumn<ExtendedStatsTableHelperObject, String>) statTable.getColumns().get(0);
         textcolumn.setCellValueFactory(new PropertyValueFactory<ExtendedStatsTableHelperObject, String>("text"));
+        textcolumn.prefWidthProperty().bind(statTable.widthProperty().multiply(0.5));
+
         TableColumn<ExtendedStatsTableHelperObject, String> valueColumn = (TableColumn<ExtendedStatsTableHelperObject, String>) statTable.getColumns().get(1);
         valueColumn.setCellValueFactory(new PropertyValueFactory<ExtendedStatsTableHelperObject, String>("value"));
+        valueColumn.prefWidthProperty().bind(statTable.widthProperty().multiply(0.5));
     }
 }
