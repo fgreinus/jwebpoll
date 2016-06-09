@@ -1,10 +1,8 @@
 package de.lebk.jwebpoll.client;
 
-import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.QuestionType;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -18,7 +16,6 @@ import javafx.util.Callback;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 public class QuestionView {
     private static final Logger LOGGER = Logger.getLogger(QuestionView.class);
@@ -100,16 +97,12 @@ public class QuestionView {
                         txtColumn.setCellFactory(TextFieldTableCell.forTableColumn());
                         txtColumn.setOnEditCommit(event -> event.getRowValue().setText(event.getNewValue()));
                     } else if (column.getText().equals("Wert")) {
-                        TableColumn<Answer, String> valueColumn = (TableColumn<Answer, String>) column;
-//                        valueColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-//                        valueColumn.setOnEditCommit(event ->
-//                        {
-//                            try {
-//                                event.getRowValue().setValue(Integer.parseInt(event.getNewValue()));
-//                            } catch (NumberFormatException ex) {
-//                                MsgBox.show("Falsche Eingabe", ex.getMessage(), null, accordion.getScene().getWindow());
-//                            }
-//                        });
+                        TableColumn<Answer, Integer> valueColumn = (TableColumn<Answer, Integer>) column;
+                        valueColumn.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.IntegerStringConverter()));
+                        valueColumn.setOnEditCommit(event ->
+                        {
+                            event.getRowValue().setValue(event.getNewValue());
+                        });
                     }
                 }
             });
