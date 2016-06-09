@@ -4,14 +4,15 @@ import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.QuestionType;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 import javafx.util.Callback;
 import org.apache.log4j.Logger;
 
@@ -29,12 +30,8 @@ public class QuestionView {
             CheckBox requiredCkB = (CheckBox) rootGird.lookup("#requiredCkB");
             TextField hintTxF = (TextField) rootGird.lookup("#hintTxF");
             ComboBox<QuestionType> typeCbo = (ComboBox<QuestionType>) rootGird.lookup("#typeCbo");
-            Text answerAddTextTxt = (Text) rootGird.lookup("#answerAddTextTxt");
-            TextField answerAddTextTxF = (TextField) rootGird.lookup("#answerAddTextTxF");
-            Text answerAddValueTxt = (Text) rootGird.lookup("#answerAddValueTxt");
-            TextField answerAddValueTxF = (TextField) rootGird.lookup("#answerAddValueTxF");
-            Button answerAddBtn = (Button) rootGird.lookup("#answerAddBtn");
             TableView<Answer> answerTable = (TableView<Answer>) rootGird.lookup("#answerTable");
+            Button answerAddBtn = (Button) rootGird.lookup("#answerAddBtn");
             Button answerRemoveBtn = (Button) rootGird.lookup("#answerRemoveBtn");
             TextArea answerFreetext = (TextArea) rootGird.lookup("#answerFreetext");
 
@@ -60,101 +57,79 @@ public class QuestionView {
             typeCbo.setButtonCell(new QuestionTypeListCell());
             typeCbo.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends QuestionType> observable, QuestionType oldValue, QuestionType newValue) ->
             {
-                if (newValue != oldValue) {
-                    question.setType(newValue);
-                    switch (newValue) {
-                        case SINGLE:
-                        case MULTIPLE:
-                            answerAddTextTxt.setVisible(true);
-                            answerAddTextTxF.setVisible(true);
-                            answerAddValueTxt.setVisible(true);
-                            answerAddValueTxF.setVisible(true);
-                            answerAddBtn.setVisible(true);
-                            answerTable.setVisible(true);
-                            answerRemoveBtn.setVisible(true);
-                            answerFreetext.setVisible(false);
-                            break;
-                        case FREE:
-                            answerAddTextTxt.setVisible(false);
-                            answerAddTextTxF.setVisible(false);
-                            answerAddValueTxt.setVisible(false);
-                            answerAddValueTxF.setVisible(false);
-                            answerAddBtn.setVisible(false);
-                            answerTable.setVisible(false);
-                            answerRemoveBtn.setVisible(false);
-                            answerFreetext.setVisible(true);
-                            break;
-                    }
-
-                    TableColumn<Answer, QuestionType> typeColumn = (TableColumn<Answer, QuestionType>) answerTable.getColumns().get(0);
-                    typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.1));
-                    typeColumn.setCellValueFactory(new QuestionTypeTableCell(question.getType()));
-                    typeColumn.setCellFactory(new Callback<TableColumn<Answer, QuestionType>, TableCell<Answer, QuestionType>>() {
-                        @Override
-                        public TableCell<Answer, QuestionType> call(TableColumn<Answer, QuestionType> btnCol) {
-                            return new TableCell<Answer, QuestionType>() {
-                                @Override
-                                public void updateItem(QuestionType type, boolean empty) {
-                                    super.updateItem(type, empty);
-
-                                    Node graphic = null;
-                                    if (type != null && !empty) {
-                                        try {
+                if (newValue == oldValue)
+                    return;
+                question.setType(newValue);
+                boolean displayAnswerTable = newValue != QuestionType.FREE;
+                answerTable.setVisible(displayAnswerTable);
+                answerAddBtn.setVisible(displayAnswerTable);
+                answerRemoveBtn.setVisible(displayAnswerTable);
+                answerFreetext.setVisible(!displayAnswerTable);
+                if (newValue == QuestionType.FREE)
+                    return;
+                for (TableColumn<Answer, ?> column : answerTable.getColumns()) {
+                    if (column.getId().equals("#controlColumn")) {
+                        final TableColumn<Answer, QuestionType> typeColumn = (TableColumn<Answer, QuestionType>) column;
+                        typeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(question.getType()));
+                        typeColumn.setCellFactory(new Callback<TableColumn<Answer, QuestionType>, TableCell<Answer, QuestionType>>() {
+                            @Override
+                            public TableCell<Answer, QuestionType> call(TableColumn<Answer, QuestionType> btnCol) {
+                                return new TableCell<Answer, QuestionType>() {
+                                    @Override
+                                    public void updateItem(QuestionType type, boolean empty) {
+                                        super.updateItem(type, empty);
+                                        Node graphic = null;
+                                        if (type != null && !empty) {
                                             switch (type) {
                                                 case SINGLE:
-                                                    graphic = FXMLLoader.load(QuestionView.class.getResource("/client/answer_single.fxml"));
+                                                    graphic = new RadioButton();
                                                     break;
                                                 case MULTIPLE:
-                                                    graphic = FXMLLoader.load(QuestionView.class.getResource("/client/answer_multiple.fxml"));
+                                                    graphic = new CheckBox();
                                                     break;
                                             }
-                                        } catch (IOException ex) {
-                                            ex.printStackTrace();
-                                            if (LOGGER.isDebugEnabled()) {
-                                                LOGGER.debug("", ex);
-                                            }
-                                        }
-                                    } else {
-                                        setText(null);
+//                                            if (graphic != null)
+//                                                graphic.setDisable(true);
+                                        } else
+                                            setText(null);
+                                        setGraphic(graphic);
                                     }
-                                    setGraphic(graphic);
-                                }
-                            };
+                                };
+                            }
+                        });
+                    }
+                    else if(!disabled)
+                        if (column.getId().equals("#textColumn")) {
+                            TableColumn<Answer, String> txtColumn = (TableColumn<Answer, String>) column;
+                            txtColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+                            txtColumn.setOnEditCommit(event -> event.getRowValue().setText(event.getNewValue()));
+                            txtColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
+                        } else if (column.getId().equals("#valueColumn")) {
+                            TableColumn<Answer, Integer> valueColumn = (TableColumn<Answer, Integer>) column;
+                            valueColumn.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.IntegerStringConverter()));
+                            valueColumn.setOnEditCommit(event -> event.getRowValue().setValue(event.getNewValue()));
+                            valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, Integer>("value"));
                         }
-                    });
                 }
             });
             typeCbo.setValue(question.getType());
             typeCbo.setDisable(disabled);
-            answerAddTextTxF.setDisable(disabled);
-            QuestionView.updateAddValueTxF(question, answerAddValueTxF);
-            answerAddValueTxF.setDisable(disabled);
+
+            if (question.getAnswers() != null)
+                answerTable.getItems().addAll(question.getAnswers());
+            answerTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+
             answerAddBtn.setOnAction((ActionEvent event) ->
             {
-                if (!answerAddTextTxF.getText().isEmpty()
-                        && !answerAddValueTxF.getText().isEmpty()) {
-                    try {
-                        int value = Integer.parseInt(answerAddValueTxF.getText());
-                        Answer answer = new Answer(answerAddTextTxF.getText(), value, question);
-                        question.getAnswers().add(answer);
-                        answerTable.getItems().add(answer);
-                        answerAddTextTxF.clear();
-                        QuestionView.updateAddValueTxF(question, answerAddValueTxF);
-                    } catch (NumberFormatException e) {
-                        answerAddValueTxF.setText("Ungültiger Wert");
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("", e);
-                        }
-                    }
-                }
-
+                Answer newAnswer = new Answer("<Neue Antwortmöglichkeit>", nextAnswerWeight(question), question);
+                question.getAnswers().add(newAnswer);
+                answerTable.getItems().add(newAnswer);
             });
-            answerAddBtn.defaultButtonProperty().bind(answerAddBtn.focusedProperty());
             answerAddBtn.setDisable(disabled);
             answerRemoveBtn.setOnAction((ActionEvent event) ->
             {
                 if (!answerTable.getSelectionModel().isEmpty())
-                    ConfirmDialog.show("Antwortmöglichkeit wirklich entfernen?", (boolean confirmed) ->
+                    ConfirmDialog.show("Antwortmöglichkeit wirklich entfernen?", confirmed ->
                     {
                         if (confirmed) {
                             Answer toRemove = answerTable.getSelectionModel().getSelectedItem();
@@ -162,27 +137,15 @@ public class QuestionView {
                                 Database.DB.getAnswerDao().delete(toRemove);
                                 question.getAnswers().remove(toRemove);
                                 answerTable.getItems().remove(toRemove);
-                                QuestionView.updateAddValueTxF(question, answerAddValueTxF);
                             } catch (SQLException ex) {
                                 ex.printStackTrace();
-                                if (LOGGER.isDebugEnabled()) {
+                                if (LOGGER.isDebugEnabled())
                                     LOGGER.debug("", ex);
-                                }
                             }
                         }
                     }, accordion.getScene().getWindow());
             });
             answerRemoveBtn.setDisable(disabled);
-
-            TableColumn<Answer, String> textColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(1);
-            textColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
-            textColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.75));
-
-            TableColumn<Answer, String> valueColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(2);
-            valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("value"));
-            valueColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.15));
-            if (question.getAnswers() != null)
-                answerTable.getItems().addAll(question.getAnswers());
 
             tp.setContent(rootGird);
             accordion.getPanes().add(tp);
@@ -197,18 +160,15 @@ public class QuestionView {
         return null;
     }
 
-    private static void updateAddValueTxF(Question item, TextField answerAddValueTxF) {
+    private static int nextAnswerWeight(Question item) {
         if (item.getAnswers() == null || item.getAnswers().isEmpty())
-            answerAddValueTxF.setText(String.valueOf(1));
-        else {
-            int highest = Integer.MIN_VALUE;
-            for (Answer answer : item.getAnswers())
-                if (answer.getValue() > highest)
-                    highest = answer.getValue();
-            if (highest == Integer.MIN_VALUE)
-                highest = 0;
-            highest++;
-            answerAddValueTxF.setText(String.valueOf(highest));
-        }
+            return 1;
+        int highest = Integer.MIN_VALUE;
+        for (Answer answer : item.getAnswers())
+            if (answer.getValue() > highest)
+                highest = answer.getValue();
+        if (highest == Integer.MIN_VALUE)
+            highest = 0;
+        return ++highest;
     }
 }
