@@ -1,5 +1,6 @@
 package de.lebk.jwebpoll.client;
 
+import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.QuestionType;
@@ -16,6 +17,7 @@ import javafx.util.Callback;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class QuestionView {
     private static final Logger LOGGER = Logger.getLogger(QuestionView.class);
@@ -29,6 +31,8 @@ public class QuestionView {
             TextField hintTxF = (TextField) rootGird.lookup("#hintTxF");
             ComboBox<QuestionType> typeCbo = (ComboBox<QuestionType>) rootGird.lookup("#typeCbo");
             TableView<Answer> answerTable = (TableView<Answer>) rootGird.lookup("#answerTable");
+            Button answerAddBtn = (Button) rootGird.lookup("#answerAddBtn");
+            Button answerRemoveBtn = (Button) rootGird.lookup("#answerRemoveBtn");
             TextArea answerFreetext = (TextArea) rootGird.lookup("#answerFreetext");
 
             titleTxF.setText("#Initialize");
@@ -56,12 +60,15 @@ public class QuestionView {
                 if (newValue == oldValue)
                     return;
                 question.setType(newValue);
-                answerTable.setVisible(newValue != QuestionType.FREE);
-                answerFreetext.setVisible(newValue == QuestionType.FREE);
+                boolean displayAnswerTable = newValue != QuestionType.FREE;
+                answerTable.setVisible(displayAnswerTable);
+                answerAddBtn.setVisible(displayAnswerTable);
+                answerRemoveBtn.setVisible(displayAnswerTable);
+                answerFreetext.setVisible(!displayAnswerTable);
                 if (newValue == QuestionType.FREE)
                     return;
                 for (TableColumn<Answer, ?> column : answerTable.getColumns()) {
-                    if (column.getText().isEmpty()) {
+                    if (column.getId().equals("#controlColumn")) {
                         final TableColumn<Answer, QuestionType> typeColumn = (TableColumn<Answer, QuestionType>) column;
                         typeColumn.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(question.getType()));
                         typeColumn.setCellFactory(new Callback<TableColumn<Answer, QuestionType>, TableCell<Answer, QuestionType>>() {
@@ -92,18 +99,17 @@ public class QuestionView {
                                 };
                             }
                         });
-                    } else if (column.getText().equals("Text")) {
-                        TableColumn<Answer, String> txtColumn = (TableColumn<Answer, String>) column;
-                        txtColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-                        txtColumn.setOnEditCommit(event -> event.getRowValue().setText(event.getNewValue()));
-                    } else if (column.getText().equals("Wert")) {
-                        TableColumn<Answer, Integer> valueColumn = (TableColumn<Answer, Integer>) column;
-                        valueColumn.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.IntegerStringConverter()));
-                        valueColumn.setOnEditCommit(event ->
-                        {
-                            event.getRowValue().setValue(event.getNewValue());
-                        });
                     }
+                    else if(!disabled)
+                        if (column.getId().equals("#textColumn")) {
+                            TableColumn<Answer, String> txtColumn = (TableColumn<Answer, String>) column;
+                            txtColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+                            txtColumn.setOnEditCommit(event -> event.getRowValue().setText(event.getNewValue()));
+                        } else if (column.getId().equals("#valueColumn")) {
+                            TableColumn<Answer, Integer> valueColumn = (TableColumn<Answer, Integer>) column;
+                            valueColumn.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.IntegerStringConverter()));
+                            valueColumn.setOnEditCommit(event -> event.getRowValue().setValue(event.getNewValue()));
+                        }
                 }
             });
             typeCbo.setValue(question.getType());
@@ -119,6 +125,34 @@ public class QuestionView {
             if (question.getAnswers() != null)
                 answerTable.getItems().addAll(question.getAnswers());
 
+            answerAddBtn.setOnAction((ActionEvent event) ->
+            {
+                Answer newAnswer = new Answer("<Neue Antwortmöglichkeit>", nextAnswerWeight(question), question);
+                question.getAnswers().add(newAnswer);
+                answerTable.getItems().add(newAnswer);
+            });
+            answerAddBtn.setDisable(disabled);
+            answerRemoveBtn.setOnAction((ActionEvent event) ->
+            {
+                if (!answerTable.getSelectionModel().isEmpty())
+                    ConfirmDialog.show("Antwortmöglichkeit wirklich entfernen?", confirmed ->
+                    {
+                        if (confirmed) {
+                            Answer toRemove = answerTable.getSelectionModel().getSelectedItem();
+                            try {
+                                Database.DB.getAnswerDao().delete(toRemove);
+                                question.getAnswers().remove(toRemove);
+                                answerTable.getItems().remove(toRemove);
+                            } catch (SQLException ex) {
+                                ex.printStackTrace();
+                                if (LOGGER.isDebugEnabled())
+                                    LOGGER.debug("", ex);
+                            }
+                        }
+                    }, accordion.getScene().getWindow());
+            });
+            answerRemoveBtn.setDisable(disabled);
+
             tp.setContent(rootGird);
             accordion.getPanes().add(tp);
 
@@ -132,18 +166,15 @@ public class QuestionView {
         return null;
     }
 
-    private static void updateAddValueTxF(Question item, TextField answerAddValueTxF) {
+    private static int nextAnswerWeight(Question item) {
         if (item.getAnswers() == null || item.getAnswers().isEmpty())
-            answerAddValueTxF.setText(String.valueOf(1));
-        else {
-            int highest = Integer.MIN_VALUE;
-            for (Answer answer : item.getAnswers())
-                if (answer.getValue() > highest)
-                    highest = answer.getValue();
-            if (highest == Integer.MIN_VALUE)
-                highest = 0;
-            highest++;
-            answerAddValueTxF.setText(String.valueOf(highest));
-        }
+            return 1;
+        int highest = Integer.MIN_VALUE;
+        for (Answer answer : item.getAnswers())
+            if (answer.getValue() > highest)
+                highest = answer.getValue();
+        if (highest == Integer.MIN_VALUE)
+            highest = 0;
+        return ++highest;
     }
 }

@@ -91,8 +91,9 @@
         <TableView id="answerTable"
                    editable="true"
                    GridPane.columnIndex="0"
-                   GridPane.columnSpan="3"
+                   GridPane.columnSpan="2"
                    GridPane.rowIndex="2"
+                   GridPane.rowSpan="2"
                    prefWidth="-Infinity"
                    prefHeight="-Infinity"
                    minHeight="150">
@@ -102,12 +103,31 @@
                 <TableColumn id="#valueColumn" text="Wert"/>
             </columns>
         </TableView>
+
+        <Button id="answerAddBtn"
+                text="Hinzufügen"
+                textFill="green"
+                maxWidth="Infinity"
+                GridPane.hgrow="SOMETIMES"
+                GridPane.columnIndex="2"
+                GridPane.rowIndex="2"
+                GridPane.valignment="BOTTOM"/>
+
+        <Button id="answerRemoveBtn"
+                text="Entfernen"
+                textFill="red"
+                maxWidth="Infinity"
+                GridPane.hgrow="SOMETIMES"
+                GridPane.columnIndex="2"
+                GridPane.rowIndex="3"/>
+
         <TextArea id="answerFreetext"
                   text="Hier kann Freitext eingegeben werden..."
                   disable="true"
                   GridPane.columnIndex="0"
                   GridPane.columnSpan="3"
                   GridPane.rowIndex="2"
+                  GridPane.rowSpan="2"
                   prefHeight="-Infinity"
                   prefWidth="-Infinity"/>
     </GridPane>
