@@ -88,10 +88,8 @@ public class QuestionView {
                                                     graphic = new CheckBox();
                                                     break;
                                             }
-                                            if (graphic != null) {
-                                                typeColumn.prefWidthProperty().bind(((ButtonBase) graphic).widthProperty());
-                                                graphic.setDisable(true);
-                                            }
+//                                            if (graphic != null)
+//                                                graphic.setDisable(true);
                                         } else
                                             setText(null);
                                         setGraphic(graphic);
@@ -105,25 +103,21 @@ public class QuestionView {
                             TableColumn<Answer, String> txtColumn = (TableColumn<Answer, String>) column;
                             txtColumn.setCellFactory(TextFieldTableCell.forTableColumn());
                             txtColumn.setOnEditCommit(event -> event.getRowValue().setText(event.getNewValue()));
+                            txtColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
                         } else if (column.getId().equals("#valueColumn")) {
                             TableColumn<Answer, Integer> valueColumn = (TableColumn<Answer, Integer>) column;
                             valueColumn.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.IntegerStringConverter()));
                             valueColumn.setOnEditCommit(event -> event.getRowValue().setValue(event.getNewValue()));
+                            valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, Integer>("value"));
                         }
                 }
             });
             typeCbo.setValue(question.getType());
             typeCbo.setDisable(disabled);
 
-            TableColumn<Answer, String> textColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(1);
-            textColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
-            textColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.75));
-
-            TableColumn<Answer, String> valueColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(2);
-            valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("value"));
-            valueColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.15));
             if (question.getAnswers() != null)
                 answerTable.getItems().addAll(question.getAnswers());
+            answerTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
             answerAddBtn.setOnAction((ActionEvent event) ->
             {
