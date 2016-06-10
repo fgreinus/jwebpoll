@@ -46,12 +46,10 @@ public class EvaluationDialog {
             initalizeMenuBar(menuBar);
             this.questionsAccordion = (Accordion) evaluationGrid.lookup("#questionsAccordion");
             initalizeAccordion();
-
         } catch (IOException ex) {
             ex.printStackTrace();
-            if (LOGGER.isDebugEnabled()) {
+            if (LOGGER.isDebugEnabled())
                 LOGGER.debug("", ex);
-            }
             return;
         }
 
@@ -82,11 +80,8 @@ public class EvaluationDialog {
     }
 
     private void initalizeAccordion() {
-
-        for (Question question : poll.questions) {
-            EvaluationQuestionView.setQuestionView(questionsAccordion, question, false);
-        }
-
+        for (Question question : poll.questions)
+            EvaluationQuestionView.setQuestionView(questionsAccordion, question);
     }
 
 
@@ -109,6 +104,4 @@ public class EvaluationDialog {
         }
         this.poll = poll;
     }
-
-
 }
