@@ -1,10 +1,12 @@
 package de.lebk.jwebpoll.client.Evaluation;
 
+import de.lebk.jwebpoll.client.SimpleNumberProperty;
 import de.lebk.jwebpoll.client.QuestionView;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.Vote;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -88,33 +90,35 @@ public class EvaluationQuestionView {
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("text"));
         typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.5));
 
-        TableColumn<Answer, String> countColumn = new TableColumn<>("Häufigkeit");
+        TableColumn<Answer, Number> countColumn = new TableColumn<>("Häufigkeit");
         countColumn.setCellValueFactory(cellData ->
         {
             Answer answer = cellData.getValue();
             if (answer.getQuestion() == null) {
                 if (answer.getText().equals(SUM))
-                    return new SimpleStringProperty(String.valueOf(sumCountFinal));
+                    return new SimpleNumberProperty(new SimpleIntegerProperty(sumCountFinal));
                 if (answer.getText().equals(AVG))
-                    return new SimpleStringProperty(String.valueOf(avgCountFinal));
+                    return new SimpleNumberProperty(new SimpleDoubleProperty(avgCountFinal));
             }
-            return new SimpleStringProperty(String.valueOf(answer.getVotes().size()));
+            return new SimpleNumberProperty(new SimpleIntegerProperty(answer.getVotes().size()));
         });
+        countColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
         countColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.25));
 
-        TableColumn<Answer, String> weightedColumn = new TableColumn<>("Gewichtet");
+        TableColumn<Answer, Number> weightedColumn = new TableColumn<>("Gewichtet");
         weightedColumn.setCellValueFactory(cellData ->
         {
             Answer answer = cellData.getValue();
             if (answer.getQuestion() == null)
             {
                 if(answer.getText().equals(SUM))
-                    return new SimpleStringProperty(String.valueOf(sumWeightFinal));
+                    return new SimpleNumberProperty(new SimpleIntegerProperty(sumWeightFinal));
                 if(answer.getText().equals(AVG))
-                    return new SimpleStringProperty(String.valueOf(avgWeightFinal));
+                    return new SimpleNumberProperty(new SimpleDoubleProperty(avgWeightFinal));
             }
-            return new SimpleStringProperty(String.valueOf(answer.getVotes().size() * answer.getValue()));
+            return new SimpleNumberProperty(new SimpleIntegerProperty(answer.getVotes().size() * answer.getValue()));
         });
+        weightedColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
         weightedColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.25));
 
         answerTable.setRowFactory(param ->
