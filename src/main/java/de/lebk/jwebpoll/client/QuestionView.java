@@ -97,19 +97,23 @@ public class QuestionView {
                                 };
                             }
                         });
-                    }
-                    else if(!disabled)
-                        if (column.getId().equals("#textColumn")) {
-                            TableColumn<Answer, String> txtColumn = (TableColumn<Answer, String>) column;
+                    } else if (column.getId().equals("#textColumn")) {
+                        TableColumn<Answer, String> txtColumn = (TableColumn<Answer, String>) column;
+                        if(!disabled)
+                        {
                             txtColumn.setCellFactory(TextFieldTableCell.forTableColumn());
                             txtColumn.setOnEditCommit(event -> event.getRowValue().setText(event.getNewValue()));
-                            txtColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
-                        } else if (column.getId().equals("#valueColumn")) {
-                            TableColumn<Answer, Integer> valueColumn = (TableColumn<Answer, Integer>) column;
+                        }
+                        txtColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
+                    } else if (column.getId().equals("#valueColumn")) {
+                        TableColumn<Answer, Integer> valueColumn = (TableColumn<Answer, Integer>) column;
+                        if(!disabled)
+                        {
                             valueColumn.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.IntegerStringConverter()));
                             valueColumn.setOnEditCommit(event -> event.getRowValue().setValue(event.getNewValue()));
-                            valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, Integer>("value"));
                         }
+                        valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, Integer>("value"));
+                    }
                 }
             });
             typeCbo.setValue(question.getType());
