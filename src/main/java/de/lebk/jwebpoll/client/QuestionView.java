@@ -88,8 +88,8 @@ public class QuestionView {
                                                     graphic = new CheckBox();
                                                     break;
                                             }
-//                                            if (graphic != null)
-//                                                graphic.setDisable(true);
+                                            if (graphic != null)
+                                                graphic.setDisable(true);
                                         } else
                                             setText(null);
                                         setGraphic(graphic);
