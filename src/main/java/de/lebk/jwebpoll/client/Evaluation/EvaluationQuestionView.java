@@ -1,12 +1,10 @@
 package de.lebk.jwebpoll.client.Evaluation;
 
-import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.client.QuestionView;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.Vote;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -14,11 +12,9 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
-import javafx.util.Callback;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Comparator;
 
 public class EvaluationQuestionView {
@@ -66,29 +62,32 @@ public class EvaluationQuestionView {
     }
 
     private static void fillForSingleAndMultipleChoice(Question question, TableView<Answer> answerTable) {
-        TableColumn<Answer, String> typeColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(0);
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("text"));
-        typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.5));
-
-
-        TableColumn<Answer, String> countColumn = new TableColumn<>("Häufigkeit");
-        countColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getVotes().size())));
-        countColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.25));
-
-        TableColumn<Answer, String> weightedColumn = new TableColumn<>("Gewichtet");
-        weightedColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getVotes().size() * cellData.getValue().getValue())));
-        weightedColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.25));
-
+        int sumCount = 0;
+        int sumWeight = 0;
         if (question.getAnswers() != null) {
             answerTable.getItems().addAll(question.getAnswers());
-            int sumCount = 0;
-            int sumWeight = 0;
             for (Answer answer : question.getAnswers()) {
                 sumCount += answer.getVotes().size();
                 sumWeight += answer.getVotes().size() * answer.getValue();
             }
-            answerTable.getItems().add(new Answer("Summe " +sumCount + " / " + sumWeight, sumCount, null));
-            answerTable.setRowFactory(param ->
+            answerTable.getItems().add(new Answer("Summe", sumCount, null));
+        }
+        final int sumCountFinal = sumCount;
+        final int sumWeightFinal = sumWeight;
+
+        TableColumn<Answer, String> typeColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(0);
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("text"));
+        typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.5));
+
+        TableColumn<Answer, String> countColumn = new TableColumn<>("Häufigkeit");
+        countColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getQuestion() == null ? sumCountFinal : cellData.getValue().getVotes().size())));
+        countColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.25));
+
+        TableColumn<Answer, String> weightedColumn = new TableColumn<>("Gewichtet");
+        weightedColumn.setCellValueFactory(cellData -> new SimpleStringProperty(String.valueOf(cellData.getValue().getQuestion() == null ? sumWeightFinal : cellData.getValue().getVotes().size() * cellData.getValue().getValue())));
+        weightedColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.25));
+
+        answerTable.setRowFactory(param ->
                 new TableRow<Answer>() {
                     @Override
                     protected void updateItem(Answer item, boolean empty) {
@@ -100,22 +99,21 @@ public class EvaluationQuestionView {
                             setStyle("");
                     }
                 });
-            answerTable.setSortPolicy(param ->
+        answerTable.setSortPolicy(param ->
+        {
+            Comparator<Answer> comparator = (a1, a2) ->
             {
-                Comparator<Answer> comparator = (a1, a2) ->
-                {
-                    if (a1.getQuestion() == null)
-                        return 1;
-                    if (a2.getQuestion() == null)
-                        return -1;
-                    if (param.getComparator() == null)
-                        return 0;
-                    return param.getComparator().compare(a1, a2);
-                };
-                FXCollections.sort(param.getItems(), comparator);
-                return true;
-            });
-        }
+                if (a1.getQuestion() == null)
+                    return 1;
+                if (a2.getQuestion() == null)
+                    return -1;
+                if (param.getComparator() == null)
+                    return 0;
+                return param.getComparator().compare(a1, a2);
+            };
+            FXCollections.sort(param.getItems(), comparator);
+            return true;
+        });
 
         answerTable.getColumns().add(countColumn);
         answerTable.getColumns().add(weightedColumn);
