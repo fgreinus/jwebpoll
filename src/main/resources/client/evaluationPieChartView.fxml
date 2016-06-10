@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.GridPane?>
+
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.geometry.Insets?>
+<GridPane xmlns="http://javafx.com/javafx/8"
+          hgap="50"
+          vgap="50"
+          style="-fx-border-color: lightgray;">
+
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+    </columnConstraints>
+
+    <rowConstraints>
+        <RowConstraints/>
+        <RowConstraints vgrow="ALWAYS"/>
+    </rowConstraints>
+
+    <RadioButton id="rbtCount"
+                 text="Häufigkeit"
+                 GridPane.columnIndex="0"
+                 GridPane.rowIndex="0"
+                 GridPane.halignment="CENTER"/>
+
+    <RadioButton id="rbtWeight"
+                 text="Gewichtet"
+                 GridPane.columnIndex="1"
+                 GridPane.rowIndex="0"
+                 GridPane.halignment="CENTER"/>
+
+    <PieChart id="pieChart"
+              GridPane.columnIndex="0"
+              GridPane.rowIndex="1"
+              GridPane.columnSpan="2"/>
+
+</GridPane>

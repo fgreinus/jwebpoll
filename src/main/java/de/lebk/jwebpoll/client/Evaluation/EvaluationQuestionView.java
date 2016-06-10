@@ -109,11 +109,10 @@ public class EvaluationQuestionView {
         weightedColumn.setCellValueFactory(cellData ->
         {
             Answer answer = cellData.getValue();
-            if (answer.getQuestion() == null)
-            {
-                if(answer.getText().equals(SUM))
+            if (answer.getQuestion() == null) {
+                if (answer.getText().equals(SUM))
                     return new SimpleNumberProperty(new SimpleIntegerProperty(sumWeightFinal));
-                if(answer.getText().equals(AVG))
+                if (answer.getText().equals(AVG))
                     return new SimpleNumberProperty(new SimpleDoubleProperty(avgWeightFinal));
             }
             return new SimpleNumberProperty(new SimpleIntegerProperty(answer.getVotes().size() * answer.getValue()));
@@ -127,14 +126,12 @@ public class EvaluationQuestionView {
                     protected void updateItem(Answer answer, boolean empty) {
                         super.updateItem(answer, empty);
 
-                        if (answer != null && answer.getQuestion() == null)
-                        {
-                            if(answer.getText().equals(SUM))
+                        if (answer != null && answer.getQuestion() == null) {
+                            if (answer.getText().equals(SUM))
                                 setStyle("-fx-font-weight: bold;");
-                            else if(answer.getText().equals(AVG))
+                            else if (answer.getText().equals(AVG))
                                 setStyle("-fx-font-style: italic;");
-                        }
-                        else
+                        } else
                             setStyle("");
                     }
                 });
@@ -142,16 +139,14 @@ public class EvaluationQuestionView {
         {
             Comparator<Answer> comparator = (a1, a2) ->
             {
-                if (a1.getQuestion() == null)
-                {
-                    if(a2.getQuestion() != null)
+                if (a1.getQuestion() == null) {
+                    if (a2.getQuestion() != null)
                         return 1;
-                    if(a1.getText().equals(SUM))
+                    if (a1.getText().equals(SUM))
                         return -1;
                     return 1;
                 }
-                if (a2.getQuestion() == null)
-                {
+                if (a2.getQuestion() == null) {
                     return -1;
                 }
                 if (param.getComparator() == null)
@@ -167,14 +162,38 @@ public class EvaluationQuestionView {
     }
 
     private static void addChart(GridPane rootgrid, Question question) {
-        ObservableList<PieChart.Data> pieChartData =
-                FXCollections.observableArrayList();
+        ObservableList<PieChart.Data> pieChartCountData = FXCollections.observableArrayList();
         for (Answer answer : question.getAnswers()) {
-            pieChartData.add(new PieChart.Data(answer.getText(), answer.getVotes().size()));
+            pieChartCountData.add(new PieChart.Data(answer.getText(), answer.getVotes().size()));
+        }
+        ObservableList<PieChart.Data> pieChartWeightData = FXCollections.observableArrayList();
+        for (Answer answer : question.getAnswers()) {
+            pieChartWeightData.add(new PieChart.Data(answer.getText(), answer.getVotes().size() * answer.getValue()));
         }
 
-        final PieChart chart = new PieChart(pieChartData);
-        rootgrid.add(chart, 1, 0);
+        GridPane pieGrid = null;
+        try {
+            pieGrid = FXMLLoader.load(QuestionView.class.getResource("/client/evaluationPieChartView.fxml"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ex);
+            }
+        }
+        if (pieGrid == null)
+            return;
+
+        PieChart pieChart = (PieChart) pieGrid.lookup("#pieChart");
+        pieChart.setData(pieChartCountData);
+        ToggleGroup toggleGrp = new ToggleGroup();
+        RadioButton rbtCount = (RadioButton) pieGrid.lookup("#rbtCount");
+        rbtCount.setToggleGroup(toggleGrp);
+        rbtCount.setOnAction(event -> pieChart.setData(pieChartCountData));
+        RadioButton rbtWeight = (RadioButton) pieGrid.lookup("#rbtWeight");
+        rbtWeight.setToggleGroup(toggleGrp);
+        rbtWeight.setOnAction(event -> pieChart.setData(pieChartWeightData));
+        rbtCount.setSelected(true);
+        rootgrid.add(pieGrid, 1, 0);
     }
 
     private static void fillForFree(Question question, TableView<Vote> voteTable) {
