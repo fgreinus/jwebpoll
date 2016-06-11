@@ -102,7 +102,7 @@
                 <TableColumn id="#textColumn"
                              text="Text"/>
                 <TableColumn id="#valueColumn"
-                             text="Wert"/>
+                             text="Gewichtung"/>
             </columns>
         </TableView>
 

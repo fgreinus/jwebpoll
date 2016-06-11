@@ -2,6 +2,7 @@ package de.lebk.jwebpoll.client.Evaluation;
 
 import de.lebk.jwebpoll.client.SimpleNumberProperty;
 import de.lebk.jwebpoll.client.QuestionView;
+import de.lebk.jwebpoll.client.Statistics;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.Vote;
@@ -23,6 +24,8 @@ public class EvaluationQuestionView {
     private static final Logger LOGGER = Logger.getLogger(EvaluationQuestionView.class);
     private static final String SUM = "Summe";
     private static final String AVG = "Durchschnitt";
+    private static final String VAR = "Varianz";
+    private static final String DEV ="Standardabweichung";
 
     public static void setQuestionView(Accordion accordion, Question question) {
         if (accordion == null)
@@ -78,13 +81,23 @@ public class EvaluationQuestionView {
             }
             avgCount = (double) sumCount / question.getAnswers().size();
             avgWeight = (double) sumWeight / question.getAnswers().size();
-            answerTable.getItems().add(new Answer(SUM, sumCount, null));
-            answerTable.getItems().add(new Answer(AVG, (int) avgCount, null));
+            answerTable.getItems().add(new Answer(SUM, 0, null));
+            answerTable.getItems().add(new Answer(AVG, 0, null));
+            answerTable.getItems().add(new Answer(VAR, 0, null));
+            answerTable.getItems().add(new Answer(DEV, 0, null));
         }
         final int sumCountFinal = sumCount;
         final int sumWeightFinal = sumWeight;
         final double avgCountFinal = avgCount;
         final double avgWeightFinal = avgWeight;
+        int[] varCountValues = new int[question.getAnswers().size()];
+        int[] varWeightValues = new int[question.getAnswers().size()];
+        int i = 0;
+        for(Answer answer : question.getAnswers())
+        {
+            varCountValues[i] = answer.getVotes().size();
+            varWeightValues[i++] = answer.getVotes().size() * answer.getValue();
+        }
 
         TableColumn<Answer, String> typeColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(0);
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("text"));
@@ -98,7 +111,11 @@ public class EvaluationQuestionView {
                 if (answer.getText().equals(SUM))
                     return new SimpleNumberProperty(new SimpleIntegerProperty(sumCountFinal));
                 if (answer.getText().equals(AVG))
-                    return new SimpleNumberProperty(new SimpleDoubleProperty(avgCountFinal));
+                    return new SimpleNumberProperty(new SimpleDoubleProperty(Statistics.round(avgCountFinal)));
+                if(answer.getText().equals(VAR))
+                    return new SimpleNumberProperty(new SimpleDoubleProperty(Statistics.round(Statistics.getVariance(varCountValues, avgCountFinal))));
+                if(answer.getText().equals(DEV))
+                    return new SimpleNumberProperty(new SimpleDoubleProperty(Statistics.round(Statistics.getStandardDeviation(varCountValues, avgCountFinal))));
             }
             return new SimpleNumberProperty(new SimpleIntegerProperty(answer.getVotes().size()));
         });
@@ -113,7 +130,11 @@ public class EvaluationQuestionView {
                 if (answer.getText().equals(SUM))
                     return new SimpleNumberProperty(new SimpleIntegerProperty(sumWeightFinal));
                 if (answer.getText().equals(AVG))
-                    return new SimpleNumberProperty(new SimpleDoubleProperty(avgWeightFinal));
+                    return new SimpleNumberProperty(new SimpleDoubleProperty(Statistics.round(avgWeightFinal)));
+                if(answer.getText().equals(VAR))
+                    return new SimpleNumberProperty(new SimpleDoubleProperty(Statistics.round(Statistics.getVariance(varWeightValues, avgWeightFinal))));
+                if(answer.getText().equals(DEV))
+                    return new SimpleNumberProperty(new SimpleDoubleProperty(Statistics.round(Statistics.getStandardDeviation(varWeightValues, avgWeightFinal))));
             }
             return new SimpleNumberProperty(new SimpleIntegerProperty(answer.getVotes().size() * answer.getValue()));
         });
@@ -143,6 +164,10 @@ public class EvaluationQuestionView {
                     if (a2.getQuestion() != null)
                         return 1;
                     if (a1.getText().equals(SUM))
+                        return -1;
+                    if (a1.getText().equals(AVG) && !a2.getText().equals(SUM))
+                        return -1;
+                    if (a1.getText().equals(VAR) && a2.getText().equals(DEV))
                         return -1;
                     return 1;
                 }

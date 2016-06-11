@@ -60,22 +60,10 @@ public class EvaluationDialog {
 
     private void initalizeMenuBar(MenuBar menuBar) {
         Menu erweitert = new Menu("Erweitert");
-        MenuItem erweiterteStats = new MenuItem("Erweiterte Statistiken");
-        erweiterteStats.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                EvaluationExtendedStats.show(poll);
-            }
-        });
-        MenuItem refresh = new MenuItem("Neu Laden");
-        refresh.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                refresh();
-            }
-        });
-        MenuItem export = new MenuItem("Exportiere Ergebnisse als CSV");
-        erweitert.getItems().addAll(erweiterteStats, refresh, export);
+        MenuItem refresh = new MenuItem("Aktualisieren");
+        refresh.setOnAction((ActionEvent event) -> refresh());
+        MenuItem export = new MenuItem("Export CSV");
+        erweitert.getItems().addAll(refresh, export);
         menuBar.getMenus().addAll(erweitert);
     }
 

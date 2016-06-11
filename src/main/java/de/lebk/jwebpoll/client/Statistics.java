@@ -1,32 +1,20 @@
 package de.lebk.jwebpoll.client;
 
-import com.j256.ormlite.dao.ForeignCollection;
-import de.lebk.jwebpoll.data.Answer;
-
 public class Statistics {
 
-    public static double getAverage(int voteCount, int voteCountTotal) {
-        return (double)voteCount/(double)voteCountTotal;
+    public static double getStandardDeviation(int[] values, double avg) {
+        return Math.sqrt(getVariance(values, avg));
     }
 
-    public static double getStandardDeviation(ForeignCollection<Answer> answers, double average) {
-        return Math.sqrt(getVariance(answers, average));
+    public static double getVariance(int[] values, double avg) {
+        double sum = 0;
+        for (int i = 0; i < values.length; i++) {
+            sum += ((double) values[i] - avg) * ((double) values[i] - avg);
+        }
+        return sum / values.length;
     }
 
-    public static double getVariance(ForeignCollection<Answer> answers, double average) {
-        double voteCountTotal = 0;
-        for (Answer answer : answers) {
-            voteCountTotal += (double)answer.getVotes().size();
-        }
-        double sum = 0.0;
-        for (Answer answer : answers) {
-            if (answer.getVotes().size() > 0) {
-                double answerValue = (double)answer.getValue();
-                double termA = answerValue - average;
-                double varianceElement = Math.pow(termA, 2);
-                sum += varianceElement * (double)answer.getVotes().size();
-            }
-        }
-        return (double)sum / (double)voteCountTotal;
+    public static double round(double x) {
+        return (double) ((int) (x * 100)) / 100;
     }
 }
