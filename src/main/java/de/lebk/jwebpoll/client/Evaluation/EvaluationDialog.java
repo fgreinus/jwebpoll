@@ -2,6 +2,7 @@ package de.lebk.jwebpoll.client.Evaluation;
 
 import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.client.ConfirmDialog;
+import de.lebk.jwebpoll.client.MsgBox;
 import de.lebk.jwebpoll.data.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,6 +17,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -77,6 +79,16 @@ public class EvaluationDialog {
             }
         });
         MenuItem export = new MenuItem("Exportiere Ergebnisse als CSV");
+        export.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                String text = "Poll exported.";
+                if (!Serializer.toCsv("pollx.csv", poll)) {
+                    text = "Poll export failed.";
+                }
+                MsgBox.show("Exported", text, null, null);
+            }
+        });
         erweitert.getItems().addAll(erweiterteStats, refresh, export);
         menuBar.getMenus().addAll(erweitert);
     }

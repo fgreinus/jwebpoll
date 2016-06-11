@@ -1,5 +1,6 @@
 package de.lebk.jwebpoll.data;
 
+import com.sun.org.apache.xml.internal.serialize.LineSeparator;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -25,14 +26,25 @@ public class Serializer {
         }
     }
 
+    public static boolean write(String fullyNamedPath, String content) {
+        Path file = Paths.get(fullyNamedPath);
+        try {
+            Files.write(file, Arrays.asList(content), Charset.defaultCharset(), StandardOpenOption.CREATE_NEW);
+        } catch (IOException ioEx) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("", ioEx);
+            }
+        }
+        return Files.exists(file, LinkOption.NOFOLLOW_LINKS);
+    }
+
     public static String serialize(Poll... polls) {
         StringBuilder sb = new StringBuilder();
         sb.append("PollTitle;PollDescription");
         sb.append("\r\n");
         for (Poll poll : polls) {
             sb.append(convert(poll.getTitle()));
-            sb.append('"').append(poll.getDescription()).append('"');//.append(';');
-            //sb.append('"').append(poll.getState()).append('"');
+            sb.append('"').append(poll.getDescription()).append('"');
             sb.append("\r\n");
         }
         return sb.toString();
@@ -40,6 +52,19 @@ public class Serializer {
 
     public static void write(String fullyNamedPath, Poll... polls) {
         write(fullyNamedPath, serialize(polls));
+    }
+
+    public static boolean toCsv(String fullyNamedPath, Poll poll) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Questions;Answer;Votes;WeightedVotes;%n"));
+        for (Question question : poll.getQuestions()) {
+            for (Answer answer : question.getAnswers()) {
+                int votesCount = answer.getVotes().size();
+                int weightedVotesCount = answer.getVotes().size() * answer.getValue();
+                sb.append(String.format("%s;%s;%s;%s;%n", question.getTitle(), answer.getText(), votesCount, weightedVotesCount));
+            }
+        }
+        return write(fullyNamedPath, sb.toString());
     }
 
     public static ArrayList<Poll> read(String fullyNamedPath) {
