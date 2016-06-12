@@ -17,6 +17,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
@@ -70,8 +71,12 @@ public class EvaluationDialog {
         export.setAccelerator(new KeyCodeCombination(KeyCode.E));
         export.setOnAction((ActionEvent event) ->
         {
+            DirectoryChooser directoryChooser=new DirectoryChooser();
+            File selectedDirectory =
+                    directoryChooser.showDialog(new Stage());
+
             String text = "Poll exported.";
-            if (!Serializer.toCsv("pollx.csv", poll)) {
+            if (!Serializer.toCsv(selectedDirectory.getAbsolutePath()+File.separator+"pollx.csv", poll)) {
                 text = "Poll export failed.";
             }
             MsgBox.show("Exported", text, null, null);
