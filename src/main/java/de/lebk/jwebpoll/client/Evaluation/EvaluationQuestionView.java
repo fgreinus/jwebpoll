@@ -190,13 +190,14 @@ public class EvaluationQuestionView {
     }
 
     private static void addChart(GridPane rootgrid, Question question) {
-        ObservableList<PieChart.Data> pieChartCountData = FXCollections.observableArrayList();
+        int i = 0;
+        int[] countValues = new int[question.getAnswers().size()];
+        int[] weightValues = new int[question.getAnswers().size()];
+        ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
         for (Answer answer : question.getAnswers()) {
-            pieChartCountData.add(new PieChart.Data(answer.getText(), answer.getVotes().size()));
-        }
-        ObservableList<PieChart.Data> pieChartWeightData = FXCollections.observableArrayList();
-        for (Answer answer : question.getAnswers()) {
-            pieChartWeightData.add(new PieChart.Data(answer.getText(), answer.getVotes().size() * answer.getValue()));
+            countValues[i] = answer.getVotes().size();
+            weightValues[i] = answer.getVotes().size() * answer.getValue();
+            pieChartData.add(new PieChart.Data(answer.getText(), countValues[i++]));
         }
 
         GridPane pieGrid = null;
@@ -212,14 +213,24 @@ public class EvaluationQuestionView {
             return;
 
         PieChart pieChart = (PieChart) pieGrid.lookup("#pieChart");
-        pieChart.setData(pieChartCountData);
+        pieChart.setData(pieChartData);
         ToggleGroup toggleGrp = new ToggleGroup();
         RadioButton rbtCount = (RadioButton) pieGrid.lookup("#rbtCount");
         rbtCount.setToggleGroup(toggleGrp);
-        rbtCount.setOnAction(event -> pieChart.setData(pieChartCountData));
+        rbtCount.setOnAction(event ->
+        {
+            int j = 0;
+            for(PieChart.Data data : pieChart.getData())
+                data.setPieValue(countValues[j++]);
+        });
         RadioButton rbtWeight = (RadioButton) pieGrid.lookup("#rbtWeight");
         rbtWeight.setToggleGroup(toggleGrp);
-        rbtWeight.setOnAction(event -> pieChart.setData(pieChartWeightData));
+        rbtWeight.setOnAction(event ->
+        {
+            int j = 0;
+            for(PieChart.Data data : pieChart.getData())
+                data.setPieValue(weightValues[j++]);
+        });
         rbtCount.setSelected(true);
         rootgrid.add(pieGrid, 1, 0);
     }
