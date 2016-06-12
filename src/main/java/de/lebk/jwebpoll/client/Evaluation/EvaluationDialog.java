@@ -13,6 +13,9 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
@@ -59,9 +62,12 @@ public class EvaluationDialog {
 
     private void initalizeMenuBar(MenuBar menuBar) {
         Menu action = new Menu("Aktion");
+        action.setAccelerator(new KeyCodeCombination(KeyCode.A));
         MenuItem refresh = new MenuItem("Aktualisieren");
+        refresh.setAccelerator(new KeyCodeCombination(KeyCode.F5));
         refresh.setOnAction((ActionEvent event) -> refresh());
         MenuItem export = new MenuItem("Export CSV");
+        export.setAccelerator(new KeyCodeCombination(KeyCode.E));
         export.setOnAction((ActionEvent event) ->
         {
             String text = "Poll exported.";

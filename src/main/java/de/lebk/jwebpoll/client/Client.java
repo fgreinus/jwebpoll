@@ -12,6 +12,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -136,22 +138,14 @@ public class Client extends Application {
         // --- Menu Hilfe
         Menu menuHelp = new Menu("Über");
         MenuItem about = new MenuItem("Über");
-        about.setOnAction((ActionEvent event) ->
-        {
-            InfoSiteHelper.show("about");
-        });
+        about.setOnAction((ActionEvent event) -> InfoSiteHelper.show("About"));
+        about.setAccelerator(new KeyCodeCombination(KeyCode.A));
         MenuItem help = new MenuItem("Hilfe");
-        help.setOnAction((ActionEvent event) ->
-        {
-            InfoSiteHelper.show("help");
-        });
+        help.setAccelerator(new KeyCodeCombination(KeyCode.F1));
+        help.setOnAction((ActionEvent event) -> InfoSiteHelper.show("Help"));
         MenuItem license = new MenuItem("Lizenzen");
-        license.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                InfoSiteHelper.show("license");
-            }
-        });
+        license.setOnAction((ActionEvent event) -> InfoSiteHelper.show("License"));
+        license.setAccelerator(new KeyCodeCombination(KeyCode.L));
         menuHelp.getItems().addAll(about, help, license);
         menuBar.getMenus().addAll(menuHelp);
 

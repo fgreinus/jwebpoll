@@ -2,6 +2,7 @@ package de.lebk.jwebpoll.client;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -17,6 +18,7 @@ public class InfoSiteHelper {
     public static void show(String resource) {
         Stage evaluationStage = new Stage();
         evaluationStage.setTitle(resource);
+        evaluationStage.getIcons().add(new Image(InfoSiteHelper.class.getResource("/icon.png").toString()));
         WebView webview;
         GridPane helpGrid;
         try {
@@ -33,7 +35,7 @@ public class InfoSiteHelper {
         String line;
         StringBuilder sb = new StringBuilder();
         try {
-            fileReader = new FileReader(InfoSiteHelper.class.getResource(RESOURCE_DIR + resource + ".html").getPath());
+            fileReader = new FileReader(InfoSiteHelper.class.getResource(RESOURCE_DIR + resource.toLowerCase() + ".html").getPath());
             bufferedReader = new BufferedReader(fileReader);
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line).append("\n");
