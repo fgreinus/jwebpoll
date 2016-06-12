@@ -1,8 +1,8 @@
 package de.lebk.jwebpoll.client.Evaluation;
 
 import de.lebk.jwebpoll.Database;
-import de.lebk.jwebpoll.client.ConfirmDialog;
-import de.lebk.jwebpoll.client.MsgBox;
+import de.lebk.jwebpoll.client.Dialogs.ConfirmDialog;
+import de.lebk.jwebpoll.client.Dialogs.MsgBox;
 import de.lebk.jwebpoll.data.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;

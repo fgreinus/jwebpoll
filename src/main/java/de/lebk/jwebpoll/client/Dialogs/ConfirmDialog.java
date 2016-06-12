@@ -1,4 +1,4 @@
-package de.lebk.jwebpoll.client;
+package de.lebk.jwebpoll.client.Dialogs;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;

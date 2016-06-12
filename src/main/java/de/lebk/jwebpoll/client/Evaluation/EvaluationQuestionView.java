@@ -2,7 +2,7 @@ package de.lebk.jwebpoll.client.Evaluation;
 
 import de.lebk.jwebpoll.client.SimpleNumberProperty;
 import de.lebk.jwebpoll.client.QuestionView;
-import de.lebk.jwebpoll.client.Statistics;
+import de.lebk.jwebpoll.Statistics;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.Vote;
@@ -27,7 +27,7 @@ public class EvaluationQuestionView {
     private static final String VAR = "Varianz";
     private static final String DEV ="Standardabweichung";
 
-    public static void setQuestionView(Accordion accordion, Question question,boolean shoExtendedStats) {
+    public static void setQuestionView(Accordion accordion, Question question,boolean showExtendedStats) {
         if (accordion == null)
             throw new IllegalArgumentException("Accordion cannot be null!");
         if (question == null)
@@ -52,7 +52,7 @@ public class EvaluationQuestionView {
             case SINGLE:
             case MULTIPLE:
                 TableView<Answer> answerTable = (TableView<Answer>) rootGrid.lookup("#voteTable");
-                fillForSingleAndMultipleChoice(question, answerTable,shoExtendedStats);
+                fillForSingleAndMultipleChoice(question, answerTable,showExtendedStats);
                 addChart(rootGrid, question);
                 break;
             case FREE:

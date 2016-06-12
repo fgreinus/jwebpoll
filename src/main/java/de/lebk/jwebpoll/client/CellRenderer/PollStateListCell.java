@@ -1,4 +1,4 @@
-package de.lebk.jwebpoll.client;
+package de.lebk.jwebpoll.client.CellRenderer;
 
 import de.lebk.jwebpoll.data.PollState;
 import javafx.scene.control.ListCell;

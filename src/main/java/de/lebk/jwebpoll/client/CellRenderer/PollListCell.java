@@ -1,5 +1,6 @@
-package de.lebk.jwebpoll.client;
+package de.lebk.jwebpoll.client.CellRenderer;
 
+import de.lebk.jwebpoll.client.Client;
 import de.lebk.jwebpoll.data.Poll;
 import javafx.scene.control.ListCell;
 import javafx.scene.image.ImageView;

@@ -2,12 +2,14 @@ package de.lebk.jwebpoll.client;
 
 import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.Frontend;
+import de.lebk.jwebpoll.client.CellRenderer.PollListCell;
+import de.lebk.jwebpoll.client.CellRenderer.PollStateListCell;
+import de.lebk.jwebpoll.client.Dialogs.ConfirmDialog;
 import de.lebk.jwebpoll.client.Evaluation.EvaluationDialog;
 import de.lebk.jwebpoll.data.*;
 import javafx.application.Application;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -97,22 +99,7 @@ public class Client extends Application {
         });
 
         this.pollAddBtn = (Button) pollListView.lookup("#pollAddBtn");
-        this.pollAddBtn.setOnAction((ActionEvent ev) ->
-        {
-            Poll newPoll = new Poll("", "", PollState.NEW);
-            try {
-                Database.DB.getPollDao().create(newPoll);
-                Client.poll = newPoll;
-                this.polls.add(Client.poll);
-                this.pollList.getItems().addAll(Client.poll);
-                this.pollList.getSelectionModel().select(Client.poll);
-            } catch (SQLException ex) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Adding poll failed: ", ex);
-                }
-                ex.printStackTrace();
-            }
-        });
+        this.pollAddBtn.setOnAction((ActionEvent ev) -> this.newPoll());
         this.pollRemoveBtn = (Button) pollListView.lookup("#pollRemoveBtn");
         this.pollRemoveBtn.setOnAction((ActionEvent ev) ->
         {
@@ -136,10 +123,19 @@ public class Client extends Application {
         rootSplit.getItems().add(pollListView);
         rootSplit.setDividerPositions(1d / 5d);
 
-        //Menubar
+        //- MenuBar -
         MenuBar menuBar = (MenuBar) rootGrid.lookup("#menuBar");
-        // --- Menu Hilfe
-        Menu menuHelp = new Menu("Über");
+        //-- Menu Poll --
+        Menu menuPoll = new Menu("Umfrage");
+        MenuItem newPoll = new MenuItem("Neu");
+        newPoll.setAccelerator(new KeyCodeCombination(KeyCode.N, KeyCodeCombination.CONTROL_DOWN));
+        newPoll.setOnAction(event -> this.newPoll());
+        MenuItem results = new MenuItem("Ergebnisse");
+        results.setAccelerator(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.CONTROL_DOWN));
+        results.setOnAction(event -> this.openResults());
+        menuPoll.getItems().addAll(newPoll, results);
+        //-- Menu About --
+        Menu menuAbout = new Menu("Über");
         MenuItem help = new MenuItem("Hilfe");
         help.setAccelerator(new KeyCodeCombination(KeyCode.F1));
         help.setOnAction((ActionEvent event) -> InfoSiteHelper.show("Help"));
@@ -149,8 +145,8 @@ public class Client extends Application {
         MenuItem license = new MenuItem("Lizenzen");
         license.setOnAction((ActionEvent event) -> InfoSiteHelper.show("License"));
         license.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCodeCombination.CONTROL_DOWN));
-        menuHelp.getItems().addAll(help, about, license);
-        menuBar.getMenus().addAll(menuHelp);
+        menuAbout.getItems().addAll(help, about, license);
+        menuBar.getMenus().addAll(menuPoll, menuAbout);
 
         // PollView (Right side)
         ScrollPane pollDetailScroller = new ScrollPane();
@@ -214,17 +210,11 @@ public class Client extends Application {
                 }
             }, primaryStage);
         });
-        this.questionsAccordion.expandedPaneProperty().addListener((observable, oldValue, newValue) ->
-        {
-            this.questionsRemoveBtn.setDisable(newValue == null);
-        });
+        this.questionsAccordion.expandedPaneProperty().addListener((observable, oldValue, newValue) -> this.questionsRemoveBtn.setDisable(newValue == null));
 
         this.stateCbo = (ComboBox<PollState>) pollDetail.lookup("#stateCbo");
         this.stateCbo.getItems().addAll(PollState.NEW, PollState.OPEN, PollState.CLOSED);
-        this.stateCbo.setCellFactory((ListView<PollState> param) ->
-        {
-            return new PollStateListCell();
-        });
+        this.stateCbo.setCellFactory((ListView<PollState> param) -> new PollStateListCell());
         this.stateCbo.setButtonCell(new PollStateListCell());
 
         this.linkCbo = (ComboBox<String>) pollDetail.lookup("#linkCbo");
@@ -304,10 +294,6 @@ public class Client extends Application {
         else
             this.pollList.getSelectionModel().selectFirst();
         primaryStage.setScene(new Scene(rootGrid));
-        primaryStage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.CONTROL_DOWN), () ->
-        {
-            this.openResults();
-        });
         primaryStage.setMaximized(true);
         primaryStage.show();
     }
@@ -371,6 +357,23 @@ public class Client extends Application {
         this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
         this.closeBtn.setDisable(!disable);
         this.resultsBtn.setDisable(Client.poll == null);
+    }
+
+    private void newPoll()
+    {
+        Poll newPoll = new Poll("", "", PollState.NEW);
+        try {
+            Database.DB.getPollDao().create(newPoll);
+            Client.poll = newPoll;
+            this.polls.add(Client.poll);
+            this.pollList.getItems().addAll(Client.poll);
+            this.pollList.getSelectionModel().select(Client.poll);
+        } catch (SQLException ex) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Adding poll failed: ", ex);
+            }
+            ex.printStackTrace();
+        }
     }
 
     private void openResults()

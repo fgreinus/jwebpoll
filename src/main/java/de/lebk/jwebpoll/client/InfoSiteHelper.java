@@ -1,5 +1,6 @@
 package de.lebk.jwebpoll.client;
 
+import de.lebk.jwebpoll.client.Dialogs.ConfirmDialog;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;

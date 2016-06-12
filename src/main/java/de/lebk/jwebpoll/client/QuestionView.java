@@ -1,6 +1,8 @@
 package de.lebk.jwebpoll.client;
 
 import de.lebk.jwebpoll.Database;
+import de.lebk.jwebpoll.client.CellRenderer.QuestionTypeListCell;
+import de.lebk.jwebpoll.client.Dialogs.ConfirmDialog;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.QuestionType;
