@@ -27,7 +27,7 @@ public class EvaluationQuestionView {
     private static final String VAR = "Varianz";
     private static final String DEV ="Standardabweichung";
 
-    public static void setQuestionView(Accordion accordion, Question question) {
+    public static void setQuestionView(Accordion accordion, Question question,boolean shoExtendedStats) {
         if (accordion == null)
             throw new IllegalArgumentException("Accordion cannot be null!");
         if (question == null)
@@ -52,7 +52,7 @@ public class EvaluationQuestionView {
             case SINGLE:
             case MULTIPLE:
                 TableView<Answer> answerTable = (TableView<Answer>) rootGrid.lookup("#voteTable");
-                fillForSingleAndMultipleChoice(question, answerTable);
+                fillForSingleAndMultipleChoice(question, answerTable,shoExtendedStats);
                 addChart(rootGrid, question);
                 break;
             case FREE:
@@ -68,7 +68,7 @@ public class EvaluationQuestionView {
         accordion.getPanes().add(tp);
     }
 
-    private static void fillForSingleAndMultipleChoice(Question question, TableView<Answer> answerTable) {
+    private static void fillForSingleAndMultipleChoice(Question question, TableView<Answer> answerTable,boolean showExtendedStats) {
         int sumCount = 0;
         int sumWeight = 0;
         double avgCount = 0;
@@ -81,10 +81,13 @@ public class EvaluationQuestionView {
             }
             avgCount = (double) sumCount / question.getAnswers().size();
             avgWeight = (double) sumWeight / question.getAnswers().size();
-            answerTable.getItems().add(new Answer(SUM, 0, null));
-            answerTable.getItems().add(new Answer(AVG, 0, null));
-            answerTable.getItems().add(new Answer(VAR, 0, null));
-            answerTable.getItems().add(new Answer(DEV, 0, null));
+            if(showExtendedStats) {
+                answerTable.getItems().add(new Answer(SUM, 0, null));
+                answerTable.getItems().add(new Answer(AVG, 0, null));
+                answerTable.getItems().add(new Answer(VAR, 0, null));
+                answerTable.getItems().add(new Answer(DEV, 0, null));
+            }
+
         }
         final int sumCountFinal = sumCount;
         final int sumWeightFinal = sumWeight;

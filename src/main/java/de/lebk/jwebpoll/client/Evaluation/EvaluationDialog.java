@@ -31,6 +31,7 @@ public class EvaluationDialog {
     private int pollid;
     private Accordion questionsAccordion;
     private Poll poll;
+    private boolean showExtendedStats=false;
 
     public EvaluationDialog(int pollid) {
         this.pollid = pollid;
@@ -64,6 +65,13 @@ public class EvaluationDialog {
     private void initalizeMenuBar(MenuBar menuBar) {
         Menu action = new Menu("Aktion");
         action.setAccelerator(new KeyCodeCombination(KeyCode.A));
+        MenuItem extendedStats=new MenuItem("Zeige erweiterte Statistiken");
+        extendedStats.setAccelerator(new KeyCodeCombination(KeyCode.S));
+        extendedStats.setOnAction((ActionEvent event) ->
+        {
+            showExtendedStats=true;
+            refresh();
+        });
         MenuItem refresh = new MenuItem("Aktualisieren");
         refresh.setAccelerator(new KeyCodeCombination(KeyCode.F5));
         refresh.setOnAction((ActionEvent event) -> refresh());
@@ -71,23 +79,23 @@ public class EvaluationDialog {
         export.setAccelerator(new KeyCodeCombination(KeyCode.E));
         export.setOnAction((ActionEvent event) ->
         {
-            DirectoryChooser directoryChooser=new DirectoryChooser();
+            DirectoryChooser directoryChooser = new DirectoryChooser();
             File selectedDirectory =
                     directoryChooser.showDialog(new Stage());
 
             String text = "Poll exported.";
-            if (!Serializer.toCsv(selectedDirectory.getAbsolutePath()+File.separator+"pollx.csv", poll)) {
+            if (!Serializer.toCsv(selectedDirectory.getAbsolutePath() + File.separator + "pollx.csv", poll)) {
                 text = "Poll export failed.";
             }
             MsgBox.show("Exported", text, null, null);
         });
-        action.getItems().addAll(refresh, export);
+        action.getItems().addAll(extendedStats,refresh, export);
         menuBar.getMenus().addAll(action);
     }
 
     private void initalizeAccordion() {
         for (Question question : poll.questions)
-            EvaluationQuestionView.setQuestionView(questionsAccordion, question);
+            EvaluationQuestionView.setQuestionView(questionsAccordion, question,showExtendedStats);
     }
 
 
