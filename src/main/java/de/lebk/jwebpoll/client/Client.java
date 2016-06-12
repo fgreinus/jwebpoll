@@ -293,6 +293,11 @@ public class Client extends Application {
             this.setPoll(null);
         else
             this.pollList.getSelectionModel().selectFirst();
+        primaryStage.setOnCloseRequest(event ->
+        {
+            if(this.evaluationDialog != null)
+                this.evaluationDialog.close();
+        });
         primaryStage.setScene(new Scene(rootGrid));
         primaryStage.setMaximized(true);
         primaryStage.show();

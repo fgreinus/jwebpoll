@@ -112,8 +112,7 @@
                 maxWidth="Infinity"
                 GridPane.hgrow="SOMETIMES"
                 GridPane.columnIndex="2"
-                GridPane.rowIndex="2"
-                GridPane.valignment="BOTTOM"/>
+                GridPane.rowIndex="2"/>
 
         <Button id="answerRemoveBtn"
                 text="Entfernen"
@@ -121,7 +120,8 @@
                 maxWidth="Infinity"
                 GridPane.hgrow="SOMETIMES"
                 GridPane.columnIndex="2"
-                GridPane.rowIndex="3"/>
+                GridPane.rowIndex="3"
+                GridPane.valignment="BOTTOM"/>
 
         <TextArea id="answerFreetext"
                   text="Hier kann Freitext eingegeben werden..."
