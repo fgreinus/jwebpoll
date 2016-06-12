@@ -1,6 +1,5 @@
 package de.lebk.jwebpoll.data;
 
-import com.sun.org.apache.xml.internal.serialize.LineSeparator;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -29,7 +28,8 @@ public class Serializer {
     public static boolean write(String fullyNamedPath, String content) {
         Path file = Paths.get(fullyNamedPath);
         try {
-            Files.write(file, Arrays.asList(content), Charset.defaultCharset(), StandardOpenOption.CREATE_NEW);
+            Files.deleteIfExists(file);
+            Files.write(file, Arrays.asList(content), Charset.forName("UTF-8"), StandardOpenOption.CREATE_NEW);
         } catch (IOException ioEx) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("", ioEx);
@@ -61,7 +61,7 @@ public class Serializer {
             for (Answer answer : question.getAnswers()) {
                 int votesCount = answer.getVotes().size();
                 int weightedVotesCount = answer.getVotes().size() * answer.getValue();
-                sb.append(String.format("%s;%s;%s;%s;%n", question.getTitle(), answer.getText(), votesCount, weightedVotesCount));
+                sb.append(String.format("\"%s\";\"%s\";%s;%s;%n", question.getTitle(), answer.getText(), votesCount, weightedVotesCount));
             }
         }
         return write(fullyNamedPath, sb.toString());
