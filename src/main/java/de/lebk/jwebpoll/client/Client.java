@@ -54,6 +54,9 @@ public class Client extends Application {
     private Button questionsAddBtn, questionsRemoveBtn;
     private Hashtable<TitledPane, Question> titledPanes = new Hashtable<>();
 
+    //- Dialogs -
+    private EvaluationDialog evaluationDialog;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("JWebPoll");
@@ -137,16 +140,16 @@ public class Client extends Application {
         MenuBar menuBar = (MenuBar) rootGrid.lookup("#menuBar");
         // --- Menu Hilfe
         Menu menuHelp = new Menu("Über");
-        MenuItem about = new MenuItem("Über");
-        about.setOnAction((ActionEvent event) -> InfoSiteHelper.show("About"));
-        about.setAccelerator(new KeyCodeCombination(KeyCode.A));
         MenuItem help = new MenuItem("Hilfe");
         help.setAccelerator(new KeyCodeCombination(KeyCode.F1));
         help.setOnAction((ActionEvent event) -> InfoSiteHelper.show("Help"));
+        MenuItem about = new MenuItem("Über");
+        about.setOnAction((ActionEvent event) -> InfoSiteHelper.show("About"));
+        about.setAccelerator(new KeyCodeCombination(KeyCode.A, KeyCodeCombination.CONTROL_DOWN));
         MenuItem license = new MenuItem("Lizenzen");
         license.setOnAction((ActionEvent event) -> InfoSiteHelper.show("License"));
-        license.setAccelerator(new KeyCodeCombination(KeyCode.L));
-        menuHelp.getItems().addAll(about, help, license);
+        license.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCodeCombination.CONTROL_DOWN));
+        menuHelp.getItems().addAll(help, about, license);
         menuBar.getMenus().addAll(menuHelp);
 
         // PollView (Right side)
@@ -289,7 +292,7 @@ public class Client extends Application {
         this.resultsBtn = (Button) pollDetail.lookup("#resultsBtn");
         this.resultsBtn.setOnAction((ActionEvent event) ->
         {
-            new EvaluationDialog(Client.poll.getId());
+            this.openResults();
         });
 
         pollDetailScroller.setContent(pollDetail);
@@ -301,6 +304,10 @@ public class Client extends Application {
         else
             this.pollList.getSelectionModel().selectFirst();
         primaryStage.setScene(new Scene(rootGrid));
+        primaryStage.getScene().getAccelerators().put(new KeyCodeCombination(KeyCode.R, KeyCodeCombination.CONTROL_DOWN), () ->
+        {
+            this.openResults();
+        });
         primaryStage.setMaximized(true);
         primaryStage.show();
     }
@@ -364,6 +371,17 @@ public class Client extends Application {
         this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
         this.closeBtn.setDisable(!disable);
         this.resultsBtn.setDisable(Client.poll == null);
+    }
+
+    private void openResults()
+    {
+        if(this.evaluationDialog != null)
+            evaluationDialog.toFront();
+        else
+        {
+            this.evaluationDialog = new EvaluationDialog(Client.poll.getId());
+            this.evaluationDialog.setOnCloseRequest(event -> this.evaluationDialog = null);
+        }
     }
 
     private String getSelectedAddress()
