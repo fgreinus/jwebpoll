@@ -5,6 +5,7 @@ import de.lebk.jwebpoll.client.QuestionView;
 import de.lebk.jwebpoll.Statistics;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
+import de.lebk.jwebpoll.data.QuestionType;
 import de.lebk.jwebpoll.data.Vote;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -18,76 +19,79 @@ import javafx.scene.layout.GridPane;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
-public class EvaluationQuestionView {
+public class EvaluationQuestionView extends TitledPane {
     private static final Logger LOGGER = Logger.getLogger(EvaluationQuestionView.class);
     private static final String SUM = "Summe";
     private static final String AVG = "Durchschnitt";
     private static final String VAR = "Varianz";
-    private static final String DEV ="Standardabweichung";
+    private static final String DEV = "Standardabweichung";
 
-    public static void setQuestionView(Accordion accordion, Question question,boolean showExtendedStats) {
-        if (accordion == null)
-            throw new IllegalArgumentException("Accordion cannot be null!");
-        if (question == null)
+    private Question question;
+    private TableView<Answer> answerTable;
+    private TableView<Vote> voteTable;
+    private List<Answer> extendedStats = new ArrayList<>();
+
+    public EvaluationQuestionView(Question question) throws IOException {
+        this.question = question;
+        if (this.question == null)
             throw new IllegalArgumentException("Question cannot be null!");
 
-        TitledPane tp = new TitledPane();
-        tp.setText(question.getTitle());
+        this.setText(this.question.getTitle());
 
-        GridPane rootGrid = null;
-        try {
-            rootGrid = FXMLLoader.load(QuestionView.class.getResource("/client/evaluationQuestionView.fxml"));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("", ex);
-            }
-        }
-        if (rootGrid == null)
-            return;
-
-        switch (question.getType()) {
+        GridPane rootGrid = FXMLLoader.load(QuestionView.class.getResource("/client/evaluationQuestionView.fxml"));
+        switch (this.question.getType()) {
             case SINGLE:
             case MULTIPLE:
-                TableView<Answer> answerTable = (TableView<Answer>) rootGrid.lookup("#voteTable");
-                fillForSingleAndMultipleChoice(question, answerTable,showExtendedStats);
-                addChart(rootGrid, question);
+                this.answerTable = (TableView<Answer>) rootGrid.lookup("#table");
+                this.initAnswerTable();
+                rootGrid.add(this.getPieGrid(), 1, 0);
                 break;
             case FREE:
-                TableView<Vote> voteTable = (TableView<Vote>) rootGrid.lookup("#voteTable");
-                fillForFree(question, voteTable);
-                rootGrid.setColumnSpan(voteTable, 2);
+                this.voteTable = (TableView<Vote>) rootGrid.lookup("#table");
+                TableColumn<Vote, String> typeColumn = (TableColumn<Vote, String>) voteTable.getColumns().get(0);
+                typeColumn.setCellValueFactory(new PropertyValueFactory<>("userText"));
+                typeColumn.prefWidthProperty().bind(this.voteTable.widthProperty());
+                for (Vote vote : this.question.getFreetextVotes())
+                    if (vote.getUserText() != null && !vote.getUserText().isEmpty())
+                        this.voteTable.getItems().add(vote);
+                GridPane.setColumnSpan(this.voteTable, 2);
                 break;
         }
-
-        tp.setContent(rootGrid);
-        if (accordion.getPanes().size() == 0)
-            accordion.setExpandedPane(tp);
-        accordion.getPanes().add(tp);
+        this.setContent(rootGrid);
     }
 
-    private static void fillForSingleAndMultipleChoice(Question question, TableView<Answer> answerTable,boolean showExtendedStats) {
+    public void showExtendedStats(boolean show) {
+        if (this.question.getType() == QuestionType.FREE)
+            return;
+
+        if (show)
+            this.answerTable.getItems().addAll(this.extendedStats);
+        else
+            this.answerTable.getItems().removeAll(this.extendedStats);
+    }
+
+    private void initAnswerTable() {
         int sumCount = 0;
         int sumWeight = 0;
         double avgCount = 0;
         double avgWeight = 0;
         if (question.getAnswers() != null) {
-            answerTable.getItems().addAll(question.getAnswers());
+            this.answerTable.getItems().addAll(question.getAnswers());
             for (Answer answer : question.getAnswers()) {
                 sumCount += answer.getVotes().size();
                 sumWeight += answer.getVotes().size() * answer.getValue();
             }
             avgCount = (double) sumCount / question.getAnswers().size();
             avgWeight = (double) sumWeight / question.getAnswers().size();
-            if(showExtendedStats) {
-                answerTable.getItems().add(new Answer(SUM, 0, null));
-                answerTable.getItems().add(new Answer(AVG, 0, null));
-                answerTable.getItems().add(new Answer(VAR, 0, null));
-                answerTable.getItems().add(new Answer(DEV, 0, null));
-            }
 
+            this.extendedStats.add(new Answer(SUM, 0, null));
+            this.extendedStats.add(new Answer(AVG, 0, null));
+            this.extendedStats.add(new Answer(VAR, 0, null));
+            this.extendedStats.add(new Answer(DEV, 0, null));
         }
         final int sumCountFinal = sumCount;
         final int sumWeightFinal = sumWeight;
@@ -96,15 +100,14 @@ public class EvaluationQuestionView {
         int[] varCountValues = new int[question.getAnswers().size()];
         int[] varWeightValues = new int[question.getAnswers().size()];
         int i = 0;
-        for(Answer answer : question.getAnswers())
-        {
+        for (Answer answer : question.getAnswers()) {
             varCountValues[i] = answer.getVotes().size();
             varWeightValues[i++] = answer.getVotes().size() * answer.getValue();
         }
 
-        TableColumn<Answer, String> typeColumn = (TableColumn<Answer, String>) answerTable.getColumns().get(0);
+        TableColumn<Answer, String> typeColumn = (TableColumn<Answer, String>) this.answerTable.getColumns().get(0);
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("text"));
-        typeColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.5));
+        typeColumn.prefWidthProperty().bind(this.answerTable.widthProperty().multiply(0.5));
 
         TableColumn<Answer, Number> countColumn = new TableColumn<>("Häufigkeit");
         countColumn.setCellValueFactory(cellData ->
@@ -115,15 +118,15 @@ public class EvaluationQuestionView {
                     return new SimpleNumberProperty(new SimpleIntegerProperty(sumCountFinal));
                 if (answer.getText().equals(AVG))
                     return new SimpleNumberProperty(new SimpleDoubleProperty(Statistics.round(avgCountFinal)));
-                if(answer.getText().equals(VAR))
+                if (answer.getText().equals(VAR))
                     return new SimpleNumberProperty(new SimpleDoubleProperty(Statistics.round(Statistics.getVariance(varCountValues, avgCountFinal))));
-                if(answer.getText().equals(DEV))
+                if (answer.getText().equals(DEV))
                     return new SimpleNumberProperty(new SimpleDoubleProperty(Statistics.round(Statistics.getStandardDeviation(varCountValues, avgCountFinal))));
             }
             return new SimpleNumberProperty(new SimpleIntegerProperty(answer.getVotes().size()));
         });
         countColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
-        countColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.25));
+        countColumn.prefWidthProperty().bind(this.answerTable.widthProperty().multiply(0.25));
 
         TableColumn<Answer, Number> weightedColumn = new TableColumn<>("Gewichtet");
         weightedColumn.setCellValueFactory(cellData ->
@@ -134,17 +137,17 @@ public class EvaluationQuestionView {
                     return new SimpleNumberProperty(new SimpleIntegerProperty(sumWeightFinal));
                 if (answer.getText().equals(AVG))
                     return new SimpleNumberProperty(new SimpleDoubleProperty(Statistics.round(avgWeightFinal)));
-                if(answer.getText().equals(VAR))
+                if (answer.getText().equals(VAR))
                     return new SimpleNumberProperty(new SimpleDoubleProperty(Statistics.round(Statistics.getVariance(varWeightValues, avgWeightFinal))));
-                if(answer.getText().equals(DEV))
+                if (answer.getText().equals(DEV))
                     return new SimpleNumberProperty(new SimpleDoubleProperty(Statistics.round(Statistics.getStandardDeviation(varWeightValues, avgWeightFinal))));
             }
             return new SimpleNumberProperty(new SimpleIntegerProperty(answer.getVotes().size() * answer.getValue()));
         });
         weightedColumn.setStyle("-fx-alignment: CENTER-RIGHT;");
-        weightedColumn.prefWidthProperty().bind(answerTable.widthProperty().multiply(0.25));
+        weightedColumn.prefWidthProperty().bind(this.answerTable.widthProperty().multiply(0.25));
 
-        answerTable.setRowFactory(param ->
+        this.answerTable.setRowFactory(param ->
                 new TableRow<Answer>() {
                     @Override
                     protected void updateItem(Answer answer, boolean empty) {
@@ -159,7 +162,7 @@ public class EvaluationQuestionView {
                             setStyle("");
                     }
                 });
-        answerTable.setSortPolicy(param ->
+        this.answerTable.setSortPolicy(param ->
         {
             Comparator<Answer> comparator = (a1, a2) ->
             {
@@ -185,16 +188,15 @@ public class EvaluationQuestionView {
             return true;
         });
 
-        answerTable.getColumns().add(countColumn);
-        answerTable.getColumns().add(weightedColumn);
+        this.answerTable.getColumns().addAll(countColumn, weightedColumn);
     }
 
-    private static void addChart(GridPane rootgrid, Question question) {
+    private GridPane getPieGrid() {
         int i = 0;
-        int[] countValues = new int[question.getAnswers().size()];
-        int[] weightValues = new int[question.getAnswers().size()];
+        int[] countValues = new int[this.question.getAnswers().size()];
+        int[] weightValues = new int[this.question.getAnswers().size()];
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList();
-        for (Answer answer : question.getAnswers()) {
+        for (Answer answer : this.question.getAnswers()) {
             countValues[i] = answer.getVotes().size();
             weightValues[i] = answer.getVotes().size() * answer.getValue();
             pieChartData.add(new PieChart.Data(answer.getText(), countValues[i++]));
@@ -210,7 +212,7 @@ public class EvaluationQuestionView {
             }
         }
         if (pieGrid == null)
-            return;
+            return null;
 
         PieChart pieChart = (PieChart) pieGrid.lookup("#pieChart");
         pieChart.setData(pieChartData);
@@ -220,7 +222,7 @@ public class EvaluationQuestionView {
         rbtCount.setOnAction(event ->
         {
             int j = 0;
-            for(PieChart.Data data : pieChart.getData())
+            for (PieChart.Data data : pieChart.getData())
                 data.setPieValue(countValues[j++]);
         });
         RadioButton rbtWeight = (RadioButton) pieGrid.lookup("#rbtWeight");
@@ -228,20 +230,10 @@ public class EvaluationQuestionView {
         rbtWeight.setOnAction(event ->
         {
             int j = 0;
-            for(PieChart.Data data : pieChart.getData())
+            for (PieChart.Data data : pieChart.getData())
                 data.setPieValue(weightValues[j++]);
         });
         rbtCount.setSelected(true);
-        rootgrid.add(pieGrid, 1, 0);
-    }
-
-    private static void fillForFree(Question question, TableView<Vote> voteTable) {
-        TableColumn<Vote, String> typeColumn = (TableColumn<Vote, String>) voteTable.getColumns().get(0);
-        typeColumn.setCellValueFactory(new PropertyValueFactory<Vote, String>("userText"));
-        typeColumn.prefWidthProperty().bind(voteTable.widthProperty().multiply(1));
-
-        for (Vote vote : question.getFreetextVotes())
-            if (vote.getUserText() != null && !vote.getUserText().isEmpty())
-                voteTable.getItems().add(vote);
+        return pieGrid;
     }
 }
