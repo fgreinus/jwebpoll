@@ -7,10 +7,7 @@ import de.lebk.jwebpoll.data.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -22,23 +19,26 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Iterator;
 
 public class EvaluationDialog extends Stage {
     private static final Logger LOGGER = Logger.getLogger(EvaluationDialog.class);
 
     private int pollid;
-    private Accordion questionsAccordion;
+    private Accordion questionsAccordion = new Accordion();
     private Poll poll;
     private boolean showExtendedStats = false;
 
     public EvaluationDialog(int pollid) {
         this.pollid = pollid;
         this.getIcons().add(new Image(EvaluationDialog.class.getResource("/icon.png").toString()));
+
         GridPane evaluationGrid;
         try {
             evaluationGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/evaluationDialog.fxml"));
             fillMenuBar((MenuBar) evaluationGrid.lookup("#menuBar"));
-            this.questionsAccordion = (Accordion) evaluationGrid.lookup("#questionsAccordion");
+            ScrollPane scrollPane = (ScrollPane) evaluationGrid.lookup("#scrollPane");
+            scrollPane.setContent(this.questionsAccordion);
         } catch (IOException ex) {
             ex.printStackTrace();
             if (LOGGER.isDebugEnabled())
@@ -62,17 +62,18 @@ public class EvaluationDialog extends Stage {
         extendedStats.setOnAction((ActionEvent event) ->
         {
             this.showExtendedStats = !this.showExtendedStats;
-            this.refresh();
+            for (TitledPane tp : this.questionsAccordion.getPanes())
+                ((EvaluationQuestionView) tp).showExtendedStats(this.showExtendedStats);
         });
         MenuItem export = new MenuItem("Export CSV");
         export.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCodeCombination.CONTROL_DOWN));
         export.setOnAction((ActionEvent event) ->
         {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialFileName("pollx.csv");
+            String fileName = poll.getTitle().replace("\"", "").replace(";", "").replace(".", "") + ".csv";
+            fileChooser.setInitialFileName(fileName);
             File choosenFile = fileChooser.showSaveDialog(this.getOwner());
-            if(choosenFile != null)
-            {
+            if (choosenFile != null) {
                 String text = "Umfrage exportiert.";
                 if (!Serializer.toCsv(choosenFile.getAbsolutePath(), this.poll))
                     text = "Exportieren fehlgeschlagen!";
@@ -84,18 +85,35 @@ public class EvaluationDialog extends Stage {
     }
 
     private void fillAccordion(Poll poll) {
-        if(this.questionsAccordion == null)
+        if (this.questionsAccordion == null)
             return;
         this.questionsAccordion.getPanes().remove(0, this.questionsAccordion.getPanes().size());
         if (poll != null)
-            for (Question question : poll.questions)
-                EvaluationQuestionView.setQuestionView(this.questionsAccordion, question, this.showExtendedStats);
+            for (Question question : poll.questions) {
+                try {
+                    EvaluationQuestionView evaluationQuestionView = new EvaluationQuestionView(question);
+                    evaluationQuestionView.showExtendedStats(this.showExtendedStats);
+                    if (this.questionsAccordion.getPanes().size() == 0)
+                        this.questionsAccordion.setExpandedPane(evaluationQuestionView);
+                    this.questionsAccordion.getPanes().add(evaluationQuestionView);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    if(LOGGER.isDebugEnabled())
+                        LOGGER.debug("", ex);
+                }
+            }
     }
-
 
     private void refresh() {
         this.poll = loadPoll(this.pollid);
-        fillAccordion(this.poll);
+        if(this.questionsAccordion.getPanes().size() != this.poll.getQuestions().size())
+            fillAccordion(this.poll);
+        else
+        {
+            Iterator<Question> it = this.poll.getQuestions().iterator();
+            for(TitledPane tp : this.questionsAccordion.getPanes())
+                ((EvaluationQuestionView) tp).setQuestion(it.next());
+        }
         this.setTitle(this.poll == null ? "Auswertung" : "Auswertung: " + this.poll.getTitle());
     }
 

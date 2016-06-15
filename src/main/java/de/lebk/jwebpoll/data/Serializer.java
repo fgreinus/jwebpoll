@@ -61,7 +61,9 @@ public class Serializer {
             for (Answer answer : question.getAnswers()) {
                 int votesCount = answer.getVotes().size();
                 int weightedVotesCount = answer.getVotes().size() * answer.getValue();
-                sb.append(String.format("\"%s\";\"%s\";%s;%s;%n", question.getTitle(), answer.getText(), votesCount, weightedVotesCount));
+                String questionTitle = question.getTitle().replace("\"", "\"\"");
+                String answerText = answer.getText().replace("\"", "\"\"");
+                sb.append(String.format("\"%s\";\"%s\";%s;%s;%n", questionTitle, answerText, votesCount, weightedVotesCount));
             }
         }
         return write(fullyNamedPath, sb.toString());

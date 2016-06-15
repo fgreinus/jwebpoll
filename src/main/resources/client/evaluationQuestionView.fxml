@@ -19,7 +19,7 @@
         <RowConstraints/>
     </rowConstraints>
 
-    <TableView id="voteTable"
+    <TableView id="table"
                GridPane.columnIndex="0"
                GridPane.rowIndex="0"
                GridPane.vgrow="ALWAYS"
@@ -27,8 +27,7 @@
                prefWidth="-Infinity">
         <columns>
             <TableColumn id="answerColumn"
-                         text="Antworten"
-                         resizable="true"/>
+                         text="Antworten"/>
         </columns>
     </TableView>
 
