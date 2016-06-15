@@ -1,6 +1,5 @@
 package de.lebk.jwebpoll.client;
 
-import de.lebk.jwebpoll.client.Dialogs.ConfirmDialog;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -9,13 +8,12 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 
 public class InfoSiteHelper {
     private static final Logger LOGGER = Logger.getLogger(InfoSiteHelper.class);
     private static final String RESOURCE_DIR = "/about/";
+
     public static void show(String resource) {
         Stage evaluationStage = new Stage();
         evaluationStage.setTitle(resource);
@@ -23,7 +21,7 @@ public class InfoSiteHelper {
         WebView webview;
         GridPane helpGrid;
         try {
-            helpGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/helpSite.fxml"));
+            helpGrid = FXMLLoader.load(InfoSiteHelper.class.getResource("/client/helpSite.fxml"));
         } catch (IOException ex) {
             ex.printStackTrace();
             if (LOGGER.isDebugEnabled())
@@ -31,19 +29,16 @@ public class InfoSiteHelper {
             return;
         }
 
-        FileReader fileReader = null;
-        BufferedReader bufferedReader = null;
         String line;
         StringBuilder sb = new StringBuilder();
         try {
-            fileReader = new FileReader(InfoSiteHelper.class.getResource(RESOURCE_DIR + resource.toLowerCase() + ".html").getPath());
-            bufferedReader = new BufferedReader(fileReader);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(InfoSiteHelper.class.getResourceAsStream(RESOURCE_DIR + resource.toLowerCase() + ".html")));
             while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line).append("\n");
             }
         } catch (IOException ex) {
-            sb.append("<html><body><h2>Fehler (404 - Not Found)</h2> Bedauerlicher Weise konnte die Hilfeseite nicht geladen werden.<br>"
-                    + "Noch bedauerlicher ist es, dass es keine Hilfeseite gibt wenn man wissen will, warum die Hilfeseite nicht lädt.</body> </html>");
+            sb = new StringBuilder("<html><body><h2>Fehler (404 - Not Found)</h2> Bedauerlicher Weise konnte die Hilfeseite nicht geladen werden.<br>"
+                + "Noch bedauerlicher ist es, dass es keine Hilfeseite gibt wenn man wissen will, warum die Hilfeseite nicht lädt.</body> </html>");
             ex.printStackTrace();
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("", ex);
@@ -53,8 +48,6 @@ public class InfoSiteHelper {
         webview = (WebView) helpGrid.lookup("#webview");
         webview.getEngine().loadContent(sb.toString());
 
-        webview.setVisible(true);
-        helpGrid.setVisible(true);
         evaluationStage.setScene(new Scene(helpGrid));
         evaluationStage.sizeToScene();
         evaluationStage.show();
