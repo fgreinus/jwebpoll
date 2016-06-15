@@ -25,7 +25,7 @@ public class EvaluationDialog extends Stage {
     private static final Logger LOGGER = Logger.getLogger(EvaluationDialog.class);
 
     private int pollid;
-    private Accordion questionsAccordion;
+    private Accordion questionsAccordion = new Accordion();
     private Poll poll;
     private boolean showExtendedStats = false;
 
@@ -33,27 +33,20 @@ public class EvaluationDialog extends Stage {
         this.pollid = pollid;
         this.getIcons().add(new Image(EvaluationDialog.class.getResource("/icon.png").toString()));
 
-        // PollView (Right side)
-        ScrollPane scroller = new ScrollPane();
-        scroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scroller.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scroller.setFitToWidth(true);
-        scroller.setFitToHeight(true);
-
         GridPane evaluationGrid;
         try {
             evaluationGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/evaluationDialog.fxml"));
             fillMenuBar((MenuBar) evaluationGrid.lookup("#menuBar"));
-            this.questionsAccordion = (Accordion) evaluationGrid.lookup("#questionsAccordion");
+            ScrollPane scrollPane = (ScrollPane) evaluationGrid.lookup("#scrollPane");
+            scrollPane.setContent(this.questionsAccordion);
         } catch (IOException ex) {
             ex.printStackTrace();
             if (LOGGER.isDebugEnabled())
                 LOGGER.debug("", ex);
             return;
         }
-        scroller.setContent(evaluationGrid);
         this.refresh();
-        this.setScene(new Scene(scroller));
+        this.setScene(new Scene(evaluationGrid));
         this.sizeToScene();
         this.show();
     }
