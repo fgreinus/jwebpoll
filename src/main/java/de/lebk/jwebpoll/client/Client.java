@@ -66,6 +66,10 @@ public class Client extends Application {
         {
             try {
                 Frontend.kill();
+
+                if(this.evaluationDialog != null)
+                    this.evaluationDialog.close();
+
             } catch (Exception e) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Front end kill failed: ", e);
@@ -78,8 +82,9 @@ public class Client extends Application {
         this.polls.addAll(Database.DB.getPollDao().queryForAll());
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
-                Client.activePoll = p;
-                break;
+                p.setState(PollState.CLOSED);
+                //Client.activePoll = p;
+                //break;
             }
         }
 
@@ -293,11 +298,7 @@ public class Client extends Application {
             this.setPoll(null);
         else
             this.pollList.getSelectionModel().selectFirst();
-        primaryStage.setOnCloseRequest(event ->
-        {
-            if(this.evaluationDialog != null)
-                this.evaluationDialog.close();
-        });
+
         primaryStage.setScene(new Scene(rootGrid));
         primaryStage.setMaximized(true);
         primaryStage.show();
