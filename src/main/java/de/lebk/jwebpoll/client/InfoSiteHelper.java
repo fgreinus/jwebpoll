@@ -48,8 +48,6 @@ public class InfoSiteHelper {
         webview = (WebView) helpGrid.lookup("#webview");
         webview.getEngine().loadContent(sb.toString());
 
-        webview.setVisible(true);
-        helpGrid.setVisible(true);
         evaluationStage.setScene(new Scene(helpGrid));
         evaluationStage.sizeToScene();
         evaluationStage.show();
