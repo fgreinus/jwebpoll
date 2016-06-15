@@ -24,7 +24,8 @@
 
     <ScrollPane id="scrollPane"
                 GridPane.columnIndex="0"
-                GridPane.rowIndex="1">
-    </ScrollPane>
+                GridPane.rowIndex="1"
+                fitToWidth="true"
+                fitToHeight="true"/>
 
 </GridPane>
