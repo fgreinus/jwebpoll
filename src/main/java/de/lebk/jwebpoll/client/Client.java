@@ -78,8 +78,9 @@ public class Client extends Application {
         this.polls.addAll(Database.DB.getPollDao().queryForAll());
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
-                Client.activePoll = p;
-                break;
+                p.setState(PollState.CLOSED);
+                //Client.activePoll = p;
+                //break;
             }
         }
 
