@@ -68,7 +68,8 @@ public class EvaluationDialog extends Stage {
         export.setOnAction((ActionEvent event) ->
         {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialFileName("pollx.csv");
+            String fileName = poll.getTitle().replace("\"", "").replace(";", "").replace(".", "") + ".csv";
+            fileChooser.setInitialFileName(fileName);
             File choosenFile = fileChooser.showSaveDialog(this.getOwner());
             if (choosenFile != null) {
                 String text = "Umfrage exportiert.";
