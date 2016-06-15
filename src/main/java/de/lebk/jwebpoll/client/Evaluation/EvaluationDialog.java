@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Iterator;
 
 public class EvaluationDialog extends Stage {
     private static final Logger LOGGER = Logger.getLogger(EvaluationDialog.class);
@@ -102,7 +103,14 @@ public class EvaluationDialog extends Stage {
 
     private void refresh() {
         this.poll = loadPoll(this.pollid);
-        fillAccordion(this.poll);
+        if(this.questionsAccordion.getPanes().size() != this.poll.getQuestions().size())
+            fillAccordion(this.poll);
+        else
+        {
+            Iterator<Question> it = this.poll.getQuestions().iterator();
+            for(TitledPane tp : this.questionsAccordion.getPanes())
+                ((EvaluationQuestionView) tp).setQuestion(it.next());
+        }
         this.setTitle(this.poll == null ? "Auswertung" : "Auswertung: " + this.poll.getTitle());
     }
 
