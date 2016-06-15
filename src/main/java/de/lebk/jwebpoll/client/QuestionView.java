@@ -1,5 +1,6 @@
 package de.lebk.jwebpoll.client;
 
+import com.j256.ormlite.stmt.query.In;
 import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.client.CellRenderer.QuestionTypeListCell;
 import de.lebk.jwebpoll.client.Dialogs.ConfirmDialog;
@@ -172,10 +173,22 @@ public class QuestionView extends TitledPane {
             this.valueColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
             this.valueColumn.setOnEditCommit(event -> event.getRowValue().setValue(event.getNewValue()));
         } else {
-            this.txtColumn.setCellFactory(param -> new TableCell<>());
+            this.txtColumn.setCellFactory(param -> new TableCell<Answer, String>()
+            {
+                @Override
+                protected void updateItem(String text, boolean empty) {
+                    setText(text);
+                }
+            });
             this.txtColumn.setOnEditCommit(event -> {
             });
-            this.valueColumn.setCellFactory(param -> new TableCell<>());
+            this.valueColumn.setCellFactory(param -> new TableCell<Answer, Integer>()
+            {
+                @Override
+                protected void updateItem(Integer value, boolean empty) {
+                    setText(value == null ? "" : String.valueOf(value));
+                }
+            });
             this.valueColumn.setOnEditCommit(event -> {
             });
         }
