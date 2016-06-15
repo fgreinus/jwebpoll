@@ -6,6 +6,7 @@ import de.lebk.jwebpoll.client.Dialogs.ConfirmDialog;
 import de.lebk.jwebpoll.data.Answer;
 import de.lebk.jwebpoll.data.Question;
 import de.lebk.jwebpoll.data.QuestionType;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -25,9 +26,13 @@ import java.sql.SQLException;
 public class QuestionView extends TitledPane {
     private static final Logger LOGGER = Logger.getLogger(QuestionView.class);
 
+    private static final String[] TEMPLATES = {"Ja | Nein", "Bewertung: ++ +   - --", "Bewertung: ++ + 0 - --", "Schulnoten"};
+
+    private boolean enabled;
+
     private TextField titleTxF, hintTxF;
     private CheckBox requiredCkB;
-    private ComboBox<QuestionType> typeCbo;
+    private ComboBox<String> typeCbo;
     private Button answerAddBtn, answerRemoveBtn;
     private TableColumn<Answer, String> txtColumn;
     private TableColumn<Answer, Integer> valueColumn;
@@ -38,7 +43,7 @@ public class QuestionView extends TitledPane {
             this.titleTxF = (TextField) rootGird.lookup("#titleTxF");
             this.requiredCkB = (CheckBox) rootGird.lookup("#requiredCkB");
             this.hintTxF = (TextField) rootGird.lookup("#hintTxF");
-            this.typeCbo = (ComboBox<QuestionType>) rootGird.lookup("#typeCbo");
+            this.typeCbo = (ComboBox<String>) rootGird.lookup("#typeCbo");
             TableView<Answer> answerTable = (TableView<Answer>) rootGird.lookup("#answerTable");
             this.answerAddBtn = (Button) rootGird.lookup("#answerAddBtn");
             this.answerRemoveBtn = (Button) rootGird.lookup("#answerRemoveBtn");
@@ -58,20 +63,59 @@ public class QuestionView extends TitledPane {
             this.requiredCkB.setOnAction((ActionEvent event) -> question.setRequired(this.requiredCkB.isSelected()));
             this.hintTxF.setText(question.getHint());
             this.hintTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> question.setHint(this.hintTxF.getText()));
-            this.typeCbo.getItems().addAll(QuestionType.SINGLE, QuestionType.MULTIPLE, QuestionType.FREE);
-            this.typeCbo.setCellFactory((ListView<QuestionType> param) -> new QuestionTypeListCell());
+            this.typeCbo.getItems().addAll(QuestionType.SINGLE.toString(), QuestionType.MULTIPLE.toString(), QuestionType.FREE.toString());
+            if (question.getAnswers().isEmpty())
+                this.typeCbo.getItems().addAll(QuestionView.TEMPLATES);
+            this.typeCbo.setCellFactory((ListView<String> param) -> new QuestionTypeListCell());
             this.typeCbo.setButtonCell(new QuestionTypeListCell());
-            this.typeCbo.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends QuestionType> observable, QuestionType oldValue, QuestionType newValue) ->
+            this.typeCbo.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
             {
-                if (newValue == oldValue)
+                if (newValue.equals(oldValue))
                     return;
-                question.setType(newValue);
-                boolean displayAnswerTable = newValue != QuestionType.FREE;
+
+                if (newValue.equals(QuestionType.SINGLE.toString()))
+                    question.setType(QuestionType.SINGLE);
+                else if (newValue.equals(QuestionType.MULTIPLE.toString()))
+                    question.setType(QuestionType.MULTIPLE);
+                else if (newValue.equals(QuestionType.FREE.toString()))
+                    question.setType(QuestionType.FREE);
+                else {
+                    question.setType(QuestionType.SINGLE);
+                    if (newValue.equals(QuestionView.TEMPLATES[0])) {
+                        question.getAnswers().add(new Answer("Ja", 1, question));
+                        question.getAnswers().add(new Answer("Nein", 1, question));
+                    } else if (newValue.equals(QuestionView.TEMPLATES[1])) {
+                        question.getAnswers().add(new Answer("Sehr gut", 1, question));
+                        question.getAnswers().add(new Answer("Gut", 1, question));
+                        question.getAnswers().add(new Answer("Schlecht", 1, question));
+                        question.getAnswers().add(new Answer("Sehr Schlecht", 1, question));
+                    } else if (newValue.equals(QuestionView.TEMPLATES[2])) {
+                        question.getAnswers().add(new Answer("Sehr gut", 1, question));
+                        question.getAnswers().add(new Answer("Gut", 1, question));
+                        question.getAnswers().add(new Answer("Mittelmäßig", 1, question));
+                        question.getAnswers().add(new Answer("Schlecht", 1, question));
+                        question.getAnswers().add(new Answer("Sehr Schlecht", 1, question));
+                    } else if (newValue.equals(QuestionView.TEMPLATES[3])) {
+                        question.getAnswers().add(new Answer("Sehr gut", 1, question));
+                        question.getAnswers().add(new Answer("Gut", 1, question));
+                        question.getAnswers().add(new Answer("Befriedigend", 1, question));
+                        question.getAnswers().add(new Answer("Ausreichend", 1, question));
+                        question.getAnswers().add(new Answer("Mangelhaft", 1, question));
+                        question.getAnswers().add(new Answer("Ungenügend", 1, question));
+                    }
+                    answerTable.getItems().addAll(question.getAnswers());
+                    Platform.runLater(() ->
+                    {
+                        this.typeCbo.getSelectionModel().select(question.getType().toString());
+                        QuestionView.this.typeCbo.getItems().removeAll(QuestionView.TEMPLATES);
+                    });
+                }
+                boolean displayAnswerTable = question.getType() != QuestionType.FREE;
                 answerTable.setVisible(displayAnswerTable);
-                answerAddBtn.setVisible(displayAnswerTable);
-                answerRemoveBtn.setVisible(displayAnswerTable);
+                this.answerAddBtn.setVisible(displayAnswerTable);
+                this.answerRemoveBtn.setVisible(displayAnswerTable);
                 answerFreetext.setVisible(!displayAnswerTable);
-                if (newValue == QuestionType.FREE)
+                if (question.getType() == QuestionType.FREE)
                     return;
                 for (TableColumn<Answer, ?> column : answerTable.getColumns()) {
                     if (column.getId().equals("#controlColumn")) {
@@ -105,24 +149,25 @@ public class QuestionView extends TitledPane {
                         });
                     } else if (column.getId().equals("#textColumn")) {
                         this.txtColumn = (TableColumn<Answer, String>) column;
-                        this.txtColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
+                        this.txtColumn.setCellValueFactory(new PropertyValueFactory<>("text"));
                     } else if (column.getId().equals("#valueColumn")) {
                         this.valueColumn = (TableColumn<Answer, Integer>) column;
-                        this.valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, Integer>("value"));
+                        this.valueColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
                     }
                 }
+                this.setEnabled(this.enabled);
             });
-            this.typeCbo.setValue(question.getType());
+            this.typeCbo.setValue(question.getType().toString());
 
-            if (question.getAnswers() != null)
-                answerTable.getItems().addAll(question.getAnswers());
-            answerTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+            answerTable.getItems().addAll(question.getAnswers());
+            answerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
             this.answerAddBtn.setOnAction((ActionEvent event) ->
             {
                 Answer newAnswer = new Answer("<Neue Antwortmöglichkeit>", 1, question);
                 question.getAnswers().add(newAnswer);
                 answerTable.getItems().add(newAnswer);
+                this.typeCbo.getItems().removeAll(QuestionView.TEMPLATES);
             });
             this.answerRemoveBtn.setOnAction((ActionEvent event) ->
             {
@@ -140,6 +185,8 @@ public class QuestionView extends TitledPane {
                                 if (LOGGER.isDebugEnabled())
                                     LOGGER.debug("", ex);
                             }
+                            if (answerTable.getItems().isEmpty())
+                                this.typeCbo.getItems().addAll(QuestionView.TEMPLATES);
                         }
                     }, this.getScene().getWindow());
             });
@@ -160,6 +207,8 @@ public class QuestionView extends TitledPane {
     }
 
     public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+
         this.titleTxF.setDisable(!enabled);
         this.requiredCkB.setDisable(!enabled);
         this.hintTxF.setDisable(!enabled);
@@ -172,8 +221,7 @@ public class QuestionView extends TitledPane {
             this.valueColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
             this.valueColumn.setOnEditCommit(event -> event.getRowValue().setValue(event.getNewValue()));
         } else {
-            this.txtColumn.setCellFactory(param -> new TableCell<Answer, String>()
-            {
+            this.txtColumn.setCellFactory(param -> new TableCell<Answer, String>() {
                 @Override
                 protected void updateItem(String text, boolean empty) {
                     setText(text);
@@ -181,8 +229,7 @@ public class QuestionView extends TitledPane {
             });
             this.txtColumn.setOnEditCommit(event -> {
             });
-            this.valueColumn.setCellFactory(param -> new TableCell<Answer, Integer>()
-            {
+            this.valueColumn.setCellFactory(param -> new TableCell<Answer, Integer>() {
                 @Override
                 protected void updateItem(Integer value, boolean empty) {
                     setText(value == null ? "" : String.valueOf(value));

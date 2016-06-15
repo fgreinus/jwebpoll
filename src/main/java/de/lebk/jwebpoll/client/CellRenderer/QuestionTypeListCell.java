@@ -4,25 +4,23 @@ import de.lebk.jwebpoll.data.QuestionType;
 import javafx.scene.control.ListCell;
 import javafx.scene.text.Text;
 
-public class QuestionTypeListCell extends ListCell<QuestionType> {
+public class QuestionTypeListCell extends ListCell<String> {
     @Override
-    protected void updateItem(QuestionType item, boolean empty) {
+    protected void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
 
+        Text txt = null;
         if (item != null) {
-            Text txt = new Text("Unbekannt");
-            switch (item) {
-                case SINGLE:
-                    txt.setText("Einzelauswahl");
-                    break;
-                case MULTIPLE:
-                    txt.setText("Mehrfachauswahl");
-                    break;
-                case FREE:
-                    txt.setText("Freitext");
-                    break;
-            }
-            this.setGraphic(txt);
+            txt = new Text("Unbekannt");
+            if (item.equals(QuestionType.SINGLE.toString()))
+                txt.setText("Einzelauswahl");
+            else if (item.equals(QuestionType.MULTIPLE.toString()))
+                txt.setText("Mehrfachauswahl");
+            else if (item.equals(QuestionType.FREE.toString()))
+                txt.setText("Freitext");
+            else
+                txt.setText(item);
         }
+        this.setGraphic(txt);
     }
 }
