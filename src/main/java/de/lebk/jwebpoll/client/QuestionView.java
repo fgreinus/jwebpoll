@@ -16,48 +16,52 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
+import javafx.util.converter.IntegerStringConverter;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class QuestionView {
+public class QuestionView extends TitledPane {
     private static final Logger LOGGER = Logger.getLogger(QuestionView.class);
 
-    public static TitledPane setQuestionView(Accordion accordion, Question question, boolean disabled) {
+    private TextField titleTxF, hintTxF;
+    private CheckBox requiredCkB;
+    private ComboBox<QuestionType> typeCbo;
+    private Button answerAddBtn, answerRemoveBtn;
+    private TableColumn<Answer, String> txtColumn;
+    private TableColumn<Answer, Integer> valueColumn;
+
+    public QuestionView(Question question) {
         try {
-            TitledPane tp = new TitledPane();
             GridPane rootGird = FXMLLoader.load(QuestionView.class.getResource("/client/questionView.fxml"));
-            TextField titleTxF = (TextField) rootGird.lookup("#titleTxF");
-            CheckBox requiredCkB = (CheckBox) rootGird.lookup("#requiredCkB");
-            TextField hintTxF = (TextField) rootGird.lookup("#hintTxF");
-            ComboBox<QuestionType> typeCbo = (ComboBox<QuestionType>) rootGird.lookup("#typeCbo");
+            this.titleTxF = (TextField) rootGird.lookup("#titleTxF");
+            this.requiredCkB = (CheckBox) rootGird.lookup("#requiredCkB");
+            this.hintTxF = (TextField) rootGird.lookup("#hintTxF");
+            this.typeCbo = (ComboBox<QuestionType>) rootGird.lookup("#typeCbo");
             TableView<Answer> answerTable = (TableView<Answer>) rootGird.lookup("#answerTable");
-            Button answerAddBtn = (Button) rootGird.lookup("#answerAddBtn");
-            Button answerRemoveBtn = (Button) rootGird.lookup("#answerRemoveBtn");
+            this.answerAddBtn = (Button) rootGird.lookup("#answerAddBtn");
+            this.answerRemoveBtn = (Button) rootGird.lookup("#answerRemoveBtn");
             TextArea answerFreetext = (TextArea) rootGird.lookup("#answerFreetext");
 
-            titleTxF.setText("#Initialize");
-            titleTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
+            this.titleTxF.setText("#Initialize");
+            this.titleTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) ->
             {
-                question.setTitle(titleTxF.getText());
+                question.setTitle(this.titleTxF.getText());
                 if (question.getTitle() == null || question.getTitle().isEmpty())
-                    tp.setText("<Neue Frage>");
+                    this.setText("<Neue Frage>");
                 else
-                    tp.setText(question.getTitle());
+                    this.setText(question.getTitle());
             });
-            titleTxF.setText(question.getTitle());
-            titleTxF.setDisable(disabled);
-            requiredCkB.setSelected(question.isRequired());
-            requiredCkB.setOnAction((ActionEvent event) -> question.setRequired(requiredCkB.isSelected()));
-            requiredCkB.setDisable(disabled);
-            hintTxF.setText(question.getHint());
-            hintTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> question.setHint(hintTxF.getText()));
-            hintTxF.setDisable(disabled);
-            typeCbo.getItems().addAll(QuestionType.SINGLE, QuestionType.MULTIPLE, QuestionType.FREE);
-            typeCbo.setCellFactory((ListView<QuestionType> param) -> new QuestionTypeListCell());
-            typeCbo.setButtonCell(new QuestionTypeListCell());
-            typeCbo.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends QuestionType> observable, QuestionType oldValue, QuestionType newValue) ->
+            this.titleTxF.setText(question.getTitle());
+            this.requiredCkB.setSelected(question.isRequired());
+            this.requiredCkB.setOnAction((ActionEvent event) -> question.setRequired(this.requiredCkB.isSelected()));
+            this.hintTxF.setText(question.getHint());
+            this.hintTxF.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> question.setHint(this.hintTxF.getText()));
+            this.typeCbo.getItems().addAll(QuestionType.SINGLE, QuestionType.MULTIPLE, QuestionType.FREE);
+            this.typeCbo.setCellFactory((ListView<QuestionType> param) -> new QuestionTypeListCell());
+            this.typeCbo.setButtonCell(new QuestionTypeListCell());
+            this.typeCbo.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends QuestionType> observable, QuestionType oldValue, QuestionType newValue) ->
             {
                 if (newValue == oldValue)
                     return;
@@ -100,39 +104,27 @@ public class QuestionView {
                             }
                         });
                     } else if (column.getId().equals("#textColumn")) {
-                        TableColumn<Answer, String> txtColumn = (TableColumn<Answer, String>) column;
-                        if(!disabled)
-                        {
-                            txtColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-                            txtColumn.setOnEditCommit(event -> event.getRowValue().setText(event.getNewValue()));
-                        }
-                        txtColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
+                        this.txtColumn = (TableColumn<Answer, String>) column;
+                        this.txtColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("text"));
                     } else if (column.getId().equals("#valueColumn")) {
-                        TableColumn<Answer, Integer> valueColumn = (TableColumn<Answer, Integer>) column;
-                        if(!disabled)
-                        {
-                            valueColumn.setCellFactory(TextFieldTableCell.forTableColumn(new javafx.util.converter.IntegerStringConverter()));
-                            valueColumn.setOnEditCommit(event -> event.getRowValue().setValue(event.getNewValue()));
-                        }
-                        valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, Integer>("value"));
+                        this.valueColumn = (TableColumn<Answer, Integer>) column;
+                        this.valueColumn.setCellValueFactory(new PropertyValueFactory<Answer, Integer>("value"));
                     }
                 }
             });
-            typeCbo.setValue(question.getType());
-            typeCbo.setDisable(disabled);
+            this.typeCbo.setValue(question.getType());
 
             if (question.getAnswers() != null)
                 answerTable.getItems().addAll(question.getAnswers());
             answerTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
-            answerAddBtn.setOnAction((ActionEvent event) ->
+            this.answerAddBtn.setOnAction((ActionEvent event) ->
             {
-                Answer newAnswer = new Answer("<Neue Antwortmöglichkeit>", nextAnswerWeight(question), question);
+                Answer newAnswer = new Answer("<Neue Antwortmöglichkeit>", 1, question);
                 question.getAnswers().add(newAnswer);
                 answerTable.getItems().add(newAnswer);
             });
-            answerAddBtn.setDisable(disabled);
-            answerRemoveBtn.setOnAction((ActionEvent event) ->
+            this.answerRemoveBtn.setOnAction((ActionEvent event) ->
             {
                 if (!answerTable.getSelectionModel().isEmpty())
                     ConfirmDialog.show("Antwortmöglichkeit wirklich entfernen?", confirmed ->
@@ -149,32 +141,43 @@ public class QuestionView {
                                     LOGGER.debug("", ex);
                             }
                         }
-                    }, accordion.getScene().getWindow());
+                    }, this.getScene().getWindow());
             });
-            answerRemoveBtn.setDisable(disabled);
 
-            tp.setContent(rootGird);
-            accordion.getPanes().add(tp);
-
-            return tp;
+            this.setEnabled(true);
+            this.setContent(rootGird);
         } catch (IOException ex) {
             ex.printStackTrace();
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("", ex);
             }
         }
-        return null;
     }
 
-    private static int nextAnswerWeight(Question item) {
-        if (item.getAnswers() == null || item.getAnswers().isEmpty())
-            return 1;
-        int highest = Integer.MIN_VALUE;
-        for (Answer answer : item.getAnswers())
-            if (answer.getValue() > highest)
-                highest = answer.getValue();
-        if (highest == Integer.MIN_VALUE)
-            highest = 0;
-        return ++highest;
+    public QuestionView(Question question, boolean disable) {
+        this(question);
+        this.setEnabled(!disable);
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.titleTxF.setDisable(!enabled);
+        this.requiredCkB.setDisable(!enabled);
+        this.hintTxF.setDisable(!enabled);
+        this.typeCbo.setDisable(!enabled);
+        this.answerAddBtn.setDisable(!enabled);
+        this.answerRemoveBtn.setDisable(!enabled);
+        if (enabled) {
+            this.txtColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+            this.txtColumn.setOnEditCommit(event -> event.getRowValue().setText(event.getNewValue()));
+            this.valueColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+            this.valueColumn.setOnEditCommit(event -> event.getRowValue().setValue(event.getNewValue()));
+        } else {
+            this.txtColumn.setCellFactory(param -> new TableCell<>());
+            this.txtColumn.setOnEditCommit(event -> {
+            });
+            this.valueColumn.setCellFactory(param -> new TableCell<>());
+            this.valueColumn.setOnEditCommit(event -> {
+            });
+        }
     }
 }

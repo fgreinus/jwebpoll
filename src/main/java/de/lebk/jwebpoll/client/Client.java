@@ -26,10 +26,7 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 public class Client extends Application {
     //- Main -
@@ -54,7 +51,7 @@ public class Client extends Application {
     private Button openBtn, closeBtn, resultsBtn;
     private Accordion questionsAccordion;
     private Button questionsAddBtn, questionsRemoveBtn;
-    private Hashtable<TitledPane, Question> titledPanes = new Hashtable<>();
+    private Hashtable<QuestionView, Question> questionViews = new Hashtable<>();
 
     //- Dialogs -
     private EvaluationDialog evaluationDialog;
@@ -67,7 +64,7 @@ public class Client extends Application {
             try {
                 Frontend.kill();
 
-                if(this.evaluationDialog != null)
+                if (this.evaluationDialog != null)
                     this.evaluationDialog.close();
 
             } catch (Exception e) {
@@ -83,8 +80,6 @@ public class Client extends Application {
         for (Poll p : this.polls) {
             if (p.getState() == PollState.OPEN) {
                 p.setState(PollState.CLOSED);
-                //Client.activePoll = p;
-                //break;
             }
         }
 
@@ -186,9 +181,10 @@ public class Client extends Application {
         {
             Question newQuestion = new Question("", true, QuestionType.SINGLE, Client.poll);
             Client.poll.getQuestions().add(newQuestion);
-            TitledPane tp = QuestionView.setQuestionView(this.questionsAccordion, newQuestion, Client.activePoll != null && Client.activePoll == Client.poll);
-            this.titledPanes.put(tp, newQuestion);
-            this.questionsAccordion.setExpandedPane(tp);
+            QuestionView questionView = new QuestionView(newQuestion, Client.activePoll != null && Client.activePoll == Client.poll);
+            this.questionViews.put(questionView, newQuestion);
+            this.questionsAccordion.getPanes().add(questionView);
+            this.questionsAccordion.setExpandedPane(questionView);
         });
 
         this.questionsRemoveBtn = (Button) pollDetail.lookup("#questionsRemoveBtn");
@@ -197,14 +193,14 @@ public class Client extends Application {
             ConfirmDialog.show("Frage wirklich entfernen?", (boolean confirmed) ->
             {
                 if (confirmed) {
-                    Question toRemove = this.titledPanes.get(this.questionsAccordion.getExpandedPane());
+                    Question toRemove = this.questionViews.get(this.questionsAccordion.getExpandedPane());
                     try {
                         Database.DB.getQuestionDao().delete(toRemove);
                         for (Answer answer : toRemove.getAnswers()) {
                             Database.DB.getAnswerDao().delete(answer);
                         }
                         Client.poll.getQuestions().remove(toRemove);
-                        this.titledPanes.remove(this.questionsAccordion.getExpandedPane());
+                        this.questionViews.remove(this.questionsAccordion.getExpandedPane());
                         this.questionsAccordion.getPanes().remove(this.questionsAccordion.getExpandedPane());
                     } catch (SQLException ex) {
                         if (LOGGER.isDebugEnabled()) {
@@ -241,9 +237,8 @@ public class Client extends Application {
         this.linkCbo.setEditable(true);
         this.linkCbo.getEditor().setEditable(false);
         this.linkCbo.getSelectionModel().selectFirst();
-        for(int i = 0; i < this.linkCbo.getItems().size(); i++)
-            if(!this.linkCbo.getItems().get(i).startsWith(Frontend.LOCALHOST_V4) && !this.linkCbo.getItems().get(i).startsWith(Frontend.LOCALHOST_V6))
-            {
+        for (int i = 0; i < this.linkCbo.getItems().size(); i++)
+            if (!this.linkCbo.getItems().get(i).startsWith(Frontend.LOCALHOST_V4) && !this.linkCbo.getItems().get(i).startsWith(Frontend.LOCALHOST_V6)) {
                 // Select first non-localhost address
                 this.linkCbo.getSelectionModel().select(i);
                 break;
@@ -324,8 +319,9 @@ public class Client extends Application {
         this.questionsAccordion.getPanes().clear();
         if (Client.poll != null)
             for (Question question : Client.poll.getQuestions()) {
-                TitledPane tp = QuestionView.setQuestionView(this.questionsAccordion, question, disabled);
-                this.titledPanes.put(tp, question);
+                QuestionView questionView = new QuestionView(question, disabled);
+                this.questionViews.put(questionView, question);
+                this.questionsAccordion.getPanes().add(questionView);
             }
     }
 
@@ -340,33 +336,28 @@ public class Client extends Application {
         this.descTxF.setDisable(disable);
         this.createdDateTxF.setDisable(disable);
         this.createdTimeTxF.setDisable(disable);
-        this.questionsAccordion.getPanes().clear();
-        if (Client.poll != null)
-            for (Question question : Client.poll.getQuestions()) {
-                TitledPane tp = QuestionView.setQuestionView(this.questionsAccordion, question, disable);
-                this.titledPanes.put(tp, question);
-            }
-
         this.questionsAddBtn.setDisable(disable);
         this.questionsRemoveBtn.setDisable(disable || Client.poll.getQuestions().isEmpty() || this.questionsAccordion.getExpandedPane() == null);
 
-        if(disable)
-        {
+        Iterator<QuestionView> it = this.questionViews.keySet().iterator();
+        while (it.hasNext())
+            it.next().setEnabled(!disable);
+
+        if (disable) {
             int selectedIndex = this.linkCbo.getSelectionModel().getSelectedIndex();
             this.linkCbo.setOnAction((ActionEvent ev) ->
             {
                 this.linkCbo.getSelectionModel().select(selectedIndex);
             });
-        }
-        else
+        } else
             this.linkCbo.setOnAction(null);
+
         this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
         this.closeBtn.setDisable(!disable);
         this.resultsBtn.setDisable(Client.poll == null);
     }
 
-    private void newPoll()
-    {
+    private void newPoll() {
         Poll newPoll = new Poll("", "", PollState.NEW);
         try {
             Database.DB.getPollDao().create(newPoll);
@@ -382,19 +373,16 @@ public class Client extends Application {
         }
     }
 
-    private void openResults()
-    {
-        if(this.evaluationDialog != null)
+    private void openResults() {
+        if (this.evaluationDialog != null)
             evaluationDialog.toFront();
-        else
-        {
+        else {
             this.evaluationDialog = new EvaluationDialog(Client.poll.getId());
             this.evaluationDialog.setOnCloseRequest(event -> this.evaluationDialog = null);
         }
     }
 
-    private String getSelectedAddress()
-    {
+    private String getSelectedAddress() {
         return this.linkCbo.getSelectionModel().getSelectedItem().endsWith(":" + Frontend.PORT) ? this.linkCbo.getSelectionModel().getSelectedItem().substring(0, this.linkCbo.getSelectionModel().getSelectedItem().lastIndexOf(':')) : this.linkCbo.getSelectionModel().getSelectedItem();
     }
 }
