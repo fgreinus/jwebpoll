@@ -36,7 +36,7 @@ public class EvaluationDialog extends Stage {
         GridPane evaluationGrid;
         try {
             evaluationGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/evaluationDialog.fxml"));
-            fillMenuBar((MenuBar) evaluationGrid.lookup("#menuBar"));
+            this.fillMenuBar((MenuBar) evaluationGrid.lookup("#menuBar"));
             ScrollPane scrollPane = (ScrollPane) evaluationGrid.lookup("#scrollPane");
             scrollPane.setContent(this.questionsAccordion);
         } catch (IOException ex) {
@@ -69,8 +69,13 @@ public class EvaluationDialog extends Stage {
         export.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCodeCombination.CONTROL_DOWN));
         export.setOnAction((ActionEvent event) ->
         {
+            if(this.poll == null)
+            {
+                MsgBox.show("Export", "Keine Ergebnisse zu exportieren!", null, this.getOwner());
+                return;
+            }
             FileChooser fileChooser = new FileChooser();
-            String pollTitle = poll.getTitle().equals("") ? "Neue Umfrage" : poll.getTitle();
+            String pollTitle = this.poll.getTitle() == null || this.poll.getTitle().isEmpty() ? "Neue Umfrage" : this.poll.getTitle();
             String fileName = pollTitle.replace("\"", "").replace(";", "").replace(".", "") + ".csv";
             fileChooser.setInitialFileName(fileName);
             File choosenFile = fileChooser.showSaveDialog(this.getOwner());
@@ -86,8 +91,8 @@ public class EvaluationDialog extends Stage {
     }
 
     private void fillAccordion(Poll poll) {
-        if (this.questionsAccordion == null)
-            return;
+        if(this.poll == null)
+            throw new IllegalArgumentException("Poll cannot be null!");
         this.questionsAccordion.getPanes().remove(0, this.questionsAccordion.getPanes().size());
         if (poll != null)
             for (Question question : poll.questions) {
@@ -107,15 +112,18 @@ public class EvaluationDialog extends Stage {
 
     private void refresh() {
         this.poll = loadPoll(this.pollid);
-        if(this.questionsAccordion.getPanes().size() != this.poll.getQuestions().size())
-            fillAccordion(this.poll);
-        else
+        if(this.poll != null)
         {
-            Iterator<Question> it = this.poll.getQuestions().iterator();
-            for(TitledPane tp : this.questionsAccordion.getPanes())
-                ((EvaluationQuestionView) tp).setQuestion(it.next());
+            if(this.questionsAccordion.getPanes().size() != this.poll.getQuestions().size())
+                fillAccordion(this.poll);
+            else
+            {
+                Iterator<Question> it = this.poll.getQuestions().iterator();
+                for(TitledPane tp : this.questionsAccordion.getPanes())
+                    ((EvaluationQuestionView) tp).setQuestion(it.next());
+            }
         }
-        this.setTitle(this.poll == null ? "Auswertung" : "Auswertung: " + this.poll.getTitle());
+        this.setTitle(this.poll == null || this.poll.getTitle().isEmpty() ? "Auswertung" : "Auswertung: " + this.poll.getTitle());
     }
 
     private Poll loadPoll(int id) {
