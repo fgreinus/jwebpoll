@@ -7,10 +7,7 @@ import de.lebk.jwebpoll.data.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -34,6 +31,14 @@ public class EvaluationDialog extends Stage {
     public EvaluationDialog(int pollid) {
         this.pollid = pollid;
         this.getIcons().add(new Image(EvaluationDialog.class.getResource("/icon.png").toString()));
+
+        // PollView (Right side)
+        ScrollPane scroller = new ScrollPane();
+        scroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scroller.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scroller.setFitToWidth(true);
+        scroller.setFitToHeight(true);
+
         GridPane evaluationGrid;
         try {
             evaluationGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/evaluationDialog.fxml"));
@@ -45,8 +50,9 @@ public class EvaluationDialog extends Stage {
                 LOGGER.debug("", ex);
             return;
         }
+        scroller.setContent(evaluationGrid);
         this.refresh();
-        this.setScene(new Scene(evaluationGrid));
+        this.setScene(new Scene(scroller));
         this.sizeToScene();
         this.show();
     }
@@ -71,8 +77,7 @@ public class EvaluationDialog extends Stage {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialFileName("pollx.csv");
             File choosenFile = fileChooser.showSaveDialog(this.getOwner());
-            if(choosenFile != null)
-            {
+            if (choosenFile != null) {
                 String text = "Umfrage exportiert.";
                 if (!Serializer.toCsv(choosenFile.getAbsolutePath(), this.poll))
                     text = "Exportieren fehlgeschlagen!";
@@ -84,7 +89,7 @@ public class EvaluationDialog extends Stage {
     }
 
     private void fillAccordion(Poll poll) {
-        if(this.questionsAccordion == null)
+        if (this.questionsAccordion == null)
             return;
         this.questionsAccordion.getPanes().remove(0, this.questionsAccordion.getPanes().size());
         if (poll != null)
