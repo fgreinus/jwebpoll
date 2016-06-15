@@ -52,7 +52,7 @@
                 invalidHandler: function(event, validator) {
                     var errors = validator.numberOfInvalids();
                     if (errors) {
-                        swal("Fehler!", "Bitte f&uuml;llen Sie alle Pflichtfelder aus.", "error");
+                        swal("Fehler!", "Bitte füllen Sie alle Pflichtfelder aus.", "error");
                     }
                 },
                rules: {

@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Iterator;
 
 public class EvaluationDialog extends Stage {
     private static final Logger LOGGER = Logger.getLogger(EvaluationDialog.class);
@@ -31,6 +32,14 @@ public class EvaluationDialog extends Stage {
     public EvaluationDialog(int pollid) {
         this.pollid = pollid;
         this.getIcons().add(new Image(EvaluationDialog.class.getResource("/icon.png").toString()));
+
+        // PollView (Right side)
+        ScrollPane scroller = new ScrollPane();
+        scroller.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scroller.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scroller.setFitToWidth(true);
+        scroller.setFitToHeight(true);
+
         GridPane evaluationGrid;
         try {
             evaluationGrid = FXMLLoader.load(ConfirmDialog.class.getResource("/client/evaluationDialog.fxml"));
@@ -42,8 +51,9 @@ public class EvaluationDialog extends Stage {
                 LOGGER.debug("", ex);
             return;
         }
+        scroller.setContent(evaluationGrid);
         this.refresh();
-        this.setScene(new Scene(evaluationGrid));
+        this.setScene(new Scene(scroller));
         this.sizeToScene();
         this.show();
     }
@@ -103,7 +113,14 @@ public class EvaluationDialog extends Stage {
 
     private void refresh() {
         this.poll = loadPoll(this.pollid);
-        fillAccordion(this.poll);
+        if(this.questionsAccordion.getPanes().size() != this.poll.getQuestions().size())
+            fillAccordion(this.poll);
+        else
+        {
+            Iterator<Question> it = this.poll.getQuestions().iterator();
+            for(TitledPane tp : this.questionsAccordion.getPanes())
+                ((EvaluationQuestionView) tp).setQuestion(it.next());
+        }
         this.setTitle(this.poll == null ? "Auswertung" : "Auswertung: " + this.poll.getTitle());
     }
 

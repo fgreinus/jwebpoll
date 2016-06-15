@@ -19,7 +19,7 @@ import static spark.Spark.*;
 public class Frontend {
     public static final String LOCALHOST_V4 = "127.0.0.1";
     public static final String LOCALHOST_V6 = "0:0:0:0:0:0:0:1";
-    public static final int PORT = 80;
+    public static final int PORT = 4567;
     private static final String TEMPLATE_DIR = "/templates";
     private static final String ASSET_DIR = "/assets";
     private final static Logger LOGGER = Logger.getLogger(Frontend.class);
