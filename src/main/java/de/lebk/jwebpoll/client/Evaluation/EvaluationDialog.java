@@ -70,7 +70,8 @@ public class EvaluationDialog extends Stage {
         export.setOnAction((ActionEvent event) ->
         {
             FileChooser fileChooser = new FileChooser();
-            String fileName = poll.getTitle().replace("\"", "").replace(";", "").replace(".", "") + ".csv";
+            String pollTitle = poll.getTitle().equals("") ? "Neue Umfrage" : poll.getTitle();
+            String fileName = pollTitle.replace("\"", "").replace(";", "").replace(".", "") + ".csv";
             fileChooser.setInitialFileName(fileName);
             File choosenFile = fileChooser.showSaveDialog(this.getOwner());
             if (choosenFile != null) {
