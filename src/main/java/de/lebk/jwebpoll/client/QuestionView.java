@@ -1,6 +1,5 @@
 package de.lebk.jwebpoll.client;
 
-import com.j256.ormlite.stmt.query.In;
 import de.lebk.jwebpoll.Database;
 import de.lebk.jwebpoll.client.CellRenderer.QuestionTypeListCell;
 import de.lebk.jwebpoll.client.Dialogs.ConfirmDialog;
