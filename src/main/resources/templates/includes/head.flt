@@ -9,4 +9,5 @@
 <script type="text/javascript" src="/js/require_from_group.js"></script>
 <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/js/sweetalert.min.js"></script>
+<script type="text/javascript" src="/js/egg.js"></script>
 <title>jWebPoll - ${poll.getTitle()}</title>

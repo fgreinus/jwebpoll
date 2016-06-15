@@ -1,6 +1,9 @@
 /* Amazing CSS for jWebPoll */
-body {
+html, body {
+    margin: 0;
     padding-top: 50px;
+    height: 100%;
+    width: 100%;
 }
 .main {
     display: block;
@@ -24,5 +27,16 @@ body {
 .has-success .form-control-feedback,
 .glyphicon-ok{
     color: #3c763d; !important;
+}
+
+/* Confetti */
+#confetti{
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    display: block;
+    pointer-events: none;
 }
 

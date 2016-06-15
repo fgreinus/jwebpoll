@@ -15,5 +15,6 @@
     </div>
 </div>
 <#include "includes/modal.flt">
+<canvas id="confetti" width="1" height="1"></canvas>
 </body>
 </html>
