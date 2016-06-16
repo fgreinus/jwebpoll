@@ -181,7 +181,7 @@ public class Client extends Application {
         {
             Question newQuestion = new Question("", true, QuestionType.SINGLE, Client.poll);
             Client.poll.getQuestions().add(newQuestion);
-            QuestionView questionView = new QuestionView(newQuestion, Client.activePoll != null && Client.activePoll == Client.poll);
+            QuestionView questionView = new QuestionView(newQuestion, () -> this.enableBtns(), Client.activePoll != null && Client.activePoll == Client.poll);
             this.questionViews.put(questionView, newQuestion);
             this.questionsAccordion.getPanes().add(questionView);
             this.questionsAccordion.setExpandedPane(questionView);
@@ -202,6 +202,7 @@ public class Client extends Application {
                         Client.poll.getQuestions().remove(toRemove);
                         this.questionViews.remove(this.questionsAccordion.getExpandedPane());
                         this.questionsAccordion.getPanes().remove(this.questionsAccordion.getExpandedPane());
+                        this.enableBtns();
                     } catch (SQLException ex) {
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("Removing question failed: ", ex);
@@ -319,7 +320,7 @@ public class Client extends Application {
         this.questionsAccordion.getPanes().clear();
         if (Client.poll != null)
             for (Question question : Client.poll.getQuestions()) {
-                QuestionView questionView = new QuestionView(question, disabled);
+                QuestionView questionView = new QuestionView(question, () -> this.enableBtns(), disabled);
                 this.questionViews.put(questionView, question);
                 this.questionsAccordion.getPanes().add(questionView);
             }
@@ -352,9 +353,21 @@ public class Client extends Application {
         } else
             this.linkCbo.setOnAction(null);
 
-        this.openBtn.setDisable(Client.poll == null || Client.activePoll != null);
         this.closeBtn.setDisable(!disable);
-        this.resultsBtn.setDisable(Client.poll == null);
+        this.enableBtns();
+    }
+
+    private void enableBtns() {
+        int totalAnswers = 0;
+        if (Client.poll != null)
+            for (Question q : Client.poll.getQuestions()) {
+                if (q.getType() != QuestionType.FREE)
+                    totalAnswers += q.getAnswers().size();
+                else
+                    totalAnswers++;
+            }
+        this.openBtn.setDisable(totalAnswers == 0 || Client.activePoll != null);
+        this.resultsBtn.setDisable(totalAnswers == 0);
     }
 
     private void newPoll() {

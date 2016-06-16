@@ -37,6 +37,8 @@ public class QuestionView extends TitledPane {
     private TableColumn<Answer, String> txtColumn;
     private TableColumn<Answer, Integer> valueColumn;
 
+    private Runnable onAnswersChanged;
+
     public QuestionView(Question question) {
         try {
             GridPane rootGird = FXMLLoader.load(QuestionView.class.getResource("/client/questionView.fxml"));
@@ -110,6 +112,8 @@ public class QuestionView extends TitledPane {
                         QuestionView.this.typeCbo.getItems().removeAll(QuestionView.TEMPLATES);
                     });
                 }
+                if (this.onAnswersChanged != null)
+                    this.onAnswersChanged.run();
                 boolean displayAnswerTable = question.getType() != QuestionType.FREE;
                 answerTable.setVisible(displayAnswerTable);
                 this.answerAddBtn.setVisible(displayAnswerTable);
@@ -168,6 +172,8 @@ public class QuestionView extends TitledPane {
                 question.getAnswers().add(newAnswer);
                 answerTable.getItems().add(newAnswer);
                 this.typeCbo.getItems().removeAll(QuestionView.TEMPLATES);
+                if (this.onAnswersChanged != null)
+                    this.onAnswersChanged.run();
             });
             this.answerRemoveBtn.setOnAction((ActionEvent event) ->
             {
@@ -180,6 +186,8 @@ public class QuestionView extends TitledPane {
                                 Database.DB.getAnswerDao().delete(toRemove);
                                 question.getAnswers().remove(toRemove);
                                 answerTable.getItems().remove(toRemove);
+                                if (this.onAnswersChanged != null)
+                                    this.onAnswersChanged.run();
                             } catch (SQLException ex) {
                                 ex.printStackTrace();
                                 if (LOGGER.isDebugEnabled())
@@ -206,6 +214,16 @@ public class QuestionView extends TitledPane {
         this.setEnabled(!disable);
     }
 
+    public QuestionView(Question question, Runnable onAnswersChanged) {
+        this(question);
+        this.setOnAnswersChanged(onAnswersChanged);
+    }
+
+    public QuestionView(Question question, Runnable onAnswersChanged, boolean disable) {
+        this(question, disable);
+        this.setOnAnswersChanged(onAnswersChanged);
+    }
+
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
 
@@ -215,28 +233,41 @@ public class QuestionView extends TitledPane {
         this.typeCbo.setDisable(!enabled);
         this.answerAddBtn.setDisable(!enabled);
         this.answerRemoveBtn.setDisable(!enabled);
+
         if (enabled) {
-            this.txtColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-            this.txtColumn.setOnEditCommit(event -> event.getRowValue().setText(event.getNewValue()));
-            this.valueColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-            this.valueColumn.setOnEditCommit(event -> event.getRowValue().setValue(event.getNewValue()));
+            if (this.txtColumn != null) {
+                this.txtColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+                this.txtColumn.setOnEditCommit(event -> event.getRowValue().setText(event.getNewValue()));
+            }
+            if (this.valueColumn != null) {
+                this.valueColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+                this.valueColumn.setOnEditCommit(event -> event.getRowValue().setValue(event.getNewValue()));
+            }
         } else {
-            this.txtColumn.setCellFactory(param -> new TableCell<Answer, String>() {
-                @Override
-                protected void updateItem(String text, boolean empty) {
-                    setText(text);
-                }
-            });
-            this.txtColumn.setOnEditCommit(event -> {
-            });
-            this.valueColumn.setCellFactory(param -> new TableCell<Answer, Integer>() {
-                @Override
-                protected void updateItem(Integer value, boolean empty) {
-                    setText(value == null ? "" : String.valueOf(value));
-                }
-            });
-            this.valueColumn.setOnEditCommit(event -> {
-            });
+            if (this.txtColumn != null) {
+                this.txtColumn.setCellFactory(param -> new TableCell<Answer, String>() {
+                    @Override
+                    protected void updateItem(String text, boolean empty) {
+                        setText(text);
+                    }
+                });
+                this.txtColumn.setOnEditCommit(event -> {
+                });
+            }
+            if (this.valueColumn != null) {
+                this.valueColumn.setCellFactory(param -> new TableCell<Answer, Integer>() {
+                    @Override
+                    protected void updateItem(Integer value, boolean empty) {
+                        setText(value == null ? "" : String.valueOf(value));
+                    }
+                });
+                this.valueColumn.setOnEditCommit(event -> {
+                });
+            }
         }
+    }
+
+    public void setOnAnswersChanged(Runnable onAnswersChanged) {
+        this.onAnswersChanged = onAnswersChanged;
     }
 }
