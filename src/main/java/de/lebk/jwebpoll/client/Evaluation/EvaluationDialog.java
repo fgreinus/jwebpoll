@@ -69,8 +69,7 @@ public class EvaluationDialog extends Stage {
         export.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCodeCombination.CONTROL_DOWN));
         export.setOnAction((ActionEvent event) ->
         {
-            if(this.poll == null)
-            {
+            if (this.poll == null) {
                 MsgBox.show("Export", "Keine Ergebnisse zu exportieren!", null, this.getOwner());
                 return;
             }
@@ -86,12 +85,30 @@ public class EvaluationDialog extends Stage {
                 MsgBox.show("Export", text, null, this.getOwner());
             }
         });
-        action.getItems().addAll(refresh, extendedStats, export);
+        MenuItem reset = new MenuItem("Zurücksetzen");
+        reset.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
+        reset.setOnAction((ActionEvent ev) ->
+        {
+            if (this.poll != null)
+                ConfirmDialog.show("Wollen sie wirklich die Umfrage zurücksetzen\nund damit alle Ergebnisse löschen?", (confirmed) ->
+                {
+                    if (confirmed)
+                    {
+                        for (Question q : this.poll.getQuestions()) {
+                            for (Answer a : q.getAnswers())
+                                a.getVotes().clear();
+                            q.getFreetextVotes().clear();
+                        }
+                        this.refresh();
+                    }
+                }, this);
+        });
+        action.getItems().addAll(refresh, extendedStats, export, reset);
         menuBar.getMenus().addAll(action);
     }
 
     private void fillAccordion(Poll poll) {
-        if(this.poll == null)
+        if (this.poll == null)
             throw new IllegalArgumentException("Poll cannot be null!");
         this.questionsAccordion.getPanes().remove(0, this.questionsAccordion.getPanes().size());
         if (poll != null)
@@ -104,37 +121,31 @@ public class EvaluationDialog extends Stage {
                     this.questionsAccordion.getPanes().add(evaluationQuestionView);
                 } catch (IOException ex) {
                     ex.printStackTrace();
-                    if(LOGGER.isDebugEnabled())
+                    if (LOGGER.isDebugEnabled())
                         LOGGER.debug("", ex);
                 }
             }
     }
 
     private void refresh() {
-        this.poll = loadPoll(this.pollid);
-        if(this.poll != null)
-        {
-            if(this.questionsAccordion.getPanes().size() != this.poll.getQuestions().size())
-                fillAccordion(this.poll);
-            else
-            {
-                Iterator<Question> it = this.poll.getQuestions().iterator();
-                for(TitledPane tp : this.questionsAccordion.getPanes())
-                    ((EvaluationQuestionView) tp).setQuestion(it.next());
-            }
-        }
-        this.setTitle(this.poll == null || this.poll.getTitle().isEmpty() ? "Auswertung" : "Auswertung: " + this.poll.getTitle());
-    }
-
-    private Poll loadPoll(int id) {
+        this.poll = null;
         try {
-            return Database.DB.getPollDao().queryForId(id);
+            this.poll = Database.DB.getPollDao().queryForId(this.pollid);
         } catch (SQLException ex) {
             ex.printStackTrace();
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("", ex);
             }
         }
-        return null;
+        if (this.poll != null) {
+            if (this.questionsAccordion.getPanes().size() != this.poll.getQuestions().size())
+                fillAccordion(this.poll);
+            else {
+                Iterator<Question> it = this.poll.getQuestions().iterator();
+                for (TitledPane tp : this.questionsAccordion.getPanes())
+                    ((EvaluationQuestionView) tp).setQuestion(it.next());
+            }
+        }
+        this.setTitle(this.poll == null || this.poll.getTitle().isEmpty() ? "Auswertung" : "Auswertung: " + this.poll.getTitle());
     }
 }
